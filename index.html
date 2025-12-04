@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador ALE-RR | Regimento Interno 2025</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' }
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          zIndex: { '60': '60', '70': '70', '80': '80' }
+        }
+      }
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; display: flex; flex-direction: column; }
+    
+    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+
+    .option-card { transition: all 0.2s ease; border-width: 2px; }
+    .option-card:hover:not(.disabled) { transform: translateX(4px); }
+    .light .option-card { border-color: #e2e8f0; background-color: white; }
+    .light .option-card:hover:not(.disabled) { border-color: #94a3b8; background-color: #f8fafc; }
+    .dark .option-card { border-color: #334155; background-color: #1e293b; color: #e2e8f0; }
+    .dark .option-card:hover:not(.disabled) { border-color: #64748b; background-color: #334155; }
+    .option-card.selected { border-color: #f59e0b !important; background-color: #fffbeb !important; }
+    .dark .option-card.selected { background-color: #451a03 !important; border-color: #f59e0b !important; }
+    .option-card.correct { border-color: #10b981 !important; background-color: #ecfdf5 !important; }
+    .dark .option-card.correct { background-color: #064e3b !important; border-color: #10b981 !important; }
+    .option-card.wrong { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+    .dark .option-card.wrong { background-color: #450a0a !important; border-color: #ef4444 !important; }
+
+    #pdf-drawer { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .drawer-open { transform: translateX(0) !important; }
+    .drawer-closed { transform: translateX(100%); }
+    
+    .pdf-tab {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: translateY(-50%);
+        box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .locked-checkbox { opacity: 0.5; pointer-events: none; background-color: #e2e8f0; }
+    .dark .locked-checkbox { background-color: #334155; }
+
+    @media (max-width: 768px) {
+      .mobile-stack { flex-direction: column; }
+      .mobile-full { width: 100%; }
+      .mobile-padding { padding: 1rem; }
+      .mobile-text-sm { font-size: 0.875rem; }
+    }
+
+    .focus-visible:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .chart-container {
+      position: relative;
+      height: 200px;
+      width: 200px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
+
+  <nav class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 h-16 shrink-0 z-50">
+    <div class="container mx-auto px-4 h-full flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer group" onclick="showScreen('home')">
+        <div class="bg-brand-600 text-white w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition">
+          <i class="fas fa-gavel"></i>
+        </div>
+        <div class="leading-tight">
+          <h1 class="text-xl font-bold text-slate-800 dark:text-white">ALE-RR <span class="text-brand-600 dark:text-brand-500">Simulador</span></h1>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">Regimento 2023</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <button onclick="showScreen('home')" class="hidden md:flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 px-3 py-2 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 transition border border-transparent hover:border-brand-200">
+          <i class="fas fa-home text-brand-500"></i> <span>Início</span>
+        </button>
+
+        <div class="h-6 w-px bg-slate-200 dark:bg-slate-600 hidden md:block"></div>
+
+        <button onclick="toggleCacheModal()" class="text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 p-2 transition" title="Gerenciar Dados">
+            <i class="fas fa-database"></i>
+        </button>
+
+        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center">
+          <i id="theme-icon" class="fas fa-moon"></i>
+        </button>
+
+        <button onclick="showScreen('analytics')" class="text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 p-2 transition" title="Histórico">
+          <i class="fas fa-chart-bar"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="flex-grow relative flex overflow-hidden">
+    
+    <main class="flex-grow overflow-y-auto custom-scrollbar p-4 md:p-8 relative z-10 w-full" id="main-scroll-area">
+        
+        <div id="screen-error" class="hidden flex flex-col items-center justify-center min-h-[60vh] text-center fade-in">
+            <div class="w-24 h-24 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mb-6 text-4xl shadow-xl">
+                <i class="fas fa-server"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Erro de Conexão Local</h2>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 max-w-lg mx-auto text-left">
+                <p class="text-slate-600 dark:text-slate-300 mb-4 font-medium">Use a extensão <strong>Live Server</strong> para rodar este aplicativo corretamente.</p>
+            </div>
+            <button onclick="location.reload()" class="mt-8 bg-brand-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-brand-700 transition shadow-lg flex items-center gap-2">
+                <i class="fas fa-sync-alt"></i> Tentar Novamente
+            </button>
+        </div>
+
+        <div id="screen-home" class="fade-in max-w-6xl mx-auto pb-24">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="p-6 md:p-10 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Configurar Simulador</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Selecione os tópicos e a estratégia de distribuição.</p>
+                </div>
+
+                <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <label class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 uppercase tracking-wide text-sm">
+                                <i class="fas fa-list-ul text-brand-500"></i> Assuntos Disponíveis
+                            </label>
+                            <div class="space-x-3">
+                                <button onclick="toggleAllModules(true)" id="btn-select-all" class="text-xs font-bold text-brand-600 hover:underline">Todos</button>
+                                <button onclick="toggleAllModules(false)" id="btn-select-none" class="text-xs font-bold text-slate-500 hover:text-red-500">Nenhum</button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-200 dark:border-slate-600 flex-grow max-h-[500px] overflow-y-auto custom-scrollbar p-1" id="module-container">
+                            <div class="p-8 text-center text-slate-400"><div class="loader mx-auto mb-2"></div> Carregando módulos...</div>
+                        </div>
+
+                        <div class="mt-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-blue-700 dark:text-blue-300">Banco de Dados</span>
+                                    <span id="badge-total" class="text-lg font-bold text-slate-800 dark:text-white">0</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-blue-700 dark:text-blue-300">Módulos Selecionados</span>
+                                    <span id="badge-modules" class="text-lg font-bold text-slate-800 dark:text-white">0</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-blue-700 dark:text-blue-300">Q. Selecionadas</span>
+                                    <span id="badge-available" class="text-lg font-bold text-slate-800 dark:text-white">0</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-blue-700 dark:text-blue-300">Para o Simulado</span>
+                                    <span id="badge-target" class="text-lg font-bold text-slate-800 dark:text-white">0</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 text-center">
+                                <i class="fas fa-info-circle mr-1"></i> As questões foram elaboradas com IA e as de 2018 são do concurso anterior (atualizadas).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 flex flex-col gap-6">
+                        
+                        <div class="bg-orange-50 dark:bg-orange-900/10 p-5 rounded-xl border border-orange-100 dark:border-orange-800/30 relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 w-20 h-20 bg-orange-100 dark:bg-orange-800/20 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
+                            <div class="relative z-10 flex items-center justify-between">
+                                <div>
+                                    <div class="font-bold text-orange-800 dark:text-orange-200">Filtro Concurso 2018</div>
+                                    <div class="text-[10px] text-orange-600 dark:text-orange-300 mt-1 max-w-[150px]">
+                                        Trava a seleção apenas para questões da prova anterior.
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="filter-2018" class="sr-only peer" onchange="toggle2018Lock()">
+                                    <div class="w-11 h-6 bg-slate-200 peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div id="qty-selector-container">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Quantidade Total</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button onclick="setQuantity(5)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="5">5</button>
+                                    <button onclick="setQuantity(10)" class="btn-qty p-2 rounded border bg-brand-50 border-brand-500 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 text-sm font-medium transition" data-val="10">10</button>
+                                    <button onclick="setQuantity(20)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="20">20</button>
+                                    <button onclick="setQuantity(30)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="30">30</button>
+                                </div>
+                                <div class="mt-2 flex gap-2">
+                                    <button onclick="setQuantity('all')" class="flex-1 btn-qty p-2 rounded border border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100 text-xs font-bold uppercase transition" data-val="all">Selecionar Tudo</button>
+                                    <input type="number" id="custom-qty" placeholder="Qtd..." class="w-20 p-2 text-sm border rounded text-center outline-none focus:border-brand-500 dark:bg-slate-700 dark:border-slate-600" oninput="setQuantity('custom')">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Modo de Distribuição</label>
+                                <select id="distribution-mode" onchange="handleModeChange()" class="w-full p-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-200">
+                                    <option value="random">Aleatório Simples</option>
+                                    <option value="balanced">Equilibrado (Por Tópico)</option>
+                                    <option value="proportional">Proporcional (Peso)</option>
+                                    <option value="manual">Manual / Personalizado</option>
+                                </select>
+                            </div>
+
+                            <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 p-3">
+                                <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 flex justify-between">
+                                    <span>Previsão do Simulado</span>
+                                    <span id="preview-total" class="text-brand-600">0 questões</span>
+                                </h4>
+                                <div id="distribution-preview" class="max-h-[150px] overflow-y-auto custom-scrollbar space-y-1 text-xs text-slate-600 dark:text-slate-300">
+                                    <p class="text-slate-400 italic">Selecione módulos para ver.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                    <button onclick="startSimulation()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex justify-center items-center gap-3">
+                        INICIAR SIMULADO <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <div class="mt-4 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+                        <div class="text-center md:text-left">
+                            <p>Desenvolvido por <strong>Marcos Guimarães Duailibi Filho</strong></p>
+                            <p class="mt-0.5">Contato: +55 (95) 98111-4983</p>
+                        </div>
+                        
+                        <div class="mt-2 md:mt-0 flex items-center gap-2 bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-600" title="Uso do Armazenamento Local">
+                            <i class="fas fa-database text-xs text-slate-400"></i>
+                            <span class="font-mono text-[10px]" id="footer-cache-stat">0 KB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="hidden max-w-6xl mx-auto h-full flex flex-col fade-in pb-24">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 flex justify-between items-center mb-6 mobile-stack mobile-padding">
+                <div class="flex items-center gap-6 mobile-stack">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Tempo</span>
+                        <span class="font-mono font-bold text-lg text-slate-700 dark:text-slate-200" id="timer">00:00</span>
+                    </div>
+                    <div class="h-8 w-px bg-slate-200 dark:bg-slate-600"></div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Progresso</span>
+                        <span class="font-bold text-lg text-slate-700 dark:text-slate-200">
+                            <span id="q-current-index">1</span><span class="text-slate-400 text-sm">/</span><span id="q-total-count" class="text-sm text-slate-400">10</span>
+                        </span>
+                    </div>
+                </div>
+                <button onclick="finishSimulation()" class="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-4 py-2 rounded-lg text-xs font-bold uppercase transition mobile-full mt-4">
+                    Finalizar
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div class="lg:col-span-9 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-slate-100 dark:bg-slate-700">
+                        <div id="progress-bar" class="h-full bg-brand-500 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+
+                    <span id="q-module-name" class="inline-block mt-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-4">Módulo</span>
+                    
+                    <h3 id="q-text" class="text-xl md:text-2xl text-slate-800 dark:text-slate-100 font-medium leading-relaxed mb-8 mobile-text-sm">...</h3>
+
+                    <div id="options-container" class="space-y-3 mb-8"></div>
+
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700 mobile-stack">
+                        <button onclick="changeQuestion(-1)" id="btn-prev" class="text-slate-500 hover:text-brand-600 font-bold px-4 py-2 rounded transition disabled:opacity-30 mobile-full mb-2">
+                            <i class="fas fa-arrow-left mr-2"></i> Anterior
+                        </button>
+                        <div class="flex gap-3 mobile-full">
+                            <button id="btn-confirm" onclick="confirmAnswer()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-bold shadow transition disabled:opacity-50 disabled:cursor-not-allowed mobile-full">
+                                Responder
+                            </button>
+                            <button onclick="changeQuestion(1)" id="btn-next" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-2 rounded-lg font-bold transition mobile-full">
+                                Pular
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="explanation-box" class="hidden mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-5 animate-in fade-in slide-in-from-top-2">
+                        <h4 class="text-blue-800 dark:text-blue-300 font-bold text-sm mb-2 flex items-center gap-2">
+                            <i class="fas fa-check-circle"></i> Comentário / Justificativa
+                        </h4>
+                        <p id="explanation-text" class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed"></p>
+                        <div class="mt-3 text-xs text-blue-600 dark:text-blue-400">
+                            <i class="fas fa-info-circle mr-1"></i> Consulte o Regimento ao lado para verificar a precisão da explicação.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 sticky top-4">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase mb-4">Mapa</h4>
+                    <div id="nav-grid" class="grid grid-cols-5 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-result" class="hidden fade-in max-w-4xl mx-auto mt-8 pb-24">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden text-center">
+                <div class="bg-slate-900 p-10 text-white relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-bold mb-2">Resultado Final</h2>
+                        <p class="text-slate-400">Confira seu desempenho.</p>
+                    </div>
+                    <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                </div>
+                
+                <div class="p-8 md:p-12">
+                    <div class="flex justify-center items-center mb-10">
+                        <div class="chart-container">
+                            <canvas id="resultChart"></canvas>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span class="text-3xl font-bold text-slate-800 dark:text-white" id="res-percent">0%</span>
+                                <span class="text-xs uppercase font-bold text-slate-400">Aproveitamento</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6 mb-10 mobile-stack">
+                        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border-b-4 border-green-500">
+                            <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="res-correct">0</div>
+                            <div class="text-xs font-bold uppercase text-slate-500">Acertos</div>
+                        </div>
+                        <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border-b-4 border-red-500">
+                            <div class="text-3xl font-bold text-red-600 dark:text-red-400" id="res-wrong">0</div>
+                            <div class="text-xs font-bold uppercase text-slate-500">Erros</div>
+                        </div>
+                        <div class="p-4 bg-slate-100 dark:bg-slate-700 rounded-xl border-b-4 border-slate-400">
+                            <div class="text-3xl font-bold text-slate-600 dark:text-slate-300" id="res-unanswered">0</div>
+                            <div class="text-xs font-bold uppercase text-slate-500">Branco</div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 justify-center mobile-stack">
+                        <button onclick="location.reload()" class="bg-brand-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-brand-700 transition shadow-lg mobile-full">Novo Simulado</button>
+                        <button onclick="showScreen('analytics')" class="border border-slate-300 text-slate-700 px-8 py-3 rounded-lg font-bold hover:bg-slate-50 transition dark:border-slate-600 dark:text-white dark:hover:bg-slate-700 mobile-full">Histórico</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-analytics" class="hidden fade-in max-w-5xl mx-auto pb-24">
+            <div class="flex justify-between items-end mb-6 mobile-stack">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Seu Histórico</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Acompanhe sua evolução.</p>
+                </div>
+                <div class="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 mobile-full mt-4">
+                    <button onclick="setHistoryFilter('days', 'all')" class="px-3 py-1 text-xs font-bold rounded bg-blue-100 text-blue-700" id="hist-filter-all">Tudo</button>
+                    <button onclick="setHistoryFilter('days', 7)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-7">7 Dias</button>
+                    <button onclick="setHistoryFilter('days', 30)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-30">30 Dias</button>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 mb-6">
+                <select id="module-filter" onchange="setHistoryFilter('module', this.value)" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm min-w-[200px]">
+                    <option value="all">Todos os módulos</option>
+                </select>
+                <div class="text-xs text-slate-500 dark:text-slate-400">
+                    <i class="fas fa-info-circle mr-1"></i> Filtre por módulo para análise específica
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Evolução do Desempenho</h3>
+                <div class="h-64 relative w-full">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Distribuição de Resultados</h3>
+                    <div class="h-64 relative w-full">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Tendência de Aproveitamento</h3>
+                    <div class="h-64 relative w-full">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                    <thead class="bg-slate-50 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
+                        <tr>
+                            <th class="px-6 py-4">Data</th>
+                            <th class="px-6 py-4">Módulo</th>
+                            <th class="px-6 py-4">Acertos</th>
+                            <th class="px-6 py-4">Erros</th>
+                            <th class="px-6 py-4">Branco</th>
+                            <th class="px-6 py-4 text-right">Nota</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                </table>
+                <div id="no-history" class="p-10 text-center text-slate-400 hidden">Nenhum simulado realizado no período.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="pdf-drawer" class="fixed top-16 right-0 w-[90%] md:w-[600px] h-[calc(100vh-4rem)] bg-white dark:bg-slate-800 shadow-2xl border-l border-slate-200 dark:border-slate-700 z-50 transform translate-x-full flex flex-col transition-transform duration-300">
+        <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <span class="font-bold text-sm text-slate-700 dark:text-slate-200"><i class="fas fa-book mr-2"></i> Regimento Interno</span>
+            <div class="flex gap-2">
+                <a href="src/regimento-interno-2023-ale-rr-ok.pdf" target="_blank" class="text-xs text-brand-600 hover:underline flex items-center"><i class="fas fa-external-link-alt mr-1"></i> Abrir Janela</a>
+                <button onclick="togglePdfDrawer()" class="w-6 h-6 rounded hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div class="flex-grow bg-slate-200 relative">
+            <object data="src/regimento-interno-2023-ale-rr-ok.pdf" type="application/pdf" class="w-full h-full">
+                <iframe src="src/regimento-interno-2023-ale-rr-ok.pdf" class="w-full h-full border-none">
+                   <div class="flex flex-col items-center justify-center h-full text-slate-500 p-4 text-center">
+                       <p>Visualizador indisponível.</p>
+                       <a href="src/regimento-interno-2023-ale-rr-ok.pdf" target="_blank" class="text-brand-600 font-bold underline mt-2">Baixar PDF</a>
+                   </div>
+                </iframe>
+            </object>
+        </div>
+        <div onclick="togglePdfDrawer()" class="absolute left-0 top-1/2 -translate-x-full cursor-pointer bg-red-600 text-white py-4 px-1 rounded-l-lg shadow-lg hover:bg-red-700 transition pdf-tab z-50 flex items-center gap-2 justify-center" title="Abrir Regimento">
+             <i class="fas fa-book-open rotate-90 mb-2"></i> <span class="font-bold text-xs tracking-widest uppercase">Regimento</span>
+        </div>
+    </div>
+
+    <div id="cache-modal" class="fixed inset-0 z-[80] bg-black/50 hidden flex items-center justify-center backdrop-blur-sm fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-700 transform transition-all">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-database text-blue-500"></i> Gerenciar Dados</h3>
+                <button onclick="toggleCacheModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <div class="flex justify-between text-sm mb-2 text-slate-600 dark:text-slate-300">
+                        <span>Uso do Cache</span>
+                        <span id="cache-usage-text" class="font-mono font-bold">0 KB</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                        <div id="cache-bar" class="bg-blue-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                    <div>
+                        <span class="block text-sm font-bold text-slate-700 dark:text-slate-200">Salvar Histórico</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400">Armazenar resultados automaticamente.</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-save-history" class="sr-only peer" checked onchange="toggleHistorySaving()">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Limpar por período</label>
+                    <div class="grid grid-cols-4 gap-2 mb-2">
+                        <button onclick="clearHistory('1h')" class="py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold">1H</button>
+                        <button onclick="clearHistory('2h')" class="py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold">2H</button>
+                        <button onclick="clearHistory('4h')" class="py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold">4H</button>
+                        <button onclick="clearHistory('24h')" class="py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold">24H</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <button onclick="clearHistory('week')" class="py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold">1 Semana</button>
+                        <button onclick="clearHistory('month')" class="py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold">1 Mês</button>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <input type="date" id="custom-date-clear" class="flex-1 py-1.5 px-2 text-xs border rounded dark:bg-slate-700 dark:border-slate-600">
+                        <button onclick="clearHistory('custom')" class="py-1.5 px-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 text-xs font-bold rounded">Limpar Antes De</button>
+                    </div>
+                </div>
+
+                <button onclick="clearHistory('all')" class="w-full py-3 px-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-sm font-bold transition border border-red-200 dark:border-red-900">
+                    <i class="fas fa-trash-alt mr-2"></i> Apagar Todo o Cache
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="warning-modal" class="fixed inset-0 z-[90] bg-black/60 hidden flex items-center justify-center backdrop-blur-sm fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-sm text-center border border-slate-200 dark:border-slate-600 transform scale-100 transition-transform">
+            <div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Quantidade Indisponível</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-300 mb-6">Você solicitou mais questões do que as selecionadas atualmente. Ajuste o filtro ou diminua a quantidade.</p>
+            <button onclick="document.getElementById('warning-modal').classList.add('hidden')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-lg w-full transition">
+                Entendi
+            </button>
+        </div>
+    </div>
+
+  </div>
+
+  <script>
+    const DB_FILES = [
+      'src/da-interpretacao-e-observancia-do-regimento-titulo-VI.json',
+      'src/da-ordem-interna-da-assembleia-titulo-IX.json',
+      'src/da-participacao-da-sociedade-civil.titulo-IV.json',
+      'src/da-representacao-parlamentar-titulo-III.json',
+      'src/das-disposicoes-finais-titulo-XI.json',
+      'src/disposicoes-preliminares-titulo-I.json',
+      'src/do-processo-por-crime-de-responsabilidade-da-convocacao-de-secretarios-e-do-credenciamento-de-imprensa-titulo-X.json',
+      'src/dos-debates-e-das-deliberacoes-titulo-VIII.json',
+      'src/orgaos-da-assembleia-titulo-II.json',
+      'src/questoes-concurso-2018.json',
+      'src/sessoes-da-assembleia-titulo-V.json'
+    ];
+
+    // Variáveis Globais de Chart.js
+    let historyChartInstance = null;
+    let distributionChartInstance = null;
+    let trendChartInstance = null;
+    let resultChartInstance = null;
+
+    let fullDatabase = [];
+    let availableModules = [];
+    let historyFilters = {
+        days: 'all',
+        module: 'all'
+    };
+    
+    let appState = {
+        questions: [],
+        index: 0,
+        answers: [],
+        timer: null,
+        config: { qty: 10, modules: [], filter2018: false, mode: 'random' },
+        moduleCounts: {}, 
+        moduleCounts2018: {}, 
+        distribution: {},
+        savingEnabled: true,
+        startTime: null
+    };
+
+    // Cache de performance para evitar cálculos repetitivos
+    let moduleCache = new Map();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        loadDatabase();
+        
+        // Pequeno delay para garantir carregamento
+        setTimeout(() => loadHistory(), 500);
+
+        const savedPref = localStorage.getItem('alerr_save_pref');
+        appState.savingEnabled = savedPref !== 'false';
+        document.getElementById('toggle-save-history').checked = appState.savingEnabled;
+        updateCacheStats();
+        
+        // Atualizar ícone do tema
+        updateThemeIcon();
+        
+        // Inicializar filtros de histórico
+        updateFilterButtons();
+        populateModuleFilter();
+    });
+
+    // Função para atualizar o ícone do tema
+    function updateThemeIcon() {
+        const themeIcon = document.getElementById('theme-icon');
+        if (document.documentElement.classList.contains('dark')) {
+            themeIcon.className = 'fas fa-sun';
+        } else {
+            themeIcon.className = 'fas fa-moon';
+        }
+    }
+
+    async function loadDatabase() {
+        try {
+            showLoadingState(true);
+            
+            // Tentar carregar do cache primeiro
+            const cachedData = localStorage.getItem('alerr_fullDatabase');
+            const cacheTimestamp = localStorage.getItem('alerr_cacheTimestamp');
+            const oneDay = 24 * 60 * 60 * 1000; // 1 dia em milissegundos
+            
+            if (cachedData && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp)) < oneDay) {
+                // Usar dados em cache
+                const parsedData = JSON.parse(cachedData);
+                fullDatabase = parsedData.database;
+                appState.moduleCounts = parsedData.moduleCounts;
+                appState.moduleCounts2018 = parsedData.moduleCounts2018;
+                
+                console.log("Dados carregados do cache");
+                renderModules();
+                updateDistribution();
+                showLoadingState(false);
+                
+                // Carregar módulos disponíveis
+                availableModules = [...new Set(fullDatabase.map(q => q.module))].sort();
+                populateModuleFilter();
+                return;
+            }
+            
+            // Carregar dados dos arquivos
+            const promises = DB_FILES.map(file => 
+                fetch(file)
+                    .then(res => {
+                        if (!res.ok) throw new Error(`Erro ao carregar ${file}: ${res.status}`);
+                        return res.json().then(data => ({ data, file }));
+                    })
+                    .catch(error => {
+                        console.error(`Erro ao carregar ${file}:`, error);
+                        return { data: [], file, error: true };
+                    })
+            );
+            
+            const results = await Promise.all(promises);
+            let allQs = [];
+            
+            results.forEach(item => {
+                if (item.error) return; // Ignorar arquivos com erro
+                
+                const is2018File = item.file.includes('2018');
+                const qs = item.data.map((q, i) => normalizeQuestion(q, i, is2018File));
+                allQs = allQs.concat(qs);
+            });
+            
+            fullDatabase = allQs;
+            
+            // Calcular contagens de módulos
+            fullDatabase.forEach(q => {
+                appState.moduleCounts[q.module] = (appState.moduleCounts[q.module] || 0) + 1;
+                if(q.is2018) appState.moduleCounts2018[q.module] = (appState.moduleCounts2018[q.module] || 0) + 1;
+            });
+            
+            // Carregar módulos disponíveis
+            availableModules = [...new Set(fullDatabase.map(q => q.module))].sort();
+            
+            // Salvar no cache
+            const cacheData = {
+                database: fullDatabase,
+                moduleCounts: appState.moduleCounts,
+                moduleCounts2018: appState.moduleCounts2018
+            };
+            localStorage.setItem('alerr_fullDatabase', JSON.stringify(cacheData));
+            localStorage.setItem('alerr_cacheTimestamp', Date.now().toString());
+            
+            renderModules();
+            updateDistribution();
+            showLoadingState(false);
+            populateModuleFilter();
+            
+        } catch (error) {
+            console.error("Erro ao carregar banco de dados:", error);
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-error').classList.remove('hidden');
+            showLoadingState(false);
+        }
+    }
+
+    function showLoadingState(show) {
+        const moduleContainer = document.getElementById('module-container');
+        if (show) {
+            moduleContainer.innerHTML = '<div class="p-8 text-center text-slate-400"><div class="loader mx-auto mb-2"></div> Carregando módulos...</div>';
+        }
+    }
+
+    function normalizeQuestion(q, id, from2018File) {
+        let mod = q.titulo || "Geral";
+        const match = mod.match(/Título\s+([IVXLCDM]+)/i);
+        if(match) {
+            const rest = mod.split('-').pop().trim();
+            mod = `Título ${match[1].toUpperCase()} - ${rest}`;
+        } else {
+             mod = mod.replace('Regimento Interno 2023 - ', '').trim();
+        }
+        if(from2018File) mod = "Questões de Concursos Anteriores (2018)";
+        
+        let correctIdx = 0;
+        if(q.resposta) {
+            correctIdx = ['A','B','C','D','E'].indexOf(q.resposta.toUpperCase());
+            if(correctIdx === -1) correctIdx = 0;
+        }
+        
+        // Normalizar alternativas
+        let options = [];
+        if (Array.isArray(q.alternativas)) {
+            options = q.alternativas;
+        } else if (typeof q.alternativas === 'object' && q.alternativas !== null) {
+            options = Object.values(q.alternativas);
+        } else {
+            options = ["Alternativa não disponível"];
+        }
+        
+        return {
+            id: id,
+            module: mod,
+            text: q.enunciado || q.question || "Questão sem enunciado",
+            options: options,
+            correct: correctIdx,
+            explanation: q.explicacao || q.explanation || "Sem comentário disponível.",
+            is2018: from2018File || (q.source === '2018') || (q.titulo && q.titulo.includes('2018'))
+        };
+    }
+
+    function renderModules() {
+        const modules = Object.keys(appState.moduleCounts).sort();
+        const container = document.getElementById('module-container');
+        container.innerHTML = '';
+        
+        modules.forEach(mod => {
+            const count = appState.moduleCounts[mod];
+            const is2018Module = mod.includes('2018');
+            const label = document.createElement('label');
+            label.className = "flex items-center justify-between p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded transition group border-b border-transparent hover:border-slate-200 dark:hover:border-slate-600 cursor-pointer module-row";
+            label.setAttribute('data-module', mod);
+            label.innerHTML = `
+                <div class="flex items-center gap-3 overflow-hidden flex-grow">
+                    <input type="checkbox" value="${mod}" class="mod-chk w-4 h-4 text-brand-600 rounded focus:ring-brand-500 cursor-pointer transition" onchange="updateDistribution()" ${is2018Module ? 'data-2018="true"' : ''}>
+                    <span class="text-xs md:text-sm truncate select-none dark:text-slate-300 font-medium" title="${mod}">${mod}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="number" min="0" max="${count}" class="manual-input hidden w-14 h-7 text-xs border border-slate-300 rounded px-1 text-center focus:border-brand-500 outline-none dark:bg-slate-800 dark:border-slate-600 dark:text-white" placeholder="0" oninput="updateDistribution()">
+                    <span class="text-[10px] font-bold bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full min-w-[24px] text-center">${count}</span>
+                </div>
+            `;
+            container.appendChild(label);
+        });
+        
+        // Atualizar contadores
+        updateBadges();
+    }
+
+    function updateBadges() {
+        const checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked'));
+        document.getElementById('badge-modules').innerText = checkedModules.length;
+        
+        // Atualizar total de questões no banco
+        document.getElementById('badge-total').innerText = fullDatabase.length;
+    }
+
+    function toggle2018Lock() {
+        const isLocked = document.getElementById('filter-2018').checked;
+        const moduleRows = document.querySelectorAll('.module-row');
+        
+        moduleRows.forEach(row => {
+            const modName = row.getAttribute('data-module');
+            const checkbox = row.querySelector('.mod-chk');
+            const is2018Module = modName.includes('2018');
+            
+            if (isLocked) {
+                if (is2018Module) {
+                    checkbox.checked = true;
+                    checkbox.disabled = false;
+                    row.classList.remove('opacity-50', 'pointer-events-none');
+                } else {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    row.classList.add('opacity-50', 'pointer-events-none');
+                }
+            } else {
+                // Quando destrava, desmarcar a opção de 2018 e liberar todos
+                if (is2018Module) {
+                    checkbox.checked = false;
+                }
+                checkbox.disabled = false;
+                row.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        });
+        
+        // Atualizar interface
+        updateBadges();
+        updateDistribution();
+    }
+
+    function toggleAllModules(val) {
+        if(document.getElementById('filter-2018').checked) return; // Ignora se travado
+        
+        document.querySelectorAll('.mod-chk').forEach(c => {
+            if (!c.disabled) {
+                c.checked = val;
+            }
+        });
+        
+        updateBadges();
+        updateDistribution();
+    }
+
+    function handleModeChange() {
+        const mode = document.getElementById('distribution-mode').value;
+        const qtyContainer = document.getElementById('qty-selector-container');
+        
+        if(mode === 'manual') {
+            document.querySelectorAll('.manual-input').forEach(el => el.classList.remove('hidden'));
+            qtyContainer.classList.add('opacity-50', 'pointer-events-none');
+        } else {
+            document.querySelectorAll('.manual-input').forEach(el => el.classList.add('hidden'));
+            qtyContainer.classList.remove('opacity-50', 'pointer-events-none');
+        }
+        
+        updateDistribution();
+    }
+
+    function setQuantity(val) {
+        document.querySelectorAll('.btn-qty').forEach(b => {
+            b.classList.remove('bg-brand-50','border-brand-500','text-brand-700','dark:bg-brand-900/30','dark:text-brand-300');
+            b.classList.add('border-slate-200','dark:border-slate-600');
+        });
+        
+        if(val === 'custom') {
+            const v = document.getElementById('custom-qty').value;
+            appState.config.qty = parseInt(v) || 0;
+        } else if(val === 'all') {
+            appState.config.qty = 'all';
+            appState.config.qty = 'all';
+            event.target.classList.add('bg-purple-50','border-purple-200','text-purple-700');
+        } else {
+            appState.config.qty = val;
+            document.getElementById('custom-qty').value = '';
+            const btn = document.querySelector(`.btn-qty[data-val="${val}"]`);
+            if(btn) btn.classList.add('bg-brand-50','border-brand-500','text-brand-700','dark:bg-brand-900/30','dark:text-brand-300');
+        }
+        
+        updateDistribution();
+    }
+
+    function updateDistribution() {
+        const is2018 = document.getElementById('filter-2018').checked;
+        const mode = document.getElementById('distribution-mode').value;
+        
+        // Pool Calculation - corrigido para funcionar com filtro 2018
+        let availablePool = [];
+        let checkedModules = [];
+        
+        if (is2018) {
+            // Se filtro 2018 ativo, usar apenas questões de 2018
+            availablePool = fullDatabase.filter(q => q.is2018);
+            checkedModules = ["Questões de Concursos Anteriores (2018)"];
+        } else {
+            // Caso contrário, usar módulos selecionados normalmente
+            checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked')).map(c => c.value);
+            availablePool = fullDatabase.filter(q => checkedModules.includes(q.module));
+        }
+
+        document.getElementById('badge-modules').innerText = checkedModules.length;
+        document.getElementById('badge-available').innerText = availablePool.length;
+
+        appState.distribution = {};
+        let totalPlan = 0;
+
+        if (mode === 'manual') {
+            document.querySelectorAll('.mod-chk:checked').forEach(cb => {
+                const row = cb.closest('label');
+                const input = row.querySelector('.manual-input');
+                let val = parseInt(input.value) || 0;
+                const realAvailable = fullDatabase.filter(q => q.module === cb.value && (!is2018 || q.is2018)).length;
+                if(val > realAvailable) val = realAvailable;
+                if(val > 0) {
+                    appState.distribution[cb.value] = val;
+                    totalPlan += val;
+                }
+            });
+        } else {
+            let targetQty = appState.config.qty === 'all' ? availablePool.length : appState.config.qty;
+            if(targetQty > availablePool.length) targetQty = availablePool.length;
+            totalPlan = targetQty;
+            
+            if(targetQty > 0 && availablePool.length > 0) {
+                // Distribuição proporcional entre módulos selecionados
+                const moduleWeights = {};
+                checkedModules.forEach(mod => {
+                    moduleWeights[mod] = availablePool.filter(q => q.module === mod).length;
+                });
+                
+                const totalWeight = Object.values(moduleWeights).reduce((a, b) => a + b, 0);
+                
+                if (mode === 'proportional' && totalWeight > 0) {
+                    // Distribuição proporcional
+                    let remaining = targetQty;
+                    Object.keys(moduleWeights).forEach(mod => {
+                        const count = Math.round(moduleWeights[mod] / totalWeight * targetQty);
+                        appState.distribution[mod] = Math.min(count, moduleWeights[mod]);
+                        remaining -= appState.distribution[mod];
+                    });
+                    
+                    // Ajustar diferenças de arredondamento
+                    if (remaining !== 0) {
+                        const modules = Object.keys(moduleWeights);
+                        for (let i = 0; i < Math.abs(remaining) && modules.length > 0; i++) {
+                            const mod = modules[i % modules.length];
+                            if (remaining > 0 && appState.distribution[mod] < moduleWeights[mod]) {
+                                appState.distribution[mod]++;
+                                remaining--;
+                            } else if (remaining < 0 && appState.distribution[mod] > 0) {
+                                appState.distribution[mod]--;
+                                remaining++;
+                            }
+                        }
+                    }
+                } else if (mode === 'balanced') {
+                    // Distribuição equilibrada
+                    const modules = checkedModules.filter(mod => moduleWeights[mod] > 0);
+                    const baseCount = Math.floor(targetQty / modules.length);
+                    let remainder = targetQty % modules.length;
+                    
+                    modules.forEach(mod => {
+                        let count = baseCount;
+                        if (remainder > 0 && moduleWeights[mod] >= baseCount + 1) {
+                            count++;
+                            remainder--;
+                        }
+                        appState.distribution[mod] = Math.min(count, moduleWeights[mod]);
+                    });
+                    
+                    // Distribuir o restante
+                    if (remainder > 0) {
+                        for (let mod of modules) {
+                            if (remainder <= 0) break;
+                            if (appState.distribution[mod] < moduleWeights[mod]) {
+                                appState.distribution[mod]++;
+                                remainder--;
+                            }
+                        }
+                    }
+                } else {
+                    // Modo aleatório - não pré-aloca por módulo
+                    // A distribuição será feita durante o sorteio
+                }
+            }
+        }
+
+        document.getElementById('badge-target').innerText = totalPlan;
+
+        const previewList = document.getElementById('distribution-preview');
+        previewList.innerHTML = '';
+        
+        if (availablePool.length === 0) {
+            previewList.innerHTML = `<p class="text-slate-400 italic">Nenhuma questão disponível.</p>`;
+            document.getElementById('preview-total').innerText = "0 questões";
+        } else {
+             if(mode === 'manual') {
+                let displayTotal = 0;
+                for (const [mod, qtd] of Object.entries(appState.distribution)) {
+                    displayTotal += qtd;
+                    previewList.innerHTML += `<div class="flex justify-between border-b border-slate-100 dark:border-slate-600 pb-1"><span class="truncate pr-2">${mod}</span><span class="font-bold text-brand-600">${qtd}</span></div>`;
+                }
+                document.getElementById('preview-total').innerText = `${displayTotal} questões`;
+             } else {
+                 if (mode === 'random') {
+                     document.getElementById('preview-total').innerText = `${totalPlan} questões (Sorteio Aleatório)`;
+                     previewList.innerHTML = `<p class="text-brand-600 font-bold">Serão sorteadas ${totalPlan} questões do universo de ${availablePool.length} disponíveis.</p>`;
+                 } else {
+                     let previewHTML = `<p class="text-brand-600 font-bold">Distribuição planejada (${totalPlan} questões):</p>`;
+                     for (const [mod, qtd] of Object.entries(appState.distribution)) {
+                         previewHTML += `<div class="flex justify-between border-b border-slate-100 dark:border-slate-600 pb-1 mt-1"><span class="truncate pr-2">${mod}</span><span class="font-bold text-brand-600">${qtd}</span></div>`;
+                     }
+                     previewList.innerHTML = previewHTML;
+                 }
+             }
+        }
+    }
+
+    function startSimulation() {
+        const mode = document.getElementById('distribution-mode').value;
+        const is2018 = document.getElementById('filter-2018').checked;
+        
+        let checkedModules = [];
+        let pool = [];
+        
+        if (is2018) {
+            // Usar apenas questões de 2018
+            pool = fullDatabase.filter(q => q.is2018);
+            checkedModules = ["Questões de Concursos Anteriores (2018)"];
+        } else {
+            // Usar módulos selecionados
+            checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked')).map(c => c.value);
+            if(checkedModules.length === 0) {
+                alert("Selecione pelo menos um módulo.");
+                return;
+            }
+            pool = fullDatabase.filter(q => checkedModules.includes(q.module));
+        }
+
+        // Validação de Quantidade vs Disponível
+        let reqQty = 0;
+        if(mode === 'manual') {
+             for(let k in appState.distribution) reqQty += appState.distribution[k];
+        } else {
+             reqQty = appState.config.qty === 'all' ? pool.length : appState.config.qty;
+        }
+
+        if(pool.length === 0) {
+            alert("Sem questões disponíveis para os critérios selecionados.");
+            return;
+        }
+        
+        if(reqQty > pool.length && mode !== 'manual') {
+            document.getElementById('warning-modal').classList.remove('hidden');
+            return;
+        }
+
+        let finalQuestions = [];
+        
+        if (mode === 'manual') {
+            for (const [mod, qtd] of Object.entries(appState.distribution)) {
+                const modPool = pool.filter(q => q.module === mod);
+                // Embaralhar e pegar a quantidade especificada
+                const shuffled = [...modPool].sort(() => Math.random() - 0.5);
+                finalQuestions.push(...shuffled.slice(0, qtd));
+            }
+        } else {
+            if(mode === 'random') {
+                // Embaralhar todo o pool e pegar a quantidade necessária
+                const shuffled = [...pool].sort(() => Math.random() - 0.5);
+                finalQuestions = shuffled.slice(0, reqQty);
+            } else if (mode === 'balanced' || mode === 'proportional') {
+                // Usar a distribuição pré-calculada
+                for (const [mod, qtd] of Object.entries(appState.distribution)) {
+                    const modPool = pool.filter(q => q.module === mod);
+                    const shuffled = [...modPool].sort(() => Math.random() - 0.5);
+                    finalQuestions.push(...shuffled.slice(0, qtd));
+                }
+            }
+        }
+
+        // Embaralhar novamente as questões finais para misturar entre módulos
+        finalQuestions = finalQuestions.sort(() => Math.random() - 0.5);
+        
+        if(finalQuestions.length === 0) {
+            alert("Erro na geração do simulado. Nenhuma questão foi selecionada.");
+            return;
+        }
+        
+        appState.questions = finalQuestions;
+        appState.answers = new Array(finalQuestions.length).fill(null).map(() => ({ sel: null, ok: false, isCorrect: false }));
+        appState.index = 0;
+        appState.startTime = new Date();
+        
+        startTimer();
+        loadQuestion(0);
+        renderNav();
+        showScreen('quiz');
+    }
+
+    // CACHE LOGIC
+    function toggleCacheModal() {
+        const m = document.getElementById('cache-modal');
+        m.classList.toggle('hidden');
+        updateCacheStats();
+    }
+    
+    function updateCacheStats() {
+        let used = 0;
+        for(let x in localStorage) { 
+            if(localStorage.hasOwnProperty(x)) {
+                used += (localStorage[x].length + x.length) * 2; 
+            }
+        }
+        const kb = (used / 1024).toFixed(2);
+        document.getElementById('cache-usage-text').innerText = `${kb} KB`;
+        
+        // Atualiza também o badge do rodapé
+        const footerBadge = document.getElementById('footer-cache-stat');
+        if (footerBadge) footerBadge.innerText = `${kb} KB`;
+
+        const percent = Math.min((used/5000000)*100, 100); // 5MB como limite
+        document.getElementById('cache-bar').style.width = `${percent}%`;
+    }
+    
+    function toggleHistorySaving() {
+        appState.savingEnabled = document.getElementById('toggle-save-history').checked;
+        localStorage.setItem('alerr_save_pref', appState.savingEnabled);
+        updateCacheStats(); // Atualizar estatísticas após mudança
+    }
+    
+    function clearHistory(scope) {
+        if(!confirm("Tem certeza que deseja limpar o histórico?")) return;
+        
+        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        const now = new Date().getTime();
+        let cutoff = 0;
+
+        if(scope === 'all') { 
+            localStorage.removeItem('alerr_hist'); 
+            localStorage.removeItem('alerr_fullDatabase');
+            localStorage.removeItem('alerr_cacheTimestamp');
+            loadHistory(); 
+            updateCacheStats(); 
+            toggleCacheModal(); // Fechar modal após limpar
+            return; 
+        }
+        
+        if(scope === '1h') cutoff = now - (1 * 60 * 60 * 1000);
+        else if(scope === '2h') cutoff = now - (2 * 60 * 60 * 1000);
+        else if(scope === '4h') cutoff = now - (4 * 60 * 60 * 1000);
+        else if(scope === '24h') cutoff = now - (24 * 60 * 60 * 1000);
+        else if(scope === 'week') cutoff = now - (7 * 24 * 60 * 60 * 1000);
+        else if(scope === 'month') cutoff = now - (30 * 24 * 60 * 60 * 1000);
+        else if(scope === 'custom') {
+            const dateVal = document.getElementById('custom-date-clear').value;
+            if(!dateVal) return alert("Selecione uma data.");
+            cutoff = new Date(dateVal).getTime();
+        }
+
+        h = h.filter(x => new Date(x.date).getTime() >= cutoff);
+        localStorage.setItem('alerr_hist', JSON.stringify(h));
+        loadHistory(); 
+        updateCacheStats();
+        toggleCacheModal(); // Fechar modal após limpar
+    }
+
+    // QUIZ & UI FUNCTIONS
+    function loadQuestion(idx) {
+        if (idx < 0 || idx >= appState.questions.length) return;
+        
+        appState.index = idx;
+        const q = appState.questions[idx];
+        const ans = appState.answers[idx];
+        
+        document.getElementById('q-current-index').innerText = idx + 1;
+        document.getElementById('q-total-count').innerText = appState.questions.length;
+        document.getElementById('q-module-name').innerText = q.module;
+        document.getElementById('q-text').innerText = q.text;
+        document.getElementById('progress-bar').style.width = `${((idx+1)/appState.questions.length)*100}%`;
+        
+        const divOpts = document.getElementById('options-container');
+        divOpts.innerHTML = '';
+        
+        const letters = ['A','B','C','D','E'];
+        q.options.forEach((opt, i) => {
+            const el = document.createElement('div');
+            let cls = "option-card w-full p-4 rounded-xl flex items-start cursor-pointer border-2 bg-white dark:bg-slate-700 border-slate-100 dark:border-slate-600";
+            
+            if(ans.ok) {
+                el.classList.add('cursor-default','disabled');
+                if(i === q.correct) {
+                    cls += " correct";
+                } else if(i === ans.sel) {
+                    cls += " wrong";
+                } else {
+                    cls += " opacity-40";
+                }
+            } else {
+                if(ans.sel === i) cls += " selected"; 
+                el.onclick = () => selectOpt(i);
+            }
+            
+            el.className = cls;
+            el.innerHTML = `
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold mr-4 shrink-0 transition ${
+                    ans.sel === i ? 'bg-brand-500 border-brand-500 text-white' : 'border-slate-300 text-slate-400'
+                }">${letters[i]}</div>
+                <div class="text-slate-700 dark:text-slate-200 pt-1 text-sm md:text-base">${opt}</div>
+            `;
+            divOpts.appendChild(el);
+        });
+        
+        const btnConf = document.getElementById('btn-confirm');
+        const boxExp = document.getElementById('explanation-box');
+        
+        if(ans.ok) { 
+            btnConf.classList.add('hidden'); 
+            boxExp.classList.remove('hidden'); 
+            document.getElementById('explanation-text').innerText = q.explanation; 
+        } else { 
+            btnConf.classList.remove('hidden'); 
+            btnConf.disabled = (ans.sel === null); 
+            boxExp.classList.add('hidden'); 
+        }
+        
+        // Lógica do botão Pular/Próxima
+        const btnNext = document.getElementById('btn-next');
+        if(idx === appState.questions.length - 1) { 
+            btnNext.innerText = "Finalizar"; 
+            btnNext.className = "bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-2 rounded-lg font-bold transition mobile-full";
+            btnNext.onclick = finishSimulation; 
+        } else { 
+            btnNext.onclick = () => changeQuestion(1); 
+
+            if(ans.ok) {
+                // Se já respondeu, o botão vira "Próxima" e fica em destaque
+                btnNext.innerHTML = 'Próxima <i class="fas fa-arrow-right ml-2"></i>';
+                btnNext.className = "bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-bold transition mobile-full shadow-md";
+            } else {
+                // Se não respondeu, é "Pular" (estilo secundário)
+                btnNext.innerText = "Pular";
+                btnNext.className = "bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-2 rounded-lg font-bold transition mobile-full";
+            }
+        }
+        
+        document.getElementById('btn-prev').disabled = idx === 0;
+        document.querySelectorAll('.nav-dot').forEach((d, i) => {
+            d.classList.toggle('ring-2', i === idx);
+            d.classList.toggle('ring-brand-500', i === idx);
+        });
+    }
+    
+    function selectOpt(i) { 
+        appState.answers[appState.index].sel = i; 
+        loadQuestion(appState.index); 
+    }
+    
+    function confirmAnswer() {
+        const idx = appState.index; 
+        if(appState.answers[idx].sel === null) return;
+        
+        const isCorrect = (appState.answers[idx].sel === appState.questions[idx].correct);
+        appState.answers[idx].ok = true; 
+        appState.answers[idx].isCorrect = isCorrect;
+        
+        loadQuestion(idx); 
+        renderNav();
+    }
+    
+    function changeQuestion(d) { 
+        const n = appState.index + d; 
+        if(n >= 0 && n < appState.questions.length) loadQuestion(n); 
+    }
+    
+    function renderNav() {
+        const g = document.getElementById('nav-grid'); 
+        g.innerHTML = '';
+        
+        appState.answers.forEach((a, i) => {
+            const d = document.createElement('div');
+            let cls = "nav-dot w-full aspect-square rounded flex items-center justify-center text-xs font-bold cursor-pointer transition ";
+            
+            if(a.ok) {
+                cls += a.isCorrect ? "bg-green-500 text-white" : "bg-red-500 text-white";
+            } else {
+                cls += "bg-slate-200 dark:bg-slate-600 text-slate-500";
+            }
+            
+            if(i === appState.index) {
+                cls += " ring-2 ring-brand-500 ring-offset-2 dark:ring-offset-slate-800";
+            }
+            
+            d.className = cls; 
+            d.innerText = i + 1; 
+            d.onclick = () => loadQuestion(i); 
+            g.appendChild(d);
+        });
+    }
+    
+    function startTimer() {
+        appState.startTime = new Date();
+        if(appState.timer) clearInterval(appState.timer);
+        
+        appState.timer = setInterval(() => {
+            const now = new Date();
+            const diff = Math.floor((now - appState.startTime) / 1000);
+            const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
+            const seconds = (diff % 60).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${minutes}:${seconds}`;
+        }, 1000);
+    }
+    
+    function calculateModuleStats() {
+        const moduleStats = {};
+        appState.questions.forEach((q, idx) => {
+            const mod = q.module;
+            if (!moduleStats[mod]) {
+                moduleStats[mod] = { correct: 0, wrong: 0, unanswered: 0, total: 0 };
+            }
+            moduleStats[mod].total++;
+            const ans = appState.answers[idx];
+            if (!ans.ok) {
+                moduleStats[mod].unanswered++;
+            } else if (ans.isCorrect) {
+                moduleStats[mod].correct++;
+            } else {
+                moduleStats[mod].wrong++;
+            }
+        });
+        return moduleStats;
+    }
+    
+    function finishSimulation() {
+        if (appState.timer) {
+            clearInterval(appState.timer);
+            appState.timer = null;
+        }
+        
+        let correct = 0, wrong = 0, unanswered = 0;
+        appState.answers.forEach((a, i) => { 
+            if(!a.ok) {
+                unanswered++; 
+            } else if(a.isCorrect) {
+                correct++; 
+            } else {
+                wrong++; 
+            }
+        });
+        
+        const total = appState.questions.length; 
+        const percent = total > 0 ? Math.round((correct/total)*100) : 0;
+        const moduleStats = calculateModuleStats();
+        const duration = appState.startTime ? Math.floor((new Date() - appState.startTime) / 1000) : 0;
+        
+        document.getElementById('res-correct').innerText = correct; 
+        document.getElementById('res-wrong').innerText = wrong;
+        document.getElementById('res-unanswered').innerText = unanswered; 
+        document.getElementById('res-percent').innerText = `${percent}%`;
+        
+        const ctx = document.getElementById('resultChart').getContext('2d'); 
+        if(resultChartInstance) resultChartInstance.destroy();
+        
+        resultChartInstance = new Chart(ctx, { 
+            type: 'doughnut', 
+            data: { 
+                labels: ['Acertos','Erros','Branco'], 
+                datasets: [{
+                    data: [correct, wrong, unanswered], 
+                    backgroundColor: ['#16a34a', '#dc2626', '#94a3b8'], 
+                    borderWidth: 0
+                }] 
+            }, 
+            options: { 
+                cutout: '75%', 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false } 
+                } 
+            } 
+        });
+        
+        if(appState.savingEnabled) {
+            saveHistory({ 
+                date: new Date(), 
+                correct: correct, 
+                wrong: wrong, 
+                unanswered: unanswered,
+                total: total,
+                percent: percent,
+                duration: duration,
+                modules: moduleStats
+            }); 
+        }
+        
+        showScreen('result');
+    }
+    
+    function saveHistory(data) { 
+        const h = JSON.parse(localStorage.getItem('alerr_hist') || '[]'); 
+        // Garantir que não há valores undefined e são números
+        data.correct = Number(data.correct) || 0;
+        data.wrong = Number(data.wrong) || 0;
+        data.unanswered = Number(data.unanswered) || 0;
+        data.total = Number(data.total) || 0;
+        data.percent = Number(data.percent) || 0;
+        data.duration = Number(data.duration) || 0;
+        data.modules = data.modules || {};
+        
+        h.unshift(data); 
+        // Manter apenas os últimos 100 registros para evitar sobrecarga
+        if (h.length > 100) h.length = 100;
+        localStorage.setItem('alerr_hist', JSON.stringify(h)); 
+        updateCacheStats();
+    }
+    
+    function populateModuleFilter() {
+        const select = document.getElementById('module-filter');
+        if (!select) return;
+        // Guardar o valor atual
+        const currentValue = select.value;
+        select.innerHTML = '<option value="all">Todos os módulos</option>';
+        availableModules.forEach(mod => {
+            const option = document.createElement('option');
+            option.value = mod;
+            option.textContent = mod;
+            select.appendChild(option);
+        });
+        // Restaurar o valor, se ainda existir
+        if (currentValue) {
+            select.value = currentValue;
+        }
+    }
+    
+    function setHistoryFilter(type, value) {
+        historyFilters[type] = value;
+        applyHistoryFilters();
+        updateFilterButtons();
+    }
+    
+    function applyHistoryFilters() {
+        loadHistory(historyFilters);
+    }
+    
+    function updateFilterButtons() {
+        // Atualizar a aparência dos botões de dias
+        const days = historyFilters.days;
+        ['all','7','30'].forEach(f => { 
+            const btn = document.getElementById(`hist-filter-${f}`);
+            if (btn) {
+                if (f == days) {
+                    btn.className = "px-3 py-1 text-xs font-bold rounded bg-blue-100 text-blue-700";
+                } else {
+                    btn.className = "px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700";
+                }
+            }
+        });
+        // Atualizar o dropdown de módulos
+        const moduleFilter = document.getElementById('module-filter');
+        if (moduleFilter) {
+            moduleFilter.value = historyFilters.module;
+        }
+    }
+    
+    function loadHistory(filters = { days: 'all', module: 'all' }) {
+        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        
+        // Converter strings para números para garantir que os gráficos funcionem
+        h = h.map(item => ({
+            ...item,
+            correct: Number(item.correct) || 0,
+            wrong: Number(item.wrong) || 0,
+            unanswered: Number(item.unanswered) || 0,
+            percent: Number(item.percent) || 0,
+            // Garantir que modules existe (para compatibilidade com históricos antigos)
+            modules: item.modules || {}
+        }));
+
+        // Aplicar filtro de dias
+        if(filters.days !== 'all') { 
+            const limit = new Date(); 
+            limit.setDate(limit.getDate() - filters.days); 
+            h = h.filter(x => new Date(x.date) >= limit); 
+        }
+
+        // Aplicar filtro de módulo
+        let filteredData = [];
+        if (filters.module === 'all') {
+            // Usar os totais do simulado
+            filteredData = h.map(item => ({
+                ...item,
+                displayCorrect: item.correct,
+                displayWrong: item.wrong,
+                displayUnanswered: item.unanswered,
+                displayPercent: item.percent,
+                displayModule: 'Vários módulos'
+            }));
+        } else {
+            // Filtrar simulados que têm o módulo e usar os dados do módulo
+            filteredData = h.filter(item => {
+                return item.modules && item.modules[filters.module] && item.modules[filters.module].total > 0;
+            }).map(item => {
+                const modData = item.modules[filters.module];
+                const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
+                return {
+                    ...item,
+                    displayCorrect: modData.correct,
+                    displayWrong: modData.wrong,
+                    displayUnanswered: modData.unanswered,
+                    displayPercent: percent,
+                    displayModule: filters.module
+                    // Para a duração, mantemos a do simulado inteiro
+                };
+            });
+        }
+
+        // Atualizar a tabela com filteredData
+        const tbody = document.getElementById('history-body'); 
+        tbody.innerHTML = '';
+        
+        if(filteredData.length === 0) {
+            document.getElementById('no-history').classList.remove('hidden');
+        } else {
+            document.getElementById('no-history').classList.add('hidden');
+            filteredData.forEach(x => {
+                const duration = x.duration ? 
+                    `${Math.floor(x.duration / 60)}:${(x.duration % 60).toString().padStart(2, '0')}` : 
+                    '--:--';
+                    
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 dark:border-slate-700">
+                        <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
+                        <td class="px-6 py-4 text-xs text-slate-500" title="${x.displayModule}">${x.displayModule.length > 30 ? x.displayModule.substring(0, 30) + '...' : x.displayModule}</td>
+                        <td class="px-6 py-4 text-green-600 font-bold">${x.displayCorrect}</td>
+                        <td class="px-6 py-4 text-red-600 font-bold">${x.displayWrong}</td>
+                        <td class="px-6 py-4 text-slate-500 font-bold">${x.displayUnanswered}</td>
+                        <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.displayPercent}%</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        // Renderizar gráficos de análise com filteredData
+        renderHistoryChart(filteredData);
+        renderDistributionChart(filteredData);
+        renderTrendChart(filteredData);
+    }
+    
+    function renderHistoryChart(historyData) {
+        const ctx = document.getElementById('historyChart').getContext('2d');
+        
+        if (historyChartInstance) {
+            historyChartInstance.destroy();
+        }
+        
+        if (historyData.length === 0) {
+            // Se não tiver dados, apenas retorna e deixa o canvas limpo
+            return;
+        }
+        
+        // Preparar dados para o gráfico
+        const labels = historyData.map(item => 
+            new Date(item.date).toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})
+        ).reverse();
+        
+        const percentages = historyData.map(item => 
+            item.displayPercent
+        ).reverse();
+        
+        historyChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Desempenho (%)',
+                    data: percentages,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `Desempenho: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) { return value + '%'; }
+                        },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+    
+    function renderDistributionChart(historyData) {
+        const ctx = document.getElementById('distributionChart').getContext('2d');
+        
+        if (distributionChartInstance) {
+            distributionChartInstance.destroy();
+        }
+        
+        if (historyData.length === 0) return;
+        
+        const totalCorrect = historyData.reduce((sum, item) => sum + item.displayCorrect, 0);
+        const totalWrong = historyData.reduce((sum, item) => sum + item.displayWrong, 0);
+        const totalUnanswered = historyData.reduce((sum, item) => sum + item.displayUnanswered, 0);
+        
+        distributionChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Acertos', 'Erros', 'Brancos'],
+                datasets: [{
+                    label: 'Questões',
+                    data: [totalCorrect, totalWrong, totalUnanswered],
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.7)',
+                        'rgba(239, 68, 68, 0.7)',
+                        'rgba(148, 163, 184, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(34, 197, 94)',
+                        'rgb(239, 68, 68)',
+                        'rgb(148, 163, 184)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+    }
+    
+    function renderTrendChart(historyData) {
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        
+        if (trendChartInstance) {
+            trendChartInstance.destroy();
+        }
+        
+        if (historyData.length < 2) return;
+        
+        const labels = historyData.map(item => 
+            new Date(item.date).toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})
+        ).reverse();
+        
+        const percentages = historyData.map(item => 
+            item.displayPercent
+        ).reverse();
+        
+        // Calcular linha de tendência (regressão linear simples)
+        const n = percentages.length;
+        let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+        
+        for (let i = 0; i < n; i++) {
+            sumX += i;
+            sumY += percentages[i];
+            sumXY += i * percentages[i];
+            sumX2 += i * i;
+        }
+        
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        
+        const trendData = [];
+        for (let i = 0; i < n; i++) {
+            trendData.push(slope * i + intercept);
+        }
+        
+        trendChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Desempenho (%)',
+                        data: percentages,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Tendência',
+                        data: trendData,
+                        borderColor: '#f59e0b',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { callback: function(value) { return value + '%'; } }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+    
+    function showScreen(id) { 
+        ['home','quiz','result','analytics','error'].forEach(s => {
+            const screen = document.getElementById('screen-'+s);
+            if (screen) screen.classList.add('hidden');
+        }); 
+        
+        const targetScreen = document.getElementById('screen-'+id);
+        if (targetScreen) {
+            targetScreen.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+        
+        if(id === 'home') {
+            updateDistribution();
+        } else if (id === 'analytics') {
+            // Adicionar delay para garantir que o canvas esteja visível antes de desenhar
+            setTimeout(() => {
+                applyHistoryFilters();
+            }, 50);
+        }
+    }
+    
+    function togglePdfDrawer() { 
+        const d = document.getElementById('pdf-drawer'); 
+        d.classList.toggle('translate-x-full'); 
+        d.classList.toggle('drawer-open'); 
+    }
+    
+    function initTheme() { 
+        if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcon();
+    }
+    
+    function toggleDarkMode() { 
+        document.documentElement.classList.toggle('dark'); 
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); 
+        updateThemeIcon();
+    }
+  </script>
+</body>
+</html>
