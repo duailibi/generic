@@ -16,7 +16,7 @@
             brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' }
           },
           fontFamily: { sans: ['Inter', 'sans-serif'] },
-          zIndex: { '60': '60', '70': '70', '80': '80' }
+          zIndex: { '60': '60', '70': '70', '80': '80', '100': '100' }
         }
       }
     }
@@ -95,6 +95,11 @@
       position: relative;
       height: 200px;
       width: 200px;
+    }
+
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
@@ -382,20 +387,29 @@
             </div>
         </div>
 
-        <div id="screen-analytics" class="hidden fade-in max-w-5xl mx-auto pb-24">
+        <div id="screen-analytics" class="hidden fade-in max-w-6xl mx-auto pb-24">
             <div class="flex justify-between items-end mb-6 mobile-stack">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Seu Histórico</h2>
                     <p class="text-sm text-slate-500 dark:text-slate-400">Acompanhe sua evolução.</p>
                 </div>
-                <div class="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 mobile-full mt-4">
+                <div class="flex gap-2">
+                    <button onclick="exportHistoryCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                        <i class="fas fa-download"></i> Exportar CSV
+                    </button>
+                    <button onclick="importHistoryCSV()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                        <i class="fas fa-upload"></i> Importar CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 mb-6">
+                <div class="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
                     <button onclick="setHistoryFilter('days', 'all')" class="px-3 py-1 text-xs font-bold rounded bg-blue-100 text-blue-700" id="hist-filter-all">Tudo</button>
                     <button onclick="setHistoryFilter('days', 7)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-7">7 Dias</button>
                     <button onclick="setHistoryFilter('days', 30)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-30">30 Dias</button>
                 </div>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-4 mb-6">
+                
                 <select id="module-filter" onchange="setHistoryFilter('module', this.value)" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm min-w-[200px]">
                     <option value="all">Todos os módulos</option>
                 </select>
@@ -426,7 +440,31 @@
                 </div>
             </div>
             
+            <div class="mb-6">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Tabela de Histórico</h3>
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                        <thead class="bg-slate-50 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
+                            <tr>
+                                <th class="px-6 py-4">Data</th>
+                                <th class="px-6 py-4">Módulo</th>
+                                <th class="px-6 py-4">Acertos</th>
+                                <th class="px-6 py-4">Erros</th>
+                                <th class="px-6 py-4">Branco</th>
+                                <th class="px-6 py-4 text-right">Nota</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                    </table>
+                    <div id="no-history" class="p-10 text-center text-slate-400 hidden">Nenhum simulado realizado no período.</div>
+                </div>
+            </div>
+
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="p-4 border-b border-slate-100 dark:border-slate-700">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white">Tabela Detalhada por Módulo</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Mostrando apenas o módulo selecionado no filtro</p>
+                </div>
                 <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
                     <thead class="bg-slate-50 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
                         <tr>
@@ -438,9 +476,9 @@
                             <th class="px-6 py-4 text-right">Nota</th>
                         </tr>
                     </thead>
-                    <tbody id="history-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                    <tbody id="module-detail-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
                 </table>
-                <div id="no-history" class="p-10 text-center text-slate-400 hidden">Nenhum simulado realizado no período.</div>
+                <div id="no-module-detail" class="p-10 text-center text-slate-400 hidden">Selecione um módulo específico para ver detalhes.</div>
             </div>
         </div>
 
@@ -535,6 +573,25 @@
         </div>
     </div>
 
+    <div id="csv-import-modal" class="fixed inset-0 z-[100] bg-black/50 hidden flex items-center justify-center backdrop-blur-sm fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-file-import text-green-500"></i> Importar Histórico CSV</h3>
+                <button onclick="closeCSVImportModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                    Selecione um arquivo CSV no formato exportado por este sistema.
+                </p>
+                <input type="file" id="csv-file-input" accept=".csv" class="w-full p-2 border border-slate-300 rounded dark:bg-slate-700 dark:border-slate-600 mb-4">
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeCSVImportModal()" class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancelar</button>
+                    <button onclick="processCSVImport()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold">Importar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
   </div>
 
   <script>
@@ -578,14 +635,10 @@
         startTime: null
     };
 
-    // Cache de performance para evitar cálculos repetitivos
-    let moduleCache = new Map();
-
     document.addEventListener('DOMContentLoaded', () => {
         initTheme();
         loadDatabase();
         
-        // Pequeno delay para garantir carregamento
         setTimeout(() => loadHistory(), 500);
 
         const savedPref = localStorage.getItem('alerr_save_pref');
@@ -593,15 +646,12 @@
         document.getElementById('toggle-save-history').checked = appState.savingEnabled;
         updateCacheStats();
         
-        // Atualizar ícone do tema
         updateThemeIcon();
         
-        // Inicializar filtros de histórico
         updateFilterButtons();
         populateModuleFilter();
     });
 
-    // Função para atualizar o ícone do tema
     function updateThemeIcon() {
         const themeIcon = document.getElementById('theme-icon');
         if (document.documentElement.classList.contains('dark')) {
@@ -615,13 +665,11 @@
         try {
             showLoadingState(true);
             
-            // Tentar carregar do cache primeiro
             const cachedData = localStorage.getItem('alerr_fullDatabase');
             const cacheTimestamp = localStorage.getItem('alerr_cacheTimestamp');
-            const oneDay = 24 * 60 * 60 * 1000; // 1 dia em milissegundos
+            const oneDay = 24 * 60 * 60 * 1000;
             
             if (cachedData && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp)) < oneDay) {
-                // Usar dados em cache
                 const parsedData = JSON.parse(cachedData);
                 fullDatabase = parsedData.database;
                 appState.moduleCounts = parsedData.moduleCounts;
@@ -632,13 +680,11 @@
                 updateDistribution();
                 showLoadingState(false);
                 
-                // Carregar módulos disponíveis
                 availableModules = [...new Set(fullDatabase.map(q => q.module))].sort();
                 populateModuleFilter();
                 return;
             }
             
-            // Carregar dados dos arquivos
             const promises = DB_FILES.map(file => 
                 fetch(file)
                     .then(res => {
@@ -655,7 +701,7 @@
             let allQs = [];
             
             results.forEach(item => {
-                if (item.error) return; // Ignorar arquivos com erro
+                if (item.error) return;
                 
                 const is2018File = item.file.includes('2018');
                 const qs = item.data.map((q, i) => normalizeQuestion(q, i, is2018File));
@@ -664,16 +710,13 @@
             
             fullDatabase = allQs;
             
-            // Calcular contagens de módulos
             fullDatabase.forEach(q => {
                 appState.moduleCounts[q.module] = (appState.moduleCounts[q.module] || 0) + 1;
                 if(q.is2018) appState.moduleCounts2018[q.module] = (appState.moduleCounts2018[q.module] || 0) + 1;
             });
             
-            // Carregar módulos disponíveis
             availableModules = [...new Set(fullDatabase.map(q => q.module))].sort();
             
-            // Salvar no cache
             const cacheData = {
                 database: fullDatabase,
                 moduleCounts: appState.moduleCounts,
@@ -719,7 +762,6 @@
             if(correctIdx === -1) correctIdx = 0;
         }
         
-        // Normalizar alternativas
         let options = [];
         if (Array.isArray(q.alternativas)) {
             options = q.alternativas;
@@ -764,15 +806,12 @@
             container.appendChild(label);
         });
         
-        // Atualizar contadores
         updateBadges();
     }
 
     function updateBadges() {
         const checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked'));
         document.getElementById('badge-modules').innerText = checkedModules.length;
-        
-        // Atualizar total de questões no banco
         document.getElementById('badge-total').innerText = fullDatabase.length;
     }
 
@@ -796,7 +835,6 @@
                     row.classList.add('opacity-50', 'pointer-events-none');
                 }
             } else {
-                // Quando destrava, desmarcar a opção de 2018 e liberar todos
                 if (is2018Module) {
                     checkbox.checked = false;
                 }
@@ -805,13 +843,12 @@
             }
         });
         
-        // Atualizar interface
         updateBadges();
         updateDistribution();
     }
 
     function toggleAllModules(val) {
-        if(document.getElementById('filter-2018').checked) return; // Ignora se travado
+        if(document.getElementById('filter-2018').checked) return;
         
         document.querySelectorAll('.mod-chk').forEach(c => {
             if (!c.disabled) {
@@ -865,16 +902,13 @@
         const is2018 = document.getElementById('filter-2018').checked;
         const mode = document.getElementById('distribution-mode').value;
         
-        // Pool Calculation - corrigido para funcionar com filtro 2018
         let availablePool = [];
         let checkedModules = [];
         
         if (is2018) {
-            // Se filtro 2018 ativo, usar apenas questões de 2018
             availablePool = fullDatabase.filter(q => q.is2018);
             checkedModules = ["Questões de Concursos Anteriores (2018)"];
         } else {
-            // Caso contrário, usar módulos selecionados normalmente
             checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked')).map(c => c.value);
             availablePool = fullDatabase.filter(q => checkedModules.includes(q.module));
         }
@@ -903,7 +937,6 @@
             totalPlan = targetQty;
             
             if(targetQty > 0 && availablePool.length > 0) {
-                // Distribuição proporcional entre módulos selecionados
                 const moduleWeights = {};
                 checkedModules.forEach(mod => {
                     moduleWeights[mod] = availablePool.filter(q => q.module === mod).length;
@@ -912,7 +945,6 @@
                 const totalWeight = Object.values(moduleWeights).reduce((a, b) => a + b, 0);
                 
                 if (mode === 'proportional' && totalWeight > 0) {
-                    // Distribuição proporcional
                     let remaining = targetQty;
                     Object.keys(moduleWeights).forEach(mod => {
                         const count = Math.round(moduleWeights[mod] / totalWeight * targetQty);
@@ -920,7 +952,6 @@
                         remaining -= appState.distribution[mod];
                     });
                     
-                    // Ajustar diferenças de arredondamento
                     if (remaining !== 0) {
                         const modules = Object.keys(moduleWeights);
                         for (let i = 0; i < Math.abs(remaining) && modules.length > 0; i++) {
@@ -935,7 +966,6 @@
                         }
                     }
                 } else if (mode === 'balanced') {
-                    // Distribuição equilibrada
                     const modules = checkedModules.filter(mod => moduleWeights[mod] > 0);
                     const baseCount = Math.floor(targetQty / modules.length);
                     let remainder = targetQty % modules.length;
@@ -949,7 +979,6 @@
                         appState.distribution[mod] = Math.min(count, moduleWeights[mod]);
                     });
                     
-                    // Distribuir o restante
                     if (remainder > 0) {
                         for (let mod of modules) {
                             if (remainder <= 0) break;
@@ -959,9 +988,6 @@
                             }
                         }
                     }
-                } else {
-                    // Modo aleatório - não pré-aloca por módulo
-                    // A distribuição será feita durante o sorteio
                 }
             }
         }
@@ -1005,11 +1031,9 @@
         let pool = [];
         
         if (is2018) {
-            // Usar apenas questões de 2018
             pool = fullDatabase.filter(q => q.is2018);
             checkedModules = ["Questões de Concursos Anteriores (2018)"];
         } else {
-            // Usar módulos selecionados
             checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked')).map(c => c.value);
             if(checkedModules.length === 0) {
                 alert("Selecione pelo menos um módulo.");
@@ -1018,7 +1042,6 @@
             pool = fullDatabase.filter(q => checkedModules.includes(q.module));
         }
 
-        // Validação de Quantidade vs Disponível
         let reqQty = 0;
         if(mode === 'manual') {
              for(let k in appState.distribution) reqQty += appState.distribution[k];
@@ -1041,17 +1064,14 @@
         if (mode === 'manual') {
             for (const [mod, qtd] of Object.entries(appState.distribution)) {
                 const modPool = pool.filter(q => q.module === mod);
-                // Embaralhar e pegar a quantidade especificada
                 const shuffled = [...modPool].sort(() => Math.random() - 0.5);
                 finalQuestions.push(...shuffled.slice(0, qtd));
             }
         } else {
             if(mode === 'random') {
-                // Embaralhar todo o pool e pegar a quantidade necessária
                 const shuffled = [...pool].sort(() => Math.random() - 0.5);
                 finalQuestions = shuffled.slice(0, reqQty);
             } else if (mode === 'balanced' || mode === 'proportional') {
-                // Usar a distribuição pré-calculada
                 for (const [mod, qtd] of Object.entries(appState.distribution)) {
                     const modPool = pool.filter(q => q.module === mod);
                     const shuffled = [...modPool].sort(() => Math.random() - 0.5);
@@ -1060,7 +1080,6 @@
             }
         }
 
-        // Embaralhar novamente as questões finais para misturar entre módulos
         finalQuestions = finalQuestions.sort(() => Math.random() - 0.5);
         
         if(finalQuestions.length === 0) {
@@ -1079,7 +1098,6 @@
         showScreen('quiz');
     }
 
-    // CACHE LOGIC
     function toggleCacheModal() {
         const m = document.getElementById('cache-modal');
         m.classList.toggle('hidden');
@@ -1096,18 +1114,17 @@
         const kb = (used / 1024).toFixed(2);
         document.getElementById('cache-usage-text').innerText = `${kb} KB`;
         
-        // Atualiza também o badge do rodapé
         const footerBadge = document.getElementById('footer-cache-stat');
         if (footerBadge) footerBadge.innerText = `${kb} KB`;
 
-        const percent = Math.min((used/5000000)*100, 100); // 5MB como limite
+        const percent = Math.min((used/5000000)*100, 100);
         document.getElementById('cache-bar').style.width = `${percent}%`;
     }
     
     function toggleHistorySaving() {
         appState.savingEnabled = document.getElementById('toggle-save-history').checked;
         localStorage.setItem('alerr_save_pref', appState.savingEnabled);
-        updateCacheStats(); // Atualizar estatísticas após mudança
+        updateCacheStats();
     }
     
     function clearHistory(scope) {
@@ -1123,7 +1140,7 @@
             localStorage.removeItem('alerr_cacheTimestamp');
             loadHistory(); 
             updateCacheStats(); 
-            toggleCacheModal(); // Fechar modal após limpar
+            toggleCacheModal();
             return; 
         }
         
@@ -1143,10 +1160,9 @@
         localStorage.setItem('alerr_hist', JSON.stringify(h));
         loadHistory(); 
         updateCacheStats();
-        toggleCacheModal(); // Fechar modal após limpar
+        toggleCacheModal();
     }
 
-    // QUIZ & UI FUNCTIONS
     function loadQuestion(idx) {
         if (idx < 0 || idx >= appState.questions.length) return;
         
@@ -1205,7 +1221,6 @@
             boxExp.classList.add('hidden'); 
         }
         
-        // Lógica do botão Pular/Próxima
         const btnNext = document.getElementById('btn-next');
         if(idx === appState.questions.length - 1) { 
             btnNext.innerText = "Finalizar"; 
@@ -1215,11 +1230,9 @@
             btnNext.onclick = () => changeQuestion(1); 
 
             if(ans.ok) {
-                // Se já respondeu, o botão vira "Próxima" e fica em destaque
                 btnNext.innerHTML = 'Próxima <i class="fas fa-arrow-right ml-2"></i>';
                 btnNext.className = "bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-bold transition mobile-full shadow-md";
             } else {
-                // Se não respondeu, é "Pular" (estilo secundário)
                 btnNext.innerText = "Pular";
                 btnNext.className = "bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-2 rounded-lg font-bold transition mobile-full";
             }
@@ -1380,7 +1393,6 @@
     
     function saveHistory(data) { 
         const h = JSON.parse(localStorage.getItem('alerr_hist') || '[]'); 
-        // Garantir que não há valores undefined e são números
         data.correct = Number(data.correct) || 0;
         data.wrong = Number(data.wrong) || 0;
         data.unanswered = Number(data.unanswered) || 0;
@@ -1390,7 +1402,6 @@
         data.modules = data.modules || {};
         
         h.unshift(data); 
-        // Manter apenas os últimos 100 registros para evitar sobrecarga
         if (h.length > 100) h.length = 100;
         localStorage.setItem('alerr_hist', JSON.stringify(h)); 
         updateCacheStats();
@@ -1399,7 +1410,6 @@
     function populateModuleFilter() {
         const select = document.getElementById('module-filter');
         if (!select) return;
-        // Guardar o valor atual
         const currentValue = select.value;
         select.innerHTML = '<option value="all">Todos os módulos</option>';
         availableModules.forEach(mod => {
@@ -1408,7 +1418,6 @@
             option.textContent = mod;
             select.appendChild(option);
         });
-        // Restaurar o valor, se ainda existir
         if (currentValue) {
             select.value = currentValue;
         }
@@ -1425,7 +1434,6 @@
     }
     
     function updateFilterButtons() {
-        // Atualizar a aparência dos botões de dias
         const days = historyFilters.days;
         ['all','7','30'].forEach(f => { 
             const btn = document.getElementById(`hist-filter-${f}`);
@@ -1437,7 +1445,6 @@
                 }
             }
         });
-        // Atualizar o dropdown de módulos
         const moduleFilter = document.getElementById('module-filter');
         if (moduleFilter) {
             moduleFilter.value = historyFilters.module;
@@ -1447,85 +1454,110 @@
     function loadHistory(filters = { days: 'all', module: 'all' }) {
         let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
         
-        // Converter strings para números para garantir que os gráficos funcionem
         h = h.map(item => ({
             ...item,
             correct: Number(item.correct) || 0,
             wrong: Number(item.wrong) || 0,
             unanswered: Number(item.unanswered) || 0,
             percent: Number(item.percent) || 0,
-            // Garantir que modules existe (para compatibilidade com históricos antigos)
             modules: item.modules || {}
         }));
 
-        // Aplicar filtro de dias
         if(filters.days !== 'all') { 
             const limit = new Date(); 
             limit.setDate(limit.getDate() - filters.days); 
             h = h.filter(x => new Date(x.date) >= limit); 
         }
 
-        // Aplicar filtro de módulo
-        let filteredData = [];
-        if (filters.module === 'all') {
-            // Usar os totais do simulado
-            filteredData = h.map(item => ({
-                ...item,
-                displayCorrect: item.correct,
-                displayWrong: item.wrong,
-                displayUnanswered: item.unanswered,
-                displayPercent: item.percent,
-                displayModule: 'Vários módulos'
-            }));
-        } else {
-            // Filtrar simulados que têm o módulo e usar os dados do módulo
-            filteredData = h.filter(item => {
-                return item.modules && item.modules[filters.module] && item.modules[filters.module].total > 0;
-            }).map(item => {
-                const modData = item.modules[filters.module];
-                const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
-                return {
-                    ...item,
-                    displayCorrect: modData.correct,
-                    displayWrong: modData.wrong,
-                    displayUnanswered: modData.unanswered,
-                    displayPercent: percent,
-                    displayModule: filters.module
-                    // Para a duração, mantemos a do simulado inteiro
-                };
-            });
-        }
-
-        // Atualizar a tabela com filteredData
         const tbody = document.getElementById('history-body'); 
         tbody.innerHTML = '';
         
-        if(filteredData.length === 0) {
-            document.getElementById('no-history').classList.remove('hidden');
-        } else {
-            document.getElementById('no-history').classList.add('hidden');
-            filteredData.forEach(x => {
-                const duration = x.duration ? 
-                    `${Math.floor(x.duration / 60)}:${(x.duration % 60).toString().padStart(2, '0')}` : 
-                    '--:--';
-                    
-                tbody.innerHTML += `
-                    <tr class="border-b border-slate-100 dark:border-slate-700">
-                        <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
-                        <td class="px-6 py-4 text-xs text-slate-500" title="${x.displayModule}">${x.displayModule.length > 30 ? x.displayModule.substring(0, 30) + '...' : x.displayModule}</td>
-                        <td class="px-6 py-4 text-green-600 font-bold">${x.displayCorrect}</td>
-                        <td class="px-6 py-4 text-red-600 font-bold">${x.displayWrong}</td>
-                        <td class="px-6 py-4 text-slate-500 font-bold">${x.displayUnanswered}</td>
-                        <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.displayPercent}%</td>
-                    </tr>
-                `;
-            });
-        }
+        const moduleDetailBody = document.getElementById('module-detail-body');
+        moduleDetailBody.innerHTML = '';
         
-        // Renderizar gráficos de análise com filteredData
-        renderHistoryChart(filteredData);
-        renderDistributionChart(filteredData);
-        renderTrendChart(filteredData);
+        if (filters.module === 'all') {
+            document.getElementById('no-module-detail').classList.remove('hidden');
+            
+            if(h.length === 0) {
+                document.getElementById('no-history').classList.remove('hidden');
+            } else {
+                document.getElementById('no-history').classList.add('hidden');
+                h.forEach(x => {
+                    const moduleNames = Object.keys(x.modules);
+                    const moduleDisplay = moduleNames.length === 1 ? 
+                        moduleNames[0] : 
+                        'Vários módulos';
+                    
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 dark:border-slate-700">
+                            <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 text-xs text-slate-500" title="${moduleDisplay}">${moduleDisplay.length > 30 ? moduleDisplay.substring(0, 30) + '...' : moduleDisplay}</td>
+                            <td class="px-6 py-4 text-green-600 font-bold">${x.correct}</td>
+                            <td class="px-6 py-4 text-red-600 font-bold">${x.wrong}</td>
+                            <td class="px-6 py-4 text-slate-500 font-bold">${x.unanswered}</td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.percent}%</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            renderHistoryChart(h);
+            renderDistributionChart(h);
+            renderTrendChart(h);
+        } else {
+            document.getElementById('no-module-detail').classList.add('hidden');
+            
+            const filteredByModule = [];
+            h.forEach(item => {
+                if (item.modules && item.modules[filters.module]) {
+                    const modData = item.modules[filters.module];
+                    const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
+                    filteredByModule.push({
+                        ...item,
+                        displayCorrect: modData.correct,
+                        displayWrong: modData.wrong,
+                        displayUnanswered: modData.unanswered,
+                        displayPercent: percent,
+                        displayModule: filters.module
+                    });
+                }
+            });
+            
+            if(filteredByModule.length === 0) {
+                document.getElementById('no-history').classList.remove('hidden');
+                document.getElementById('no-module-detail').classList.add('hidden');
+            } else {
+                document.getElementById('no-history').classList.add('hidden');
+                
+                filteredByModule.forEach(x => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 dark:border-slate-700">
+                            <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 text-xs text-slate-500" title="${x.displayModule}">${x.displayModule.length > 30 ? x.displayModule.substring(0, 30) + '...' : x.displayModule}</td>
+                            <td class="px-6 py-4 text-green-600 font-bold">${x.displayCorrect}</td>
+                            <td class="px-6 py-4 text-red-600 font-bold">${x.displayWrong}</td>
+                            <td class="px-6 py-4 text-slate-500 font-bold">${x.displayUnanswered}</td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.displayPercent}%</td>
+                        </tr>
+                    `;
+                    
+                    moduleDetailBody.innerHTML += `
+                        <tr class="border-b border-slate-100 dark:border-slate-700">
+                            <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 text-xs text-slate-500" title="${x.displayModule}">${x.displayModule.length > 30 ? x.displayModule.substring(0, 30) + '...' : x.displayModule}</td>
+                            <td class="px-6 py-4 text-green-600 font-bold">${x.displayCorrect}</td>
+                            <td class="px-6 py-4 text-red-600 font-bold">${x.displayWrong}</td>
+                            <td class="px-6 py-4 text-slate-500 font-bold">${x.displayUnanswered}</td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.displayPercent}%</td>
+                        </tr>
+                    `;
+                });
+                
+                renderHistoryChart(filteredByModule);
+                renderDistributionChart(filteredByModule);
+                renderTrendChart(filteredByModule);
+            }
+        }
     }
     
     function renderHistoryChart(historyData) {
@@ -1536,17 +1568,15 @@
         }
         
         if (historyData.length === 0) {
-            // Se não tiver dados, apenas retorna e deixa o canvas limpo
             return;
         }
         
-        // Preparar dados para o gráfico
         const labels = historyData.map(item => 
             new Date(item.date).toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})
         ).reverse();
         
         const percentages = historyData.map(item => 
-            item.displayPercent
+            item.displayPercent || item.percent
         ).reverse();
         
         historyChartInstance = new Chart(ctx, {
@@ -1609,9 +1639,9 @@
         
         if (historyData.length === 0) return;
         
-        const totalCorrect = historyData.reduce((sum, item) => sum + item.displayCorrect, 0);
-        const totalWrong = historyData.reduce((sum, item) => sum + item.displayWrong, 0);
-        const totalUnanswered = historyData.reduce((sum, item) => sum + item.displayUnanswered, 0);
+        const totalCorrect = historyData.reduce((sum, item) => sum + (item.displayCorrect || item.correct), 0);
+        const totalWrong = historyData.reduce((sum, item) => sum + (item.displayWrong || item.wrong), 0);
+        const totalUnanswered = historyData.reduce((sum, item) => sum + (item.displayUnanswered || item.unanswered), 0);
         
         distributionChartInstance = new Chart(ctx, {
             type: 'bar',
@@ -1670,10 +1700,9 @@
         ).reverse();
         
         const percentages = historyData.map(item => 
-            item.displayPercent
+            item.displayPercent || item.percent
         ).reverse();
         
-        // Calcular linha de tendência (regressão linear simples)
         const n = percentages.length;
         let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
         
@@ -1740,6 +1769,156 @@
         });
     }
     
+    function exportHistoryCSV() {
+        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        
+        if (h.length === 0) {
+            alert("Nenhum histórico para exportar.");
+            return;
+        }
+        
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Data,Módulo,Acertos,Erros,Branco,Nota(%),Duração(s),Detalhes\n";
+        
+        h.forEach(item => {
+            const date = new Date(item.date).toLocaleString();
+            const modules = Object.keys(item.modules);
+            
+            if (modules.length === 0) {
+                csvContent += `"${date}","Sem módulo",${item.correct},${item.wrong},${item.unanswered},${item.percent},${item.duration || 0},""\n`;
+            } else if (modules.length === 1) {
+                const mod = modules[0];
+                const modData = item.modules[mod];
+                const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
+                csvContent += `"${date}","${mod}",${modData.correct},${modData.wrong},${modData.unanswered},${percent},${item.duration || 0},""\n`;
+            } else {
+                csvContent += `"${date}","Vários módulos",${item.correct},${item.wrong},${item.unanswered},${item.percent},${item.duration || 0},"${modules.join('; ')}"\n`;
+            }
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `historico_simulados_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function importHistoryCSV() {
+        document.getElementById('csv-import-modal').classList.remove('hidden');
+    }
+    
+    function closeCSVImportModal() {
+        document.getElementById('csv-import-modal').classList.add('hidden');
+        document.getElementById('csv-file-input').value = '';
+    }
+    
+    function processCSVImport() {
+        const fileInput = document.getElementById('csv-file-input');
+        if (!fileInput.files.length) {
+            alert("Selecione um arquivo CSV para importar.");
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const content = e.target.result;
+                const lines = content.split('\n');
+                
+                if (lines.length < 2) {
+                    alert("Arquivo CSV vazio ou inválido.");
+                    return;
+                }
+                
+                const headers = lines[0].split(',').map(h => h.trim());
+                
+                const expectedHeaders = ['Data', 'Módulo', 'Acertos', 'Erros', 'Branco', 'Nota(%)', 'Duração(s)', 'Detalhes'];
+                const hasRequiredHeaders = expectedHeaders.every(h => headers.includes(h));
+                
+                if (!hasRequiredHeaders) {
+                    alert("Formato de CSV inválido. Verifique os cabeçalhos.");
+                    return;
+                }
+                
+                const newHistory = [];
+                
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim() === '') continue;
+                    
+                    const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                    
+                    if (values.length < 6) continue;
+                    
+                    const date = new Date(values[0]);
+                    if (isNaN(date.getTime())) {
+                        console.warn(`Data inválida na linha ${i+1}: ${values[0]}`);
+                        continue;
+                    }
+                    
+                    const moduleName = values[1];
+                    const correct = parseInt(values[2]) || 0;
+                    const wrong = parseInt(values[3]) || 0;
+                    const unanswered = parseInt(values[4]) || 0;
+                    const percent = parseInt(values[5]) || 0;
+                    const duration = parseInt(values[6]) || 0;
+                    
+                    let modules = {};
+                    
+                    if (moduleName === 'Vários módulos' || moduleName === 'Sem módulo') {
+                        modules = {};
+                    } else {
+                        modules[moduleName] = {
+                            correct: correct,
+                            wrong: wrong,
+                            unanswered: unanswered,
+                            total: correct + wrong + unanswered
+                        };
+                    }
+                    
+                    newHistory.push({
+                        date: date,
+                        correct: correct,
+                        wrong: wrong,
+                        unanswered: unanswered,
+                        total: correct + wrong + unanswered,
+                        percent: percent,
+                        duration: duration,
+                        modules: modules
+                    });
+                }
+                
+                if (newHistory.length === 0) {
+                    alert("Nenhum dado válido encontrado no arquivo.");
+                    return;
+                }
+                
+                let existingHistory = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+                existingHistory = [...newHistory, ...existingHistory];
+                
+                if (existingHistory.length > 100) {
+                    existingHistory = existingHistory.slice(0, 100);
+                }
+                
+                localStorage.setItem('alerr_hist', JSON.stringify(existingHistory));
+                
+                closeCSVImportModal();
+                loadHistory(historyFilters);
+                updateCacheStats();
+                
+                alert(`${newHistory.length} registros importados com sucesso!`);
+            } catch (error) {
+                console.error("Erro ao processar CSV:", error);
+                alert("Erro ao processar o arquivo CSV. Verifique o formato.");
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+    
     function showScreen(id) { 
         ['home','quiz','result','analytics','error'].forEach(s => {
             const screen = document.getElementById('screen-'+s);
@@ -1755,7 +1934,6 @@
         if(id === 'home') {
             updateDistribution();
         } else if (id === 'analytics') {
-            // Adicionar delay para garantir que o canvas esteja visível antes de desenhar
             setTimeout(() => {
                 applyHistoryFilters();
             }, 50);
