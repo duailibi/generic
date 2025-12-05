@@ -157,6 +157,7 @@
         </div>
 
         <div id="screen-home" class="fade-in max-w-6xl mx-auto pb-24">
+            <!-- Configuração do simulador (mantido igual) -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="p-6 md:p-10 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
                     <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Configurar Simulador</h2>
@@ -280,6 +281,7 @@
         </div>
 
         <div id="screen-quiz" class="hidden max-w-6xl mx-auto h-full flex flex-col fade-in pb-24">
+            <!-- Tela do quiz (mantida igual) -->
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 flex justify-between items-center mb-6 mobile-stack mobile-padding">
                 <div class="flex items-center gap-6 mobile-stack">
                     <div class="flex flex-col">
@@ -344,6 +346,7 @@
         </div>
 
         <div id="screen-result" class="hidden fade-in max-w-4xl mx-auto mt-8 pb-24">
+            <!-- Tela de resultados (mantida igual) -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden text-center">
                 <div class="bg-slate-900 p-10 text-white relative overflow-hidden">
                     <div class="relative z-10">
@@ -440,14 +443,16 @@
                 </div>
             </div>
             
+            <!-- Tabela 1: Histórico Total (independente do filtro de módulo) -->
             <div class="mb-6">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Tabela de Histórico</h3>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Tabela de Histórico Completo</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Mostra todos os simulados realizados (filtrado apenas por período)</p>
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
                     <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
                         <thead class="bg-slate-50 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
                             <tr>
                                 <th class="px-6 py-4">Data</th>
-                                <th class="px-6 py-4">Módulo</th>
+                                <th class="px-6 py-4">Módulo(s)</th>
                                 <th class="px-6 py-4">Acertos</th>
                                 <th class="px-6 py-4">Erros</th>
                                 <th class="px-6 py-4">Branco</th>
@@ -460,10 +465,13 @@
                 </div>
             </div>
 
+            <!-- Tabela 2: Detalhada por Módulo (depende do filtro) -->
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 dark:border-slate-700">
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white">Tabela Detalhada por Módulo</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Mostrando apenas o módulo selecionado no filtro</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400" id="module-detail-description">
+                        Mostrando todos os módulos (selecione um módulo específico para detalhes)
+                    </p>
                 </div>
                 <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
                     <thead class="bg-slate-50 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
@@ -473,12 +481,16 @@
                             <th class="px-6 py-4">Acertos</th>
                             <th class="px-6 py-4">Erros</th>
                             <th class="px-6 py-4">Branco</th>
+                            <th class="px-6 py-4">Total</th>
                             <th class="px-6 py-4 text-right">Nota</th>
                         </tr>
                     </thead>
                     <tbody id="module-detail-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
                 </table>
-                <div id="no-module-detail" class="p-10 text-center text-slate-400 hidden">Selecione um módulo específico para ver detalhes.</div>
+                <div id="no-module-detail" class="p-10 text-center text-slate-400 hidden">
+                    <i class="fas fa-info-circle mb-2 block text-2xl"></i>
+                    <p>Selecione um módulo específico no filtro acima para ver detalhes por módulo.</p>
+                </div>
             </div>
         </div>
 
@@ -1454,109 +1466,103 @@
     function loadHistory(filters = { days: 'all', module: 'all' }) {
         let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
         
-        h = h.map(item => ({
-            ...item,
-            correct: Number(item.correct) || 0,
-            wrong: Number(item.wrong) || 0,
-            unanswered: Number(item.unanswered) || 0,
-            percent: Number(item.percent) || 0,
-            modules: item.modules || {}
-        }));
-
+        // Aplicar filtro de dias
         if(filters.days !== 'all') { 
             const limit = new Date(); 
             limit.setDate(limit.getDate() - filters.days); 
             h = h.filter(x => new Date(x.date) >= limit); 
         }
 
+        // Tabela 1: Histórico Completo (independente do filtro de módulo)
         const tbody = document.getElementById('history-body'); 
         tbody.innerHTML = '';
         
+        if(h.length === 0) {
+            document.getElementById('no-history').classList.remove('hidden');
+        } else {
+            document.getElementById('no-history').classList.add('hidden');
+            h.forEach(x => {
+                const moduleNames = Object.keys(x.modules);
+                const moduleDisplay = moduleNames.length === 0 ? 'Sem módulo' : 
+                                    moduleNames.length === 1 ? moduleNames[0] : 
+                                    'Vários módulos';
+                
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                        <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
+                        <td class="px-6 py-4 text-xs text-slate-500" title="${moduleNames.join(', ')}">
+                            ${moduleDisplay.length > 30 ? moduleDisplay.substring(0, 30) + '...' : moduleDisplay}
+                        </td>
+                        <td class="px-6 py-4 text-green-600 font-bold">${x.correct}</td>
+                        <td class="px-6 py-4 text-red-600 font-bold">${x.wrong}</td>
+                        <td class="px-6 py-4 text-slate-500 font-bold">${x.unanswered}</td>
+                        <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.percent}%</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Tabela 2: Detalhada por Módulo
         const moduleDetailBody = document.getElementById('module-detail-body');
         moduleDetailBody.innerHTML = '';
         
+        // Atualizar descrição
+        const description = document.getElementById('module-detail-description');
         if (filters.module === 'all') {
+            description.textContent = 'Mostrando todos os módulos (selecione um módulo específico para detalhes)';
             document.getElementById('no-module-detail').classList.remove('hidden');
+        } else {
+            description.textContent = `Mostrando apenas o módulo: ${filters.module}`;
+            document.getElementById('no-module-detail').classList.add('hidden');
             
-            if(h.length === 0) {
-                document.getElementById('no-history').classList.remove('hidden');
-            } else {
-                document.getElementById('no-history').classList.add('hidden');
-                h.forEach(x => {
-                    const moduleNames = Object.keys(x.modules);
-                    const moduleDisplay = moduleNames.length === 1 ? 
-                        moduleNames[0] : 
-                        'Vários módulos';
+            // Coletar todos os dados do módulo selecionado
+            let moduleDetails = [];
+            
+            h.forEach(item => {
+                if (item.modules && item.modules[filters.module]) {
+                    const modData = item.modules[filters.module];
+                    const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
                     
-                    tbody.innerHTML += `
-                        <tr class="border-b border-slate-100 dark:border-slate-700">
+                    moduleDetails.push({
+                        date: item.date,
+                        module: filters.module,
+                        correct: modData.correct,
+                        wrong: modData.wrong,
+                        unanswered: modData.unanswered,
+                        total: modData.total,
+                        percent: percent
+                    });
+                }
+            });
+            
+            if (moduleDetails.length === 0) {
+                document.getElementById('no-module-detail').classList.remove('hidden');
+                document.getElementById('no-module-detail').innerHTML = `
+                    <i class="fas fa-info-circle mb-2 block text-2xl"></i>
+                    <p>Nenhum simulado encontrado para o módulo "${filters.module}" no período selecionado.</p>
+                `;
+            } else {
+                moduleDetails.forEach(x => {
+                    moduleDetailBody.innerHTML += `
+                        <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
                             <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
-                            <td class="px-6 py-4 text-xs text-slate-500" title="${moduleDisplay}">${moduleDisplay.length > 30 ? moduleDisplay.substring(0, 30) + '...' : moduleDisplay}</td>
+                            <td class="px-6 py-4 text-xs text-slate-500" title="${x.module}">
+                                ${x.module.length > 30 ? x.module.substring(0, 30) + '...' : x.module}
+                            </td>
                             <td class="px-6 py-4 text-green-600 font-bold">${x.correct}</td>
                             <td class="px-6 py-4 text-red-600 font-bold">${x.wrong}</td>
                             <td class="px-6 py-4 text-slate-500 font-bold">${x.unanswered}</td>
+                            <td class="px-6 py-4 text-slate-700 dark:text-slate-300 font-bold">${x.total}</td>
                             <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.percent}%</td>
                         </tr>
                     `;
                 });
             }
             
-            renderHistoryChart(h);
-            renderDistributionChart(h);
-            renderTrendChart(h);
-        } else {
-            document.getElementById('no-module-detail').classList.add('hidden');
-            
-            const filteredByModule = [];
-            h.forEach(item => {
-                if (item.modules && item.modules[filters.module]) {
-                    const modData = item.modules[filters.module];
-                    const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
-                    filteredByModule.push({
-                        ...item,
-                        displayCorrect: modData.correct,
-                        displayWrong: modData.wrong,
-                        displayUnanswered: modData.unanswered,
-                        displayPercent: percent,
-                        displayModule: filters.module
-                    });
-                }
-            });
-            
-            if(filteredByModule.length === 0) {
-                document.getElementById('no-history').classList.remove('hidden');
-                document.getElementById('no-module-detail').classList.add('hidden');
-            } else {
-                document.getElementById('no-history').classList.add('hidden');
-                
-                filteredByModule.forEach(x => {
-                    tbody.innerHTML += `
-                        <tr class="border-b border-slate-100 dark:border-slate-700">
-                            <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
-                            <td class="px-6 py-4 text-xs text-slate-500" title="${x.displayModule}">${x.displayModule.length > 30 ? x.displayModule.substring(0, 30) + '...' : x.displayModule}</td>
-                            <td class="px-6 py-4 text-green-600 font-bold">${x.displayCorrect}</td>
-                            <td class="px-6 py-4 text-red-600 font-bold">${x.displayWrong}</td>
-                            <td class="px-6 py-4 text-slate-500 font-bold">${x.displayUnanswered}</td>
-                            <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.displayPercent}%</td>
-                        </tr>
-                    `;
-                    
-                    moduleDetailBody.innerHTML += `
-                        <tr class="border-b border-slate-100 dark:border-slate-700">
-                            <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
-                            <td class="px-6 py-4 text-xs text-slate-500" title="${x.displayModule}">${x.displayModule.length > 30 ? x.displayModule.substring(0, 30) + '...' : x.displayModule}</td>
-                            <td class="px-6 py-4 text-green-600 font-bold">${x.displayCorrect}</td>
-                            <td class="px-6 py-4 text-red-600 font-bold">${x.displayWrong}</td>
-                            <td class="px-6 py-4 text-slate-500 font-bold">${x.displayUnanswered}</td>
-                            <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.displayPercent}%</td>
-                        </tr>
-                    `;
-                });
-                
-                renderHistoryChart(filteredByModule);
-                renderDistributionChart(filteredByModule);
-                renderTrendChart(filteredByModule);
-            }
+            // Atualizar gráficos com dados do módulo específico
+            renderHistoryChart(moduleDetails);
+            renderDistributionChart(moduleDetails);
+            renderTrendChart(moduleDetails);
         }
     }
     
@@ -1568,6 +1574,56 @@
         }
         
         if (historyData.length === 0) {
+            // Criar gráfico vazio
+            historyChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Desempenho (%)',
+                        data: [],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Desempenho: ${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) { return value + '%'; }
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
             return;
         }
         
@@ -1575,9 +1631,7 @@
             new Date(item.date).toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})
         ).reverse();
         
-        const percentages = historyData.map(item => 
-            item.displayPercent || item.percent
-        ).reverse();
+        const percentages = historyData.map(item => item.percent).reverse();
         
         historyChartInstance = new Chart(ctx, {
             type: 'line',
@@ -1637,11 +1691,55 @@
             distributionChartInstance.destroy();
         }
         
-        if (historyData.length === 0) return;
+        if (historyData.length === 0) {
+            // Criar gráfico vazio
+            distributionChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Acertos', 'Erros', 'Brancos'],
+                    datasets: [{
+                        label: 'Questões',
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(148, 163, 184, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(239, 68, 68)',
+                            'rgb(148, 163, 184)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+            return;
+        }
         
-        const totalCorrect = historyData.reduce((sum, item) => sum + (item.displayCorrect || item.correct), 0);
-        const totalWrong = historyData.reduce((sum, item) => sum + (item.displayWrong || item.wrong), 0);
-        const totalUnanswered = historyData.reduce((sum, item) => sum + (item.displayUnanswered || item.unanswered), 0);
+        const totalCorrect = historyData.reduce((sum, item) => sum + item.correct, 0);
+        const totalWrong = historyData.reduce((sum, item) => sum + item.wrong, 0);
+        const totalUnanswered = historyData.reduce((sum, item) => sum + item.unanswered, 0);
         
         distributionChartInstance = new Chart(ctx, {
             type: 'bar',
@@ -1693,15 +1791,62 @@
             trendChartInstance.destroy();
         }
         
-        if (historyData.length < 2) return;
+        if (historyData.length < 2) {
+            // Criar gráfico vazio
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Desempenho (%)',
+                            data: [],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#3b82f6',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Tendência',
+                            data: [],
+                            borderColor: '#f59e0b',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { callback: function(value) { return value + '%'; } }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+            return;
+        }
         
         const labels = historyData.map(item => 
             new Date(item.date).toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})
         ).reverse();
         
-        const percentages = historyData.map(item => 
-            item.displayPercent || item.percent
-        ).reverse();
+        const percentages = historyData.map(item => item.percent).reverse();
         
         const n = percentages.length;
         let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
