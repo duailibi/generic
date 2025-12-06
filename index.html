@@ -22,7 +22,10 @@
     }
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js (apenas para gráficos 2D) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <!-- Plotly.js - Biblioteca para gráficos 3D mais estável -->
+  <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -101,6 +104,70 @@
       background-color: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
     }
+
+    /* Estilos específicos para gráficos 3D com Plotly */
+    .plotly-3d-container {
+      height: 500px;
+      width: 100%;
+      position: relative;
+      background-color: #f8fafc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .dark .plotly-3d-container {
+      background-color: #1e293b;
+    }
+    
+    .plotly-error {
+      display: none;
+      padding: 2rem;
+      text-align: center;
+      color: #dc2626;
+    }
+
+    .chart-controls {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .chart-controls {
+      background: rgba(30, 41, 59, 0.9);
+    }
+
+    /* Estilos para as tabelas roláveis */
+    .metrics-table-container {
+      max-height: 500px;
+      overflow-y: auto;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .dark .metrics-table-container {
+      border-color: #475569;
+    }
+
+    .evolution-line {
+      stroke: #3b82f6;
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 5, 5;
+    }
+    .dark .evolution-line {
+      stroke: #60a5fa;
+    }
+
+    .metric-card {
+      transition: all 0.2s ease;
+      border-left: 4px solid #3b82f6;
+    }
+    .dark .metric-card {
+      border-left-color: #60a5fa;
+    }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
@@ -157,7 +224,7 @@
         </div>
 
         <div id="screen-home" class="fade-in max-w-6xl mx-auto pb-24">
-            <!-- Configuração do simulador (mantido igual) -->
+            <!-- Configuração do simulador -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="p-6 md:p-10 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
                     <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Configurar Simulador</h2>
@@ -227,14 +294,14 @@
                             <div id="qty-selector-container">
                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Quantidade Total</label>
                                 <div class="grid grid-cols-4 gap-2">
-                                    <button onclick="setQuantity(5)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="5">5</button>
-                                    <button onclick="setQuantity(10)" class="btn-qty p-2 rounded border bg-brand-50 border-brand-500 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 text-sm font-medium transition" data-val="10">10</button>
-                                    <button onclick="setQuantity(20)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="20">20</button>
-                                    <button onclick="setQuantity(30)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="30">30</button>
+                                    <button onclick="setQuantity(5, event)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="5">5</button>
+                                    <button onclick="setQuantity(10, event)" class="btn-qty p-2 rounded border bg-brand-50 border-brand-500 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 text-sm font-medium transition" data-val="10">10</button>
+                                    <button onclick="setQuantity(20, event)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="20">20</button>
+                                    <button onclick="setQuantity(30, event)" class="btn-qty p-2 rounded border hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 text-sm font-medium transition" data-val="30">30</button>
                                 </div>
                                 <div class="mt-2 flex gap-2">
-                                    <button onclick="setQuantity('all')" class="flex-1 btn-qty p-2 rounded border border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100 text-xs font-bold uppercase transition" data-val="all">Selecionar Tudo</button>
-                                    <input type="number" id="custom-qty" placeholder="Qtd..." class="w-20 p-2 text-sm border rounded text-center outline-none focus:border-brand-500 dark:bg-slate-700 dark:border-slate-600" oninput="setQuantity('custom')">
+                                    <button onclick="setQuantity('all', event)" class="flex-1 btn-qty p-2 rounded border border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100 text-xs font-bold uppercase transition" data-val="all">Selecionar Tudo</button>
+                                    <input type="number" id="custom-qty" placeholder="Qtd..." class="w-20 p-2 text-sm border rounded text-center outline-none focus:border-brand-500 dark:bg-slate-700 dark:border-slate-600" oninput="setQuantity('custom', event)">
                                 </div>
                             </div>
                             
@@ -281,7 +348,7 @@
         </div>
 
         <div id="screen-quiz" class="hidden max-w-6xl mx-auto h-full flex flex-col fade-in pb-24">
-            <!-- Tela do quiz (mantida igual) -->
+            <!-- Tela do quiz -->
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 flex justify-between items-center mb-6 mobile-stack mobile-padding">
                 <div class="flex items-center gap-6 mobile-stack">
                     <div class="flex flex-col">
@@ -327,7 +394,7 @@
                         </div>
                     </div>
 
-                    <div id="explanation-box" class="hidden mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-5 animate-in fade-in slide-in-from-top-2">
+                    <div id="explanation-box" class="hidden mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-5 fade-in">
                         <h4 class="text-blue-800 dark:text-blue-300 font-bold text-sm mb-2 flex items-center gap-2">
                             <i class="fas fa-check-circle"></i> Comentário / Justificativa
                         </h4>
@@ -346,7 +413,7 @@
         </div>
 
         <div id="screen-result" class="hidden fade-in max-w-4xl mx-auto mt-8 pb-24">
-            <!-- Tela de resultados (mantida igual) -->
+            <!-- Tela de resultados -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden text-center">
                 <div class="bg-slate-900 p-10 text-white relative overflow-hidden">
                     <div class="relative z-10">
@@ -390,11 +457,11 @@
             </div>
         </div>
 
-        <div id="screen-analytics" class="hidden fade-in max-w-6xl mx-auto pb-24">
+        <div id="screen-analytics" class="hidden fade-in max-w-7xl mx-auto pb-24">
             <div class="flex justify-between items-end mb-6 mobile-stack">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Seu Histórico</h2>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Acompanhe sua evolução.</p>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Análise Avançada de Desempenho</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Métricas detalhadas e gráficos 3D interativos.</p>
                 </div>
                 <div class="flex gap-2">
                     <button onclick="exportHistoryCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
@@ -403,6 +470,61 @@
                     <button onclick="importHistoryCSV()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
                         <i class="fas fa-upload"></i> Importar CSV
                     </button>
+                </div>
+            </div>
+
+            <!-- Métricas Rápidas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Média Geral</div>
+                            <div class="text-2xl font-bold text-slate-800 dark:text-white" id="avg-overall">0%</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="avg-trend">Carregando...</div>
+                </div>
+                
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Tempo Médio/Q</div>
+                            <div class="text-2xl font-bold text-slate-800 dark:text-white" id="avg-time-per-q">0s</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                            <i class="fas fa-clock text-green-600 dark:text-green-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="time-trend">Carregando...</div>
+                </div>
+                
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Melhor Módulo</div>
+                            <div class="text-xl font-bold text-slate-800 dark:text-white truncate" id="best-module">-</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                            <i class="fas fa-trophy text-yellow-600 dark:text-yellow-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="best-module-score">0%</div>
+                </div>
+                
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Evolução 30 dias</div>
+                            <div class="text-2xl font-bold text-slate-800 dark:text-white" id="evolution-30d">0%</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                            <i class="fas fa-arrow-trend-up text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="evolution-trend">Carregando...</div>
                 </div>
             </div>
 
@@ -443,50 +565,233 @@
                 </div>
             </div>
             
-            <!-- Tabela 1: Histórico Total (independente do filtro de módulo) -->
-            <div class="mb-6">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Tabela de Histórico Completo</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Mostra todos os simulados realizados (filtrado apenas por período)</p>
-                <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
-                        <thead class="bg-slate-50 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
-                            <tr>
-                                <th class="px-6 py-4">Data</th>
-                                <th class="px-6 py-4">Módulo(s)</th>
-                                <th class="px-6 py-4">Acertos</th>
-                                <th class="px-6 py-4">Erros</th>
-                                <th class="px-6 py-4">Branco</th>
-                                <th class="px-6 py-4 text-right">Nota</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
-                    </table>
-                    <div id="no-history" class="p-10 text-center text-slate-400 hidden">Nenhum simulado realizado no período.</div>
+            <!-- Seção de Análise Tridimensional com Plotly.js -->
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">Análise Tridimensional com Métricas Avançadas</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Gráficos 3D interativos com tabelas de métricas evolutivas. Os pontos são interligados para mostrar progressão temporal.</p>
+
+                <!-- Filtros para gráficos 3D -->
+                <div class="flex flex-wrap items-center gap-4 mb-6">
+                    <div class="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <button onclick="set3dFilter('days', 'all')" class="px-3 py-1 text-xs font-bold rounded bg-blue-100 text-blue-700" id="3d-filter-all">Tudo</button>
+                        <button onclick="set3dFilter('days', 7)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="3d-filter-7">7 Dias</button>
+                        <button onclick="set3dFilter('days', 30)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="3d-filter-30">30 Dias</button>
+                    </div>
+                    
+                    <select id="3d-module-filter" onchange="set3dFilter('module', this.value)" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm min-w-[200px]">
+                        <option value="all">Todos os módulos</option>
+                    </select>
+
+                    <div class="text-xs text-slate-500 dark:text-slate-400">
+                        <i class="fas fa-info-circle mr-1"></i> Arraste para girar, use a roda para zoom. Linhas conectam a evolução temporal.
+                    </div>
+                </div>
+
+                <!-- Gráfico 3D Geral (AGORA COM Plotly.js e tabela de métricas) -->
+                <div id="overall-3d-section" class="mb-8">
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Gráfico 3D Geral: Tempo vs Questões vs Módulos</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">
+                                Relação entre tempo médio de resposta (eixo Z), número total de questões (eixo X) e quantidade de módulos (eixo Y). Linhas mostram evolução temporal.
+                            </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+                            <div class="lg:col-span-2">
+                                <div id="overall3dChart" class="plotly-3d-container"></div>
+                                <div class="plotly-error hidden" id="overall3dError">
+                                    Falha ao carregar gráfico 3D.
+                                </div>
+                            </div>
+                            
+                            <div class="lg:col-span-1">
+                                <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-4 h-full">
+                                    <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                                        <i class="fas fa-table"></i> Métricas por Simulado
+                                    </h4>
+                                    <div class="metrics-table-container">
+                                        <table class="w-full text-sm">
+                                            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800">
+                                                <tr class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+                                                    <th class="px-3 py-2 text-left">Data</th>
+                                                    <th class="px-3 py-2 text-left">Q</th>
+                                                    <th class="px-3 py-2 text-left">M</th>
+                                                    <th class="px-3 py-2 text-left">Tempo</th>
+                                                    <th class="px-3 py-2 text-left">%</th>
+                                                    <th class="px-3 py-2 text-left">Δ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="overall3dTable" class="divide-y divide-slate-200 dark:divide-slate-700">
+                                                <!-- Preenchido por JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                        <div class="text-xs font-bold text-blue-700 dark:text-blue-300 mb-1">Legenda</div>
+                                        <div class="text-xs text-slate-600 dark:text-slate-400">
+                                            <div class="flex items-center gap-2 mb-1"><div class="w-3 h-3 rounded-full bg-green-500"></div> ≥70%</div>
+                                            <div class="flex items-center gap-2 mb-1"><div class="w-3 h-3 rounded-full bg-yellow-500"></div> 50-70%</div>
+                                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div> <50%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 border-t border-slate-100 dark:border-slate-700">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                    <div class="text-xs font-bold text-blue-700 dark:text-blue-300">Eixo X</div>
+                                    <div class="font-bold">Total de Questões</div>
+                                </div>
+                                <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                    <div class="text-xs font-bold text-green-700 dark:text-green-300">Eixo Y</div>
+                                    <div class="font-bold">Quantidade de Módulos</div>
+                                </div>
+                                <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                    <div class="text-xs font-bold text-purple-700 dark:text-purple-300">Eixo Z</div>
+                                    <div class="font-bold">Tempo Médio (segundos)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico 3D por Módulo (AGORA COM Plotly.js e tabela de métricas) -->
+                <div id="module-3d-section" class="mb-8">
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Gráfico 3D por Módulo: Desempenho Detalhado</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">
+                                Relação entre tempo médio por questão (eixo Z), número de questões do módulo (eixo X) e desempenho percentual (eixo Y). Linhas conectam por ordem de desempenho.
+                            </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+                            <div class="lg:col-span-2">
+                                <div id="module3dChart" class="plotly-3d-container"></div>
+                                <div class="plotly-error hidden" id="module3dError">
+                                    Falha ao carregar gráfico 3D.
+                                </div>
+                            </div>
+                            
+                            <div class="lg:col-span-1">
+                                <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-4 h-full">
+                                    <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                                        <i class="fas fa-chart-bar"></i> Métricas por Módulo
+                                    </h4>
+                                    <div class="metrics-table-container">
+                                        <table class="w-full text-sm">
+                                            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800">
+                                                <tr class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+                                                    <th class="px-3 py-2 text-left">Módulo</th>
+                                                    <th class="px-3 py-2 text-left">Q/M</th>
+                                                    <th class="px-3 py-2 text-left">%</th>
+                                                    <th class="px-3 py-2 text-left">Tempo</th>
+                                                    <th class="px-3 py-2 text-left">Sim</th>
+                                                    <th class="px-3 py-2 text-left">Evol</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="module3dTable" class="divide-y divide-slate-200 dark:divide-slate-700">
+                                                <!-- Preenchido por JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="mt-4 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                        <div class="text-xs font-bold text-purple-700 dark:text-purple-300 mb-1">Interpretação</div>
+                                        <div class="text-xs text-slate-600 dark:text-slate-400">
+                                            <div class="mb-1"><span class="font-bold">Q/M:</span> Questões por módulo (média)</div>
+                                            <div class="mb-1"><span class="font-bold">Sim:</span> Número de simulações</div>
+                                            <div><span class="font-bold">Evol:</span> Evolução vs anterior (↑ melhora)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 border-t border-slate-100 dark:border-slate-700">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                    <div class="text-xs font-bold text-blue-700 dark:text-blue-300">Eixo X</div>
+                                    <div class="font-bold">Questões por Módulo</div>
+                                </div>
+                                <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                    <div class="text-xs font-bold text-green-700 dark:text-green-300">Eixo Y</div>
+                                    <div class="font-bold">Desempenho (%)</div>
+                                </div>
+                                <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                    <div class="text-xs font-bold text-purple-700 dark:text-purple-300">Eixo Z</div>
+                                    <div class="font-bold">Tempo por Questão (s)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Tabela 2: Detalhada por Módulo (depende do filtro) -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 dark:border-slate-700">
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-white">Tabela Detalhada por Módulo</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400" id="module-detail-description">
-                        Mostrando todos os módulos (selecione um módulo específico para detalhes)
-                    </p>
+            <!-- Tabela 1: Histórico Total -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Histórico Completo de Simulados</h3>
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300">Todos os simulados (filtrado por período)</h4>
+                            <span class="text-xs text-slate-500 dark:text-slate-400" id="history-count">0 registros</span>
+                        </div>
+                    </div>
+                    <div class="max-h-[400px] overflow-y-auto">
+                        <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
+                                <tr>
+                                    <th class="px-6 py-4">Data</th>
+                                    <th class="px-6 py-4">Módulo(s)</th>
+                                    <th class="px-6 py-4">Acertos</th>
+                                    <th class="px-6 py-4">Erros</th>
+                                    <th class="px-6 py-4">Branco</th>
+                                    <th class="px-6 py-4">Tempo/Q</th>
+                                    <th class="px-6 py-4 text-right">Nota</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <div id="no-history" class="p-10 text-center text-slate-400 hidden">
+                        <i class="fas fa-inbox mb-4 text-3xl"></i>
+                        <p>Nenhum simulado realizado no período.</p>
+                    </div>
                 </div>
-                <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
-                    <thead class="bg-slate-50 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
-                        <tr>
-                            <th class="px-6 py-4">Data</th>
-                            <th class="px-6 py-4">Módulo</th>
-                            <th class="px-6 py-4">Acertos</th>
-                            <th class="px-6 py-4">Erros</th>
-                            <th class="px-6 py-4">Branco</th>
-                            <th class="px-6 py-4">Total</th>
-                            <th class="px-6 py-4 text-right">Nota</th>
-                        </tr>
-                    </thead>
-                    <tbody id="module-detail-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
-                </table>
+            </div>
+
+            <!-- Tabela 2: Detalhada por Módulo -->
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Análise Detalhada por Módulo</h3>
+                        <span class="text-xs text-slate-500 dark:text-slate-400" id="module-detail-description">
+                            Mostrando todos os módulos
+                        </span>
+                    </div>
+                </div>
+                <div class="max-h-[400px] overflow-y-auto">
+                    <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                        <thead class="sticky top-0 bg-slate-100 dark:bg-slate-700 text-xs uppercase font-bold text-slate-500">
+                            <tr>
+                                <th class="px-6 py-4">Data</th>
+                                <th class="px-6 py-4">Módulo</th>
+                                <th class="px-6 py-4">Acertos</th>
+                                <th class="px-6 py-4">Erros</th>
+                                <th class="px-6 py-4">Branco</th>
+                                <th class="px-6 py-4">Total</th>
+                                <th class="px-6 py-4">Tempo/Q</th>
+                                <th class="px-6 py-4 text-right">Nota</th>
+                            </tr>
+                        </thead>
+                        <tbody id="module-detail-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                    </table>
+                </div>
                 <div id="no-module-detail" class="p-10 text-center text-slate-400 hidden">
                     <i class="fas fa-info-circle mb-2 block text-2xl"></i>
                     <p>Selecione um módulo específico no filtro acima para ver detalhes por módulo.</p>
@@ -506,12 +811,10 @@
         </div>
         <div class="flex-grow bg-slate-200 relative">
             <object data="src/regimento-interno-2023-ale-rr-ok.pdf" type="application/pdf" class="w-full h-full">
-                <iframe src="src/regimento-interno-2023-ale-rr-ok.pdf" class="w-full h-full border-none">
-                   <div class="flex flex-col items-center justify-center h-full text-slate-500 p-4 text-center">
-                       <p>Visualizador indisponível.</p>
-                       <a href="src/regimento-interno-2023-ale-rr-ok.pdf" target="_blank" class="text-brand-600 font-bold underline mt-2">Baixar PDF</a>
-                   </div>
-                </iframe>
+                <div class="flex flex-col items-center justify-center h-full text-slate-500 p-4 text-center">
+                    <p>Visualizador indisponível.</p>
+                    <a href="src/regimento-interno-2023-ale-rr-ok.pdf" target="_blank" class="text-brand-600 font-bold underline mt-2">Baixar PDF</a>
+                </div>
             </object>
         </div>
         <div onclick="togglePdfDrawer()" class="absolute left-0 top-1/2 -translate-x-full cursor-pointer bg-red-600 text-white py-4 px-1 rounded-l-lg shadow-lg hover:bg-red-700 transition pdf-tab z-50 flex items-center gap-2 justify-center" title="Abrir Regimento">
@@ -621,15 +924,24 @@
       'src/sessoes-da-assembleia-titulo-V.json'
     ];
 
-    // Variáveis Globais de Chart.js
+    // Variáveis Globais de Chart.js (2D)
     let historyChartInstance = null;
     let distributionChartInstance = null;
     let trendChartInstance = null;
     let resultChartInstance = null;
-
+    
+    // Variáveis para Plotly.js (3D)
+    let overall3dChartInstance = null;
+    let module3dChartInstance = null;
+    
     let fullDatabase = [];
     let availableModules = [];
     let historyFilters = {
+        days: 'all',
+        module: 'all'
+    };
+
+    let analytics3dFilters = {
         days: 'all',
         module: 'all'
     };
@@ -647,22 +959,50 @@
         startTime: null
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initTheme();
-        loadDatabase();
+    // Funções auxiliares
+    function showScreen(id) { 
+        ['home','quiz','result','analytics','error'].forEach(s => {
+            const screen = document.getElementById('screen-'+s);
+            if (screen) screen.classList.add('hidden');
+        }); 
         
-        setTimeout(() => loadHistory(), 500);
-
-        const savedPref = localStorage.getItem('alerr_save_pref');
-        appState.savingEnabled = savedPref !== 'false';
-        document.getElementById('toggle-save-history').checked = appState.savingEnabled;
-        updateCacheStats();
+        const targetScreen = document.getElementById('screen-'+id);
+        if (targetScreen) {
+            targetScreen.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
         
+        if(id === 'home') {
+            updateDistribution();
+        } else if (id === 'analytics') {
+            setTimeout(() => {
+                applyHistoryFilters();
+                update3dCharts();
+                updateMetricsCards();
+            }, 100);
+        }
+    }
+    
+    function togglePdfDrawer() { 
+        const d = document.getElementById('pdf-drawer'); 
+        d.classList.toggle('translate-x-full'); 
+        d.classList.toggle('drawer-open'); 
+    }
+    
+    function initTheme() { 
+        if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcon();
+    }
+    
+    function toggleDarkMode() { 
+        document.documentElement.classList.toggle('dark'); 
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); 
         updateThemeIcon();
         
-        updateFilterButtons();
-        populateModuleFilter();
-    });
+        update3dCharts();
+    }
 
     function updateThemeIcon() {
         const themeIcon = document.getElementById('theme-icon');
@@ -671,6 +1011,676 @@
         } else {
             themeIcon.className = 'fas fa-moon';
         }
+    }
+
+    // ============================================
+    // FUNÇÕES PLOTLY.JS (3D) COM TABELAS
+    // ============================================
+
+    // Inicializa os gráficos 3D com Plotly.js
+    function init3dCharts() {
+        console.log("Plotly.js carregado e pronto para gráficos 3D");
+    }
+
+    // Atualiza gráfico 3D Geral com dados do histórico
+    function renderOverall3dChart(historyData) {
+        const container = document.getElementById('overall3dChart');
+        if (!container || historyData.length === 0) {
+            document.getElementById('overall3dError').classList.remove('hidden');
+            document.getElementById('overall3dTable').innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-500">Nenhum dado disponível</td></tr>';
+            return;
+        }
+
+        // Ordenar por data para linha evolutiva
+        const sortedData = [...historyData].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Preparar dados para o gráfico 3D
+        const xData = [];
+        const yData = [];
+        const zData = [];
+        const colors = [];
+        const sizes = [];
+        const hoverTexts = [];
+        const dates = [];
+
+        // Encontrar valores máximos para normalização
+        let maxQuestions = 1;
+        let maxModules = 1;
+        let maxTime = 1;
+
+        sortedData.forEach(item => {
+            const moduleCount = Object.keys(item.modules || {}).length;
+            const avgTime = item.total > 0 ? (item.duration || 0) / item.total : 0;
+            
+            maxQuestions = Math.max(maxQuestions, item.total || 1);
+            maxModules = Math.max(maxModules, moduleCount || 1);
+            maxTime = Math.max(maxTime, avgTime || 1);
+        });
+
+        // Preparar dados
+        sortedData.forEach((item, index) => {
+            const moduleCount = Object.keys(item.modules || {}).length;
+            const avgTime = item.total > 0 ? (item.duration || 0) / item.total : 0;
+            
+            xData.push(item.total || 0);
+            yData.push(moduleCount);
+            zData.push(avgTime);
+            dates.push(new Date(item.date));
+            
+            // Tamanho baseado no número de questões
+            const size = 8 + (item.total / maxQuestions) * 12;
+            sizes.push(size);
+            
+            // Cor baseada no desempenho
+            let color;
+            if (item.percent >= 70) {
+                color = '#22c55e'; // Verde
+            } else if (item.percent >= 50) {
+                color = '#eab308'; // Amarelo
+            } else {
+                color = '#ef4444'; // Vermelho
+            }
+            colors.push(color);
+            
+            // Texto de hover
+            const date = new Date(item.date).toLocaleDateString('pt-BR');
+            hoverTexts.push(
+                `Data: ${date}<br>` +
+                `Questões: ${item.total}<br>` +
+                `Módulos: ${moduleCount}<br>` +
+                `Tempo médio: ${avgTime.toFixed(1)}s<br>` +
+                `Desempenho: ${item.percent}%`
+            );
+        });
+
+        // Configurar layout do tema
+        const isDark = document.documentElement.classList.contains('dark');
+        const bgColor = isDark ? '#1e293b' : '#f8fafc';
+        const textColor = isDark ? '#e2e8f0' : '#334155';
+        const gridColor = isDark ? '#475569' : '#cbd5e1';
+
+        // Criar trace de marcadores
+        const markerTrace = {
+            x: xData,
+            y: yData,
+            z: zData,
+            mode: 'markers',
+            type: 'scatter3d',
+            marker: {
+                size: sizes,
+                color: colors,
+                opacity: 0.8,
+                line: {
+                    color: isDark ? '#ffffff' : '#000000',
+                    width: 1
+                }
+            },
+            text: hoverTexts,
+            hoverinfo: 'text',
+            name: 'Simulados'
+        };
+
+        // Criar trace de linha evolutiva
+        const lineTrace = {
+            x: xData,
+            y: yData,
+            z: zData,
+            mode: 'lines',
+            type: 'scatter3d',
+            line: {
+                color: isDark ? '#60a5fa' : '#3b82f6',
+                width: 2,
+                dash: 'dash'
+            },
+            opacity: 0.6,
+            hoverinfo: 'none',
+            name: 'Evolução Temporal'
+        };
+
+        const layout = {
+            title: {
+                text: 'Relação Tempo vs Questões vs Módulos',
+                font: {
+                    color: textColor,
+                    size: 14
+                }
+            },
+            scene: {
+                xaxis: {
+                    title: {
+                        text: 'Total de Questões',
+                        font: { color: textColor }
+                    },
+                    gridcolor: gridColor,
+                    zerolinecolor: gridColor
+                },
+                yaxis: {
+                    title: {
+                        text: 'Quantidade de Módulos',
+                        font: { color: textColor }
+                    },
+                    gridcolor: gridColor,
+                    zerolinecolor: gridColor
+                },
+                zaxis: {
+                    title: {
+                        text: 'Tempo Médio (segundos)',
+                        font: { color: textColor }
+                    },
+                    gridcolor: gridColor,
+                    zerolinecolor: gridColor
+                },
+                bgcolor: bgColor,
+                camera: {
+                    eye: { x: 1.5, y: 1.5, z: 1.5 }
+                }
+            },
+            paper_bgcolor: bgColor,
+            plot_bgcolor: bgColor,
+            font: { color: textColor },
+            margin: { l: 0, r: 0, b: 0, t: 40 },
+            showlegend: true,
+            legend: {
+                x: 0.1,
+                y: 0.9,
+                font: { color: textColor }
+            }
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['select2d', 'lasso2d']
+        };
+
+        // Renderizar ou atualizar gráfico
+        Plotly.newPlot(container, [markerTrace, lineTrace], layout, config)
+            .then(() => {
+                document.getElementById('overall3dError').classList.add('hidden');
+                overall3dChartInstance = container;
+                fillOverall3dTable(sortedData);
+            })
+            .catch(error => {
+                console.error('Erro ao renderizar gráfico 3D geral:', error);
+                document.getElementById('overall3dError').classList.remove('hidden');
+            });
+    }
+
+    // Preencher tabela de métricas para gráfico geral
+    function fillOverall3dTable(data) {
+        const tableBody = document.getElementById('overall3dTable');
+        if (!tableBody || data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-500">Nenhum dado disponível</td></tr>';
+            return;
+        }
+
+        // Ordenar por data (mais recente primeiro)
+        const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        let tableHTML = '';
+        let previousPercent = null;
+        
+        sortedData.forEach((item, index) => {
+            const date = new Date(item.date);
+            const moduleCount = Object.keys(item.modules || {}).length;
+            const avgTime = item.total > 0 ? (item.duration || 0) / item.total : 0;
+            const formattedDate = date.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'});
+            const formattedTime = avgTime.toFixed(1);
+
+            // Calcular variação em relação ao anterior
+            let variation = '';
+            let variationClass = '';
+            if (previousPercent !== null && index > 0) {
+                const diff = item.percent - previousPercent;
+                if (diff > 0) {
+                    variation = `+${diff.toFixed(1)}`;
+                    variationClass = 'text-green-600 dark:text-green-400';
+                } else if (diff < 0) {
+                    variation = `${diff.toFixed(1)}`;
+                    variationClass = 'text-red-600 dark:text-red-400';
+                } else {
+                    variation = '0.0';
+                    variationClass = 'text-slate-500';
+                }
+            } else {
+                variation = '-';
+                variationClass = 'text-slate-400';
+            }
+            
+            previousPercent = item.percent;
+
+            // Determinar ícone de tendência
+            let trendIcon = '';
+            if (variation !== '-' && variation !== '0.0') {
+                if (variation.startsWith('+')) {
+                    trendIcon = '<i class="fas fa-arrow-up text-green-500"></i>';
+                } else {
+                    trendIcon = '<i class="fas fa-arrow-down text-red-500"></i>';
+                }
+            }
+
+            tableHTML += `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <td class="px-3 py-2 text-xs font-mono">${formattedDate}</td>
+                    <td class="px-3 py-2 font-bold">${item.total}</td>
+                    <td class="px-3 py-2">${moduleCount}</td>
+                    <td class="px-3 py-2">${formattedTime}s</td>
+                    <td class="px-3 py-2 font-bold ${item.percent >= 70 ? 'text-green-600' : item.percent >= 50 ? 'text-yellow-600' : 'text-red-600'}">${item.percent}%</td>
+                    <td class="px-3 py-2 ${variationClass}">${trendIcon} ${variation}</td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = tableHTML;
+    }
+
+    // Atualiza gráfico 3D por Módulo
+    function renderModule3dChart(historyData) {
+        const container = document.getElementById('module3dChart');
+        if (!container) {
+            document.getElementById('module3dError').classList.remove('hidden');
+            document.getElementById('module3dTable').innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-500">Nenhum dado disponível</td></tr>';
+            return;
+        }
+
+        // Coletar dados agregados por módulo
+        const moduleDataMap = new Map();
+        const moduleEvolutionMap = new Map(); // Para evolução por módulo
+        
+        historyData.forEach(item => {
+            Object.entries(item.modules || {}).forEach(([moduleName, moduleStats]) => {
+                if (analytics3dFilters.module !== 'all' && analytics3dFilters.module !== moduleName) {
+                    return;
+                }
+                
+                if (!moduleDataMap.has(moduleName)) {
+                    moduleDataMap.set(moduleName, {
+                        totalQuestions: 0,
+                        totalTime: 0,
+                        totalCorrect: 0,
+                        totalSimulations: 0,
+                        performances: [], // Para calcular evolução
+                        dates: []
+                    });
+                }
+                
+                const moduleData = moduleDataMap.get(moduleName);
+                const timePerQuestion = item.total > 0 ? (item.duration || 0) / item.total : 0;
+                const performance = moduleStats.total > 0 ? (moduleStats.correct / moduleStats.total) * 100 : 0;
+                
+                moduleData.totalQuestions += moduleStats.total;
+                moduleData.totalTime += timePerQuestion * moduleStats.total;
+                moduleData.totalCorrect += moduleStats.correct;
+                moduleData.totalSimulations += 1;
+                moduleData.performances.push(performance);
+                moduleData.dates.push(new Date(item.date));
+                
+                // Armazenar para evolução
+                if (!moduleEvolutionMap.has(moduleName)) {
+                    moduleEvolutionMap.set(moduleName, []);
+                }
+                moduleEvolutionMap.get(moduleName).push({
+                    date: new Date(item.date),
+                    performance: performance,
+                    questions: moduleStats.total,
+                    time: timePerQuestion
+                });
+            });
+        });
+        
+        if (moduleDataMap.size === 0) {
+            document.getElementById('module3dError').classList.remove('hidden');
+            document.getElementById('module3dTable').innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-500">Nenhum dado disponível</td></tr>';
+            return;
+        }
+
+        // Preparar dados para o gráfico
+        const graphData = [];
+        moduleDataMap.forEach((data, moduleName) => {
+            const avgQuestions = data.totalQuestions / data.totalSimulations;
+            const avgPerformance = data.totalQuestions > 0 ? 
+                (data.totalCorrect / data.totalQuestions) * 100 : 0;
+            const avgTime = data.totalQuestions > 0 ? 
+                data.totalTime / data.totalQuestions : 0;
+            
+            // Calcular evolução (diferença entre primeira e última performance)
+            let evolution = 0;
+            if (data.performances.length >= 2) {
+                const first = data.performances[0];
+                const last = data.performances[data.performances.length - 1];
+                evolution = last - first;
+            }
+            
+            graphData.push({
+                moduleName,
+                avgQuestions,
+                avgPerformance,
+                avgTime,
+                totalSimulations: data.totalSimulations,
+                totalQuestions: data.totalQuestions,
+                totalCorrect: data.totalCorrect,
+                evolution: evolution
+            });
+        });
+
+        // Ordenar por desempenho para linha evolutiva
+        const sortedGraphData = [...graphData].sort((a, b) => a.avgPerformance - b.avgPerformance);
+
+        // Preparar arrays para o gráfico
+        const xData = sortedGraphData.map(d => d.avgQuestions);
+        const yData = sortedGraphData.map(d => d.avgPerformance);
+        const zData = sortedGraphData.map(d => d.avgTime);
+        const colors = [];
+        const sizes = [];
+        const hoverTexts = [];
+        const labels = [];
+
+        // Encontrar valores máximos para normalização
+        const maxQuestions = Math.max(...xData, 1);
+        const maxPerformance = Math.max(...yData, 1);
+
+        sortedGraphData.forEach(item => {
+            labels.push(item.moduleName);
+            
+            // Tamanho baseado no número de simulações
+            const size = 8 + (item.totalSimulations * 1.5);
+            sizes.push(size);
+            
+            // Cor baseada no desempenho
+            let color;
+            if (item.avgPerformance >= 70) {
+                color = '#22c55e'; // Verde
+            } else if (item.avgPerformance >= 50) {
+                color = '#eab308'; // Amarelo
+            } else {
+                color = '#ef4444'; // Vermelho
+            }
+            colors.push(color);
+            
+            // Texto de hover
+            hoverTexts.push(
+                `Módulo: ${item.moduleName}<br>` +
+                `Questões/média: ${item.avgQuestions.toFixed(1)}<br>` +
+                `Desempenho: ${item.avgPerformance.toFixed(1)}%<br>` +
+                `Tempo/q: ${item.avgTime.toFixed(1)}s<br>` +
+                `Simulações: ${item.totalSimulations}<br>` +
+                `Evolução: ${item.evolution > 0 ? '+' : ''}${item.evolution.toFixed(1)}%`
+            );
+        });
+
+        // Configurar layout do tema
+        const isDark = document.documentElement.classList.contains('dark');
+        const bgColor = isDark ? '#1e293b' : '#f8fafc';
+        const textColor = isDark ? '#e2e8f0' : '#334155';
+        const gridColor = isDark ? '#475569' : '#cbd5e1';
+
+        // Criar trace de marcadores
+        const markerTrace = {
+            x: xData,
+            y: yData,
+            z: zData,
+            mode: 'markers',
+            type: 'scatter3d',
+            marker: {
+                size: sizes,
+                color: colors,
+                opacity: 0.8,
+                line: {
+                    color: isDark ? '#ffffff' : '#000000',
+                    width: 1
+                }
+            },
+            text: hoverTexts,
+            hoverinfo: 'text',
+            name: 'Módulos'
+        };
+
+        // Criar trace de linha (conectando por ordem de desempenho)
+        const lineTrace = {
+            x: xData,
+            y: yData,
+            z: zData,
+            mode: 'lines',
+            type: 'scatter3d',
+            line: {
+                color: isDark ? '#a78bfa' : '#8b5cf6',
+                width: 2,
+                dash: 'dot'
+            },
+            opacity: 0.5,
+            hoverinfo: 'none',
+            name: 'Ordem de Desempenho'
+        };
+
+        const layout = {
+            title: {
+                text: 'Desempenho por Módulo',
+                font: {
+                    color: textColor,
+                    size: 14
+                }
+            },
+            scene: {
+                xaxis: {
+                    title: {
+                        text: 'Questões por Módulo',
+                        font: { color: textColor }
+                    },
+                    gridcolor: gridColor,
+                    zerolinecolor: gridColor
+                },
+                yaxis: {
+                    title: {
+                        text: 'Desempenho (%)',
+                        font: { color: textColor }
+                    },
+                    gridcolor: gridColor,
+                    zerolinecolor: gridColor
+                },
+                zaxis: {
+                    title: {
+                        text: 'Tempo por Questão (s)',
+                        font: { color: textColor }
+                    },
+                    gridcolor: gridColor,
+                    zerolinecolor: gridColor
+                },
+                bgcolor: bgColor,
+                camera: {
+                    eye: { x: 1.7, y: 1.7, z: 1.7 }
+                }
+            },
+            paper_bgcolor: bgColor,
+            plot_bgcolor: bgColor,
+            font: { color: textColor },
+            margin: { l: 0, r: 0, b: 0, t: 40 },
+            showlegend: true,
+            legend: {
+                x: 0.1,
+                y: 0.9,
+                font: { color: textColor }
+            }
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['select2d', 'lasso2d']
+        };
+
+        // Renderizar ou atualizar gráfico
+        Plotly.newPlot(container, [markerTrace, lineTrace], layout, config)
+            .then(() => {
+                document.getElementById('module3dError').classList.add('hidden');
+                module3dChartInstance = container;
+                fillModule3dTable(graphData);
+            })
+            .catch(error => {
+                console.error('Erro ao renderizar gráfico 3D por módulo:', error);
+                document.getElementById('module3dError').classList.remove('hidden');
+            });
+    }
+
+    // Preencher tabela de métricas para gráfico por módulo
+    function fillModule3dTable(data) {
+        const tableBody = document.getElementById('module3dTable');
+        if (!tableBody || data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-500">Nenhum dado disponível</td></tr>';
+            return;
+        }
+
+        // Ordenar por desempenho (do maior para o menor)
+        const sortedData = [...data].sort((a, b) => b.avgPerformance - a.avgPerformance);
+        
+        let tableHTML = '';
+        
+        sortedData.forEach(item => {
+            const moduleName = item.moduleName.length > 15 ? item.moduleName.substring(0, 15) + '...' : item.moduleName;
+            
+            // Determinar ícone de evolução
+            let evolutionIcon = '';
+            let evolutionClass = '';
+            if (item.evolution > 1) {
+                evolutionIcon = '<i class="fas fa-arrow-up text-green-500"></i>';
+                evolutionClass = 'text-green-600 dark:text-green-400';
+            } else if (item.evolution < -1) {
+                evolutionIcon = '<i class="fas fa-arrow-down text-red-500"></i>';
+                evolutionClass = 'text-red-600 dark:text-red-400';
+            } else {
+                evolutionIcon = '<i class="fas fa-minus text-slate-400"></i>';
+                evolutionClass = 'text-slate-500';
+            }
+
+            tableHTML += `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <td class="px-3 py-2" title="${item.moduleName}">${moduleName}</td>
+                    <td class="px-3 py-2 font-bold">${item.avgQuestions.toFixed(1)}</td>
+                    <td class="px-3 py-2 font-bold ${item.avgPerformance >= 70 ? 'text-green-600' : item.avgPerformance >= 50 ? 'text-yellow-600' : 'text-red-600'}">${item.avgPerformance.toFixed(1)}%</td>
+                    <td class="px-3 py-2">${item.avgTime.toFixed(1)}s</td>
+                    <td class="px-3 py-2">${item.totalSimulations}</td>
+                    <td class="px-3 py-2 ${evolutionClass}">${evolutionIcon} ${item.evolution > 0 ? '+' : ''}${item.evolution.toFixed(1)}%</td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = tableHTML;
+    }
+
+    // Atualiza métricas dos cards superiores
+    function updateMetricsCards() {
+        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        
+        if (h.length === 0) {
+            document.getElementById('avg-overall').textContent = '0%';
+            document.getElementById('avg-time-per-q').textContent = '0s';
+            document.getElementById('best-module').textContent = '-';
+            document.getElementById('best-module-score').textContent = '0%';
+            document.getElementById('evolution-30d').textContent = '0%';
+            document.getElementById('avg-trend').textContent = 'Nenhum dado disponível';
+            document.getElementById('time-trend').textContent = 'Nenhum dado disponível';
+            document.getElementById('evolution-trend').textContent = 'Nenhum dado disponível';
+            return;
+        }
+
+        // Filtrar últimos 30 dias
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const recentData = h.filter(x => new Date(x.date) >= thirtyDaysAgo);
+        const olderData = h.filter(x => new Date(x.date) < thirtyDaysAgo);
+
+        // Calcular média geral
+        const avgOverall = h.length > 0 ? 
+            h.reduce((sum, item) => sum + item.percent, 0) / h.length : 0;
+        document.getElementById('avg-overall').textContent = `${avgOverall.toFixed(1)}%`;
+
+        // Calcular tempo médio por questão
+        const totalQuestions = h.reduce((sum, item) => sum + item.total, 0);
+        const totalTime = h.reduce((sum, item) => sum + (item.duration || 0), 0);
+        const avgTimePerQuestion = totalQuestions > 0 ? totalTime / totalQuestions : 0;
+        document.getElementById('avg-time-per-q').textContent = `${avgTimePerQuestion.toFixed(1)}s`;
+
+        // Encontrar melhor módulo
+        const modulePerformance = new Map();
+        h.forEach(item => {
+            Object.entries(item.modules || {}).forEach(([moduleName, moduleStats]) => {
+                if (!modulePerformance.has(moduleName)) {
+                    modulePerformance.set(moduleName, { correct: 0, total: 0 });
+                }
+                const data = modulePerformance.get(moduleName);
+                data.correct += moduleStats.correct;
+                data.total += moduleStats.total;
+            });
+        });
+
+        let bestModule = '-';
+        let bestModuleScore = 0;
+        modulePerformance.forEach((data, moduleName) => {
+            if (data.total > 0) {
+                const score = (data.correct / data.total) * 100;
+                if (score > bestModuleScore) {
+                    bestModuleScore = score;
+                    bestModule = moduleName;
+                }
+            }
+        });
+
+        document.getElementById('best-module').textContent = bestModule.length > 20 ? 
+            bestModule.substring(0, 20) + '...' : bestModule;
+        document.getElementById('best-module-score').textContent = `${bestModuleScore.toFixed(1)}%`;
+
+        // Calcular evolução nos últimos 30 dias
+        let evolution30d = 0;
+        if (recentData.length > 0 && olderData.length > 0) {
+            const recentAvg = recentData.reduce((sum, item) => sum + item.percent, 0) / recentData.length;
+            const olderAvg = olderData.reduce((sum, item) => sum + item.percent, 0) / olderData.length;
+            evolution30d = recentAvg - olderAvg;
+        }
+        
+        document.getElementById('evolution-30d').textContent = `${evolution30d > 0 ? '+' : ''}${evolution30d.toFixed(1)}%`;
+        
+        // Determinar tendências
+        const avgTrendText = avgOverall >= 70 ? 'Excelente!' : avgOverall >= 50 ? 'Bom, pode melhorar' : 'Precisa melhorar';
+        document.getElementById('avg-trend').textContent = avgTrendText;
+        
+        const timeTrendText = avgTimePerQuestion < 60 ? 'Ótimo ritmo!' : avgTimePerQuestion < 120 ? 'Ritmo adequado' : 'Muito lento';
+        document.getElementById('time-trend').textContent = timeTrendText;
+        
+        const evolutionTrendText = evolution30d > 5 ? 'Em forte evolução!' : 
+                                 evolution30d > 0 ? 'Em evolução' : 
+                                 evolution30d < -5 ? 'Regressão preocupante' : 'Estável';
+        document.getElementById('evolution-trend').textContent = evolutionTrendText;
+    }
+
+    // ============================================
+    // FUNÇÕES MODIFICADAS PARA USAR PLOTLY.JS
+    // ============================================
+
+    // Atualiza ambos os gráficos 3D
+    function update3dCharts() {
+        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        
+        // Aplicar filtros
+        if(analytics3dFilters.days !== 'all') { 
+            const limit = new Date(); 
+            limit.setDate(limit.getDate() - analytics3dFilters.days); 
+            h = h.filter(x => new Date(x.date) >= limit); 
+        }
+
+        if(analytics3dFilters.module !== 'all') {
+            h = h.filter(item => item.modules && item.modules[analytics3dFilters.module]);
+        }
+
+        // Atualizar contador de histórico
+        document.getElementById('history-count').textContent = `${h.length} ${h.length === 1 ? 'registro' : 'registros'}`;
+
+        // Renderizar gráficos 3D com Plotly.js
+        renderOverall3dChart(h);
+        renderModule3dChart(h);
+        
+        // Atualizar métricas dos cards
+        updateMetricsCards();
     }
 
     async function loadDatabase() {
@@ -694,6 +1704,7 @@
                 
                 availableModules = [...new Set(fullDatabase.map(q => q.module))].sort();
                 populateModuleFilter();
+                populate3dModuleFilter();
                 return;
             }
             
@@ -741,6 +1752,7 @@
             updateDistribution();
             showLoadingState(false);
             populateModuleFilter();
+            populate3dModuleFilter();
             
         } catch (error) {
             console.error("Erro ao carregar banco de dados:", error);
@@ -825,6 +1837,19 @@
         const checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked'));
         document.getElementById('badge-modules').innerText = checkedModules.length;
         document.getElementById('badge-total').innerText = fullDatabase.length;
+        
+        // Atualizar questões disponíveis
+        const is2018 = document.getElementById('filter-2018').checked;
+        let availableCount = 0;
+        
+        if (is2018) {
+            availableCount = fullDatabase.filter(q => q.is2018).length;
+        } else {
+            const checkedModules = Array.from(document.querySelectorAll('.mod-chk:checked')).map(c => c.value);
+            availableCount = fullDatabase.filter(q => checkedModules.includes(q.module)).length;
+        }
+        
+        document.getElementById('badge-available').innerText = availableCount;
     }
 
     function toggle2018Lock() {
@@ -887,7 +1912,7 @@
         updateDistribution();
     }
 
-    function setQuantity(val) {
+    function setQuantity(val, evt) {
         document.querySelectorAll('.btn-qty').forEach(b => {
             b.classList.remove('bg-brand-50','border-brand-500','text-brand-700','dark:bg-brand-900/30','dark:text-brand-300');
             b.classList.add('border-slate-200','dark:border-slate-600');
@@ -898,8 +1923,9 @@
             appState.config.qty = parseInt(v) || 0;
         } else if(val === 'all') {
             appState.config.qty = 'all';
-            appState.config.qty = 'all';
-            event.target.classList.add('bg-purple-50','border-purple-200','text-purple-700');
+            if (evt) {
+                evt.target.classList.add('bg-purple-50','border-purple-200','text-purple-700');
+            }
         } else {
             appState.config.qty = val;
             document.getElementById('custom-qty').value = '';
@@ -1434,11 +2460,33 @@
             select.value = currentValue;
         }
     }
+
+    function populate3dModuleFilter() {
+        const select = document.getElementById('3d-module-filter');
+        if (!select) return;
+        const currentValue = select.value;
+        select.innerHTML = '<option value="all">Todos os módulos</option>';
+        availableModules.forEach(mod => {
+            const option = document.createElement('option');
+            option.value = mod;
+            option.textContent = mod;
+            select.appendChild(option);
+        });
+        if (currentValue) {
+            select.value = currentValue;
+        }
+    }
     
     function setHistoryFilter(type, value) {
         historyFilters[type] = value;
         applyHistoryFilters();
         updateFilterButtons();
+    }
+
+    function set3dFilter(type, value) {
+        analytics3dFilters[type] = value;
+        update3dCharts();
+        update3dFilterButtons();
     }
     
     function applyHistoryFilters() {
@@ -1462,6 +2510,24 @@
             moduleFilter.value = historyFilters.module;
         }
     }
+
+    function update3dFilterButtons() {
+        const days = analytics3dFilters.days;
+        ['all','7','30'].forEach(f => { 
+            const btn = document.getElementById(`3d-filter-${f}`);
+            if (btn) {
+                if (f == days) {
+                    btn.className = "px-3 py-1 text-xs font-bold rounded bg-blue-100 text-blue-700";
+                } else {
+                    btn.className = "px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700";
+                }
+            }
+        });
+        const moduleFilter = document.getElementById('3d-module-filter');
+        if (moduleFilter) {
+            moduleFilter.value = analytics3dFilters.module;
+        }
+    }
     
     function loadHistory(filters = { days: 'all', module: 'all' }) {
         let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
@@ -1482,10 +2548,12 @@
         } else {
             document.getElementById('no-history').classList.add('hidden');
             h.forEach(x => {
-                const moduleNames = Object.keys(x.modules);
+                const moduleNames = Object.keys(x.modules || {});
                 const moduleDisplay = moduleNames.length === 0 ? 'Sem módulo' : 
                                     moduleNames.length === 1 ? moduleNames[0] : 
                                     'Vários módulos';
+                
+                const avgTime = x.total > 0 ? (x.duration || 0) / x.total : 0;
                 
                 tbody.innerHTML += `
                     <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
@@ -1496,7 +2564,8 @@
                         <td class="px-6 py-4 text-green-600 font-bold">${x.correct}</td>
                         <td class="px-6 py-4 text-red-600 font-bold">${x.wrong}</td>
                         <td class="px-6 py-4 text-slate-500 font-bold">${x.unanswered}</td>
-                        <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.percent}%</td>
+                        <td class="px-6 py-4 text-slate-600 font-mono">${avgTime.toFixed(1)}s</td>
+                        <td class="px-6 py-4 text-right font-bold ${x.percent >= 70 ? 'text-green-600' : x.percent >= 50 ? 'text-yellow-600' : 'text-red-600'}">${x.percent}%</td>
                     </tr>
                 `;
             });
@@ -1522,6 +2591,7 @@
                 if (item.modules && item.modules[filters.module]) {
                     const modData = item.modules[filters.module];
                     const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
+                    const avgTime = modData.total > 0 ? (item.duration || 0) / modData.total : 0;
                     
                     moduleDetails.push({
                         date: item.date,
@@ -1530,6 +2600,7 @@
                         wrong: modData.wrong,
                         unanswered: modData.unanswered,
                         total: modData.total,
+                        avgTime: avgTime,
                         percent: percent
                     });
                 }
@@ -1553,17 +2624,19 @@
                             <td class="px-6 py-4 text-red-600 font-bold">${x.wrong}</td>
                             <td class="px-6 py-4 text-slate-500 font-bold">${x.unanswered}</td>
                             <td class="px-6 py-4 text-slate-700 dark:text-slate-300 font-bold">${x.total}</td>
-                            <td class="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-200">${x.percent}%</td>
+                            <td class="px-6 py-4 text-slate-600 font-mono">${x.avgTime.toFixed(1)}s</td>
+                            <td class="px-6 py-4 text-right font-bold ${x.percent >= 70 ? 'text-green-600' : x.percent >= 50 ? 'text-yellow-600' : 'text-red-600'}">${x.percent}%</td>
                         </tr>
                     `;
                 });
             }
-            
-            // Atualizar gráficos com dados do módulo específico
-            renderHistoryChart(moduleDetails);
-            renderDistributionChart(moduleDetails);
-            renderTrendChart(moduleDetails);
         }
+
+        // Atualizar gráficos 2D
+        renderHistoryChart(h);
+        renderDistributionChart(h);
+        renderTrendChart(h);
+        updateMetricsCards();
     }
     
     function renderHistoryChart(historyData) {
@@ -1574,7 +2647,6 @@
         }
         
         if (historyData.length === 0) {
-            // Criar gráfico vazio
             historyChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1692,7 +2764,6 @@
         }
         
         if (historyData.length === 0) {
-            // Criar gráfico vazio
             distributionChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1792,7 +2863,6 @@
         }
         
         if (historyData.length < 2) {
-            // Criar gráfico vazio
             trendChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1927,7 +2997,7 @@
         
         h.forEach(item => {
             const date = new Date(item.date).toLocaleString();
-            const modules = Object.keys(item.modules);
+            const modules = Object.keys(item.modules || {});
             
             if (modules.length === 0) {
                 csvContent += `"${date}","Sem módulo",${item.correct},${item.wrong},${item.unanswered},${item.percent},${item.duration || 0},""\n`;
@@ -2052,6 +3122,7 @@
                 
                 closeCSVImportModal();
                 loadHistory(historyFilters);
+                update3dCharts();
                 updateCacheStats();
                 
                 alert(`${newHistory.length} registros importados com sucesso!`);
@@ -2063,46 +3134,31 @@
         
         reader.readAsText(file);
     }
-    
-    function showScreen(id) { 
-        ['home','quiz','result','analytics','error'].forEach(s => {
-            const screen = document.getElementById('screen-'+s);
-            if (screen) screen.classList.add('hidden');
-        }); 
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        loadDatabase();
         
-        const targetScreen = document.getElementById('screen-'+id);
-        if (targetScreen) {
-            targetScreen.classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
+        // Inicializa gráficos 3D com Plotly.js
+        init3dCharts();
         
-        if(id === 'home') {
-            updateDistribution();
-        } else if (id === 'analytics') {
-            setTimeout(() => {
-                applyHistoryFilters();
-            }, 50);
-        }
-    }
-    
-    function togglePdfDrawer() { 
-        const d = document.getElementById('pdf-drawer'); 
-        d.classList.toggle('translate-x-full'); 
-        d.classList.toggle('drawer-open'); 
-    }
-    
-    function initTheme() { 
-        if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
+        setTimeout(() => {
+            loadHistory();
+        }, 500);
+
+        const savedPref = localStorage.getItem('alerr_save_pref');
+        appState.savingEnabled = savedPref !== 'false';
+        document.getElementById('toggle-save-history').checked = appState.savingEnabled;
+        updateCacheStats();
+        
         updateThemeIcon();
-    }
-    
-    function toggleDarkMode() { 
-        document.documentElement.classList.toggle('dark'); 
-        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); 
-        updateThemeIcon();
-    }
+        
+        updateFilterButtons();
+        update3dFilterButtons();
+        populateModuleFilter();
+        populate3dModuleFilter();
+    });
   </script>
 </body>
 </html>
