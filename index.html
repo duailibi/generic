@@ -168,6 +168,35 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+    
+    /* Novos estilos para indicadores de evolução */
+    .evolution-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: bold;
+      margin-left: 4px;
+    }
+    
+    .evolution-positive {
+      background-color: #10b98120;
+      color: #10b981;
+      border: 1px solid #10b98140;
+    }
+    
+    .evolution-negative {
+      background-color: #ef444420;
+      color: #ef4444;
+      border: 1px solid #ef444440;
+    }
+    
+    .evolution-neutral {
+      background-color: #6b728020;
+      color: #6b7280;
+      border: 1px solid #6b728040;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
@@ -224,6 +253,16 @@
         </div>
 
         <div id="screen-home" class="fade-in max-w-6xl mx-auto pb-24">
+            <!-- Card para retomar simulado pausado -->
+            <div id="paused-alert" class="hidden bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
+                <h3 class="text-lg font-bold text-amber-800 dark:text-amber-200">Simulado Pausado</h3>
+                <p class="text-sm text-amber-600 dark:text-amber-300">Você tem um simulado em pausa. Deseja retomar?</p>
+                <div class="mt-4 flex gap-3">
+                    <button onclick="resumeSimulation()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-bold">Retomar Simulado</button>
+                    <button onclick="discardPaused()" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-lg font-bold">Descartar</button>
+                </div>
+            </div>
+
             <!-- Configuração do simulador -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="p-6 md:p-10 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
@@ -349,7 +388,7 @@
 
         <div id="screen-quiz" class="hidden max-w-6xl mx-auto h-full flex flex-col fade-in pb-24">
             <!-- Tela do quiz -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 flex justify-between items-center mb-6 mobile-stack mobile-padding">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 flex flex-col md:flex-row justify-between items-center mb-6 mobile-padding">
                 <div class="flex items-center gap-6 mobile-stack">
                     <div class="flex flex-col">
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Tempo</span>
@@ -363,9 +402,17 @@
                         </span>
                     </div>
                 </div>
-                <button onclick="finishSimulation()" class="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-4 py-2 rounded-lg text-xs font-bold uppercase transition mobile-full mt-4">
-                    Finalizar
-                </button>
+                <div class="flex gap-2 mt-4 md:mt-0">
+                    <button onclick="pauseSimulation()" id="btn-pause" class="text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 px-4 py-2 rounded-lg text-xs font-bold uppercase transition">
+                        Pausar
+                    </button>
+                    <button onclick="abandonSimulation()" class="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-4 py-2 rounded-lg text-xs font-bold uppercase transition">
+                        Abandonar
+                    </button>
+                    <button onclick="finishSimulation()" class="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-4 py-2 rounded-lg text-xs font-bold uppercase transition">
+                        Finalizar
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -408,6 +455,38 @@
                 <div class="lg:col-span-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 sticky top-4">
                     <h4 class="text-xs font-bold text-slate-500 uppercase mb-4">Mapa</h4>
                     <div id="nav-grid" class="grid grid-cols-5 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de pausa -->
+        <div id="screen-pause" class="hidden fade-in max-w-4xl mx-auto mt-8 pb-24">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden text-center">
+                <div class="bg-amber-500 p-10 text-white relative overflow-hidden">
+                    <h2 class="text-3xl font-bold mb-2">Simulado Pausado</h2>
+                    <p class="text-amber-100">Você pode retomar de onde parou.</p>
+                </div>
+                <div class="p-8 md:p-12">
+                    <div class="grid grid-cols-3 gap-6 mb-10 mobile-stack">
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-b-4 border-blue-500">
+                            <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="paused-progress">0/0</div>
+                            <div class="text-xs font-bold uppercase text-slate-500">Progresso</div>
+                        </div>
+                        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border-b-4 border-green-500">
+                            <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="paused-correct">0</div>
+                            <div class="text-xs font-bold uppercase text-slate-500">Acertos</div>
+                        </div>
+                        <div class="p-4 bg-slate-100 dark:bg-slate-700 rounded-xl border-b-4 border-slate-400">
+                            <div class="text-3xl font-bold text-slate-600 dark:text-slate-300" id="paused-time">00:00</div>
+                            <div class="text-xs font-bold uppercase text-slate-500">Tempo</div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 justify-center mobile-stack">
+                        <button onclick="resumeSimulation()" class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-bold shadow-lg mobile-full">Retomar Simulado</button>
+                        <button onclick="abandonSimulation()" class="border border-slate-300 text-slate-700 px-8 py-3 rounded-lg font-bold hover:bg-slate-50 transition dark:border-slate-600 dark:text-white dark:hover:bg-slate-700 mobile-full">Abandonar</button>
+                        <button onclick="showScreen('home')" class="border border-slate-300 text-slate-700 px-8 py-3 rounded-lg font-bold hover:bg-slate-50 transition dark:border-slate-600 dark:text-white dark:hover:bg-slate-700 mobile-full">Voltar ao Início</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -473,8 +552,8 @@
                 </div>
             </div>
 
-            <!-- Métricas Rápidas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Métricas Rápidas - PRIMEIRA LINHA -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
                     <div class="flex justify-between items-start">
                         <div>
@@ -517,24 +596,82 @@
                 <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
                     <div class="flex justify-between items-start">
                         <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Pior Módulo</div>
+                            <div class="text-xl font-bold text-slate-800 dark:text-white truncate" id="worst-module">-</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="worst-module-score">0%</div>
+                </div>
+            </div>
+
+            <!-- Métricas Rápidas - SEGUNDA LINHA (Indicadores de Evolução) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Evolução 1 dia</div>
+                            <div class="text-2xl font-bold text-slate-800 dark:text-white" id="evolution-1d">0%</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                            <i class="fas fa-calendar-day text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="evolution-1d-trend">Carregando...</div>
+                </div>
+                
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Evolução 2 dias</div>
+                            <div class="text-2xl font-bold text-slate-800 dark:text-white" id="evolution-2d">0%</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                            <i class="fas fa-calendar-alt text-indigo-600 dark:text-indigo-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="evolution-2d-trend">Carregando...</div>
+                </div>
+                
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Evolução 7 dias</div>
+                            <div class="text-2xl font-bold text-slate-800 dark:text-white" id="evolution-7d">0%</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+                            <i class="fas fa-calendar-week text-pink-600 dark:text-pink-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="evolution-7d-trend">Carregando...</div>
+                </div>
+                
+                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
                             <div class="text-xs font-bold text-slate-500 uppercase">Evolução 30 dias</div>
                             <div class="text-2xl font-bold text-slate-800 dark:text-white" id="evolution-30d">0%</div>
                         </div>
-                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                            <i class="fas fa-arrow-trend-up text-purple-600 dark:text-purple-400"></i>
+                        <div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+                            <i class="fas fa-calendar text-teal-600 dark:text-teal-400"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="evolution-trend">Carregando...</div>
+                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="evolution-30d-trend">Carregando...</div>
                 </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-4 mb-6">
                 <div class="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
                     <button onclick="setHistoryFilter('days', 'all')" class="px-3 py-1 text-xs font-bold rounded bg-blue-100 text-blue-700" id="hist-filter-all">Tudo</button>
+                    <button onclick="setHistoryFilter('days', 1)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-1">1 Dia</button>
+                    <button onclick="setHistoryFilter('days', 2)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-2">2 Dias</button>
                     <button onclick="setHistoryFilter('days', 7)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-7">7 Dias</button>
                     <button onclick="setHistoryFilter('days', 30)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-30">30 Dias</button>
                 </div>
                 
+                <!-- Corrigido: O filtro agora só mostra módulos que realmente têm questões respondidas -->
                 <select id="module-filter" onchange="setHistoryFilter('module', this.value)" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm min-w-[200px]">
                     <option value="all">Todos os módulos</option>
                 </select>
@@ -543,14 +680,14 @@
                 </div>
             </div>
             
-            <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6 mb-6">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Evolução do Desempenho</h3>
-                <div class="h-64 relative w-full">
-                    <canvas id="historyChart"></canvas>
+            <!-- Gráficos 2D - Agora com 3 gráficos (linha, barras, pizza) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Evolução do Desempenho</h3>
+                    <div class="h-64 relative w-full">
+                        <canvas id="historyChart"></canvas>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6">
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Distribuição de Resultados</h3>
                     <div class="h-64 relative w-full">
@@ -558,10 +695,18 @@
                     </div>
                 </div>
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6">
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Tendência de Aproveitamento</h3>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Distribuição por Módulo</h3>
                     <div class="h-64 relative w-full">
-                        <canvas id="trendChart"></canvas>
+                        <canvas id="pieChart"></canvas>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Gráfico de Tendência (Linha) -->
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-6 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Tendência de Aproveitamento</h3>
+                <div class="h-64 relative w-full">
+                    <canvas id="trendChart"></canvas>
                 </div>
             </div>
             
@@ -574,6 +719,7 @@
                 <div class="flex flex-wrap items-center gap-4 mb-6">
                     <div class="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
                         <button onclick="set3dFilter('days', 'all')" class="px-3 py-1 text-xs font-bold rounded bg-blue-100 text-blue-700" id="3d-filter-all">Tudo</button>
+                        <button onclick="set3dFilter('days', 1)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="3d-filter-1">1 Dia</button>
                         <button onclick="set3dFilter('days', 7)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="3d-filter-7">7 Dias</button>
                         <button onclick="set3dFilter('days', 30)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="3d-filter-30">30 Dias</button>
                     </div>
@@ -929,6 +1075,7 @@
     let distributionChartInstance = null;
     let trendChartInstance = null;
     let resultChartInstance = null;
+    let pieChartInstance = null;
     
     // Variáveis para Plotly.js (3D)
     let overall3dChartInstance = null;
@@ -956,12 +1103,13 @@
         moduleCounts2018: {}, 
         distribution: {},
         savingEnabled: true,
-        startTime: null
+        startTime: null,
+        isPaused: false
     };
 
     // Funções auxiliares
     function showScreen(id) { 
-        ['home','quiz','result','analytics','error'].forEach(s => {
+        ['home','quiz','result','analytics','error','pause'].forEach(s => {
             const screen = document.getElementById('screen-'+s);
             if (screen) screen.classList.add('hidden');
         }); 
@@ -974,6 +1122,11 @@
         
         if(id === 'home') {
             updateDistribution();
+            // Verifica se há simulado pausado
+            const paused = localStorage.getItem('alerr_paused_sim');
+            if (paused) {
+                document.getElementById('paused-alert').classList.remove('hidden');
+            }
         } else if (id === 'analytics') {
             setTimeout(() => {
                 applyHistoryFilters();
@@ -1011,6 +1164,134 @@
         } else {
             themeIcon.className = 'fas fa-moon';
         }
+    }
+
+    // ============================================
+    // FUNÇÕES DE PAUSA, RETOMADA E ABANDONO
+    // ============================================
+
+    function pauseSimulation() {
+        // Calcula o tempo decorrido
+        const now = new Date();
+        const elapsed = Math.floor((now - appState.startTime) / 1000);
+
+        // Salva o estado do simulado
+        const pausedState = {
+            questions: appState.questions,
+            answers: appState.answers,
+            index: appState.index,
+            config: appState.config,
+            elapsedTime: elapsed,
+            datePaused: new Date().toISOString()
+        };
+
+        // Salva no localStorage
+        localStorage.setItem('alerr_paused_sim', JSON.stringify(pausedState));
+
+        // Para o timer
+        if (appState.timer) {
+            clearInterval(appState.timer);
+            appState.timer = null;
+        }
+
+        // Atualiza a tela de pausa com os dados atuais
+        updatePauseScreen(pausedState);
+
+        // Marca como pausado
+        appState.isPaused = true;
+
+        // Mostra a tela de pausa
+        showScreen('pause');
+    }
+
+    function updatePauseScreen(pausedState) {
+        const total = pausedState.questions.length;
+        const current = pausedState.index + 1;
+        document.getElementById('paused-progress').textContent = `${current}/${total}`;
+
+        // Calcula acertos até agora
+        let correct = 0;
+        for (let i = 0; i < pausedState.answers.length; i++) {
+            if (pausedState.answers[i].ok && pausedState.answers[i].isCorrect) {
+                correct++;
+            }
+        }
+        document.getElementById('paused-correct').textContent = correct;
+
+        // Formata o tempo decorrido
+        const minutes = Math.floor(pausedState.elapsedTime / 60).toString().padStart(2, '0');
+        const seconds = (pausedState.elapsedTime % 60).toString().padStart(2, '0');
+        document.getElementById('paused-time').textContent = `${minutes}:${seconds}`;
+    }
+
+    function resumeSimulation() {
+        // Carrega o estado pausado
+        const pausedState = localStorage.getItem('alerr_paused_sim');
+        
+        if (!pausedState) {
+            alert('Não há simulado pausado.');
+            return;
+        }
+
+        const state = JSON.parse(pausedState);
+
+        // Restaura o estado
+        appState.questions = state.questions;
+        appState.answers = state.answers;
+        appState.index = state.index;
+        appState.config = state.config;
+
+        // Ajusta o startTime para considerar o tempo já decorrido
+        const now = new Date();
+        const adjustedStartTime = new Date(now.getTime() - (state.elapsedTime * 1000));
+        appState.startTime = adjustedStartTime;
+
+        // Remove o estado pausado do localStorage
+        localStorage.removeItem('alerr_paused_sim');
+
+        // Esconde o alerta de pausado na tela inicial
+        document.getElementById('paused-alert').classList.add('hidden');
+
+        // Reinicia o timer
+        startTimer();
+
+        // Carrega a questão atual
+        loadQuestion(appState.index);
+        renderNav();
+
+        // Mostra a tela do quiz
+        showScreen('quiz');
+    }
+
+    function discardPaused() {
+        if (confirm('Tem certeza que deseja descartar o simulado pausado? Esta ação não pode ser desfeita.')) {
+            localStorage.removeItem('alerr_paused_sim');
+            document.getElementById('paused-alert').classList.add('hidden');
+        }
+    }
+
+    function abandonSimulation() {
+        if (!confirm('Tem certeza que deseja abandonar o simulado? Todo o progresso será perdido e não será salvo no histórico.')) {
+            return;
+        }
+
+        // Para o timer
+        if (appState.timer) {
+            clearInterval(appState.timer);
+            appState.timer = null;
+        }
+
+        // Remove o estado pausado se existir
+        localStorage.removeItem('alerr_paused_sim');
+
+        // Reseta o estado
+        appState.questions = [];
+        appState.answers = [];
+        appState.index = 0;
+        appState.isPaused = false;
+
+        // Mostra a tela inicial
+        showScreen('home');
     }
 
     // ============================================
@@ -1568,6 +1849,62 @@
         tableBody.innerHTML = tableHTML;
     }
 
+    // ============================================
+    // NOVAS FUNÇÕES PARA INDICADORES DE EVOLUÇÃO
+    // ============================================
+
+    // Calcula a evolução do desempenho para diferentes períodos
+    function calculateEvolution(historyData, days) {
+        if (historyData.length === 0) return { evolution: 0, trend: 'Nenhum dado disponível' };
+        
+        const now = new Date();
+        const recentStart = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));
+        const previousStart = new Date(now.getTime() - (days * 2 * 24 * 60 * 60 * 1000));
+        const previousEnd = recentStart;
+        
+        // Filtrar dados para os períodos
+        const recentData = historyData.filter(item => new Date(item.date) >= recentStart);
+        const previousData = historyData.filter(item => 
+            new Date(item.date) >= previousStart && new Date(item.date) < previousEnd
+        );
+        
+        if (recentData.length === 0) return { evolution: 0, trend: 'Sem dados recentes' };
+        
+        // Calcular médias
+        const recentAvg = recentData.reduce((sum, item) => sum + item.percent, 0) / recentData.length;
+        
+        let previousAvg = 0;
+        let evolution = 0;
+        let trend = '';
+        
+        if (previousData.length > 0) {
+            previousAvg = previousData.reduce((sum, item) => sum + item.percent, 0) / previousData.length;
+            evolution = recentAvg - previousAvg;
+            
+            if (evolution > 5) {
+                trend = 'Em forte alta';
+            } else if (evolution > 1) {
+                trend = 'Em alta';
+            } else if (evolution < -5) {
+                trend = 'Em forte queda';
+            } else if (evolution < -1) {
+                trend = 'Em queda';
+            } else {
+                trend = 'Estável';
+            }
+        } else {
+            evolution = 0;
+            trend = 'Sem dados anteriores para comparar';
+        }
+        
+        return {
+            evolution: evolution,
+            trend: trend,
+            recentAvg: recentAvg,
+            previousAvg: previousAvg
+        };
+    }
+
     // Atualiza métricas dos cards superiores
     function updateMetricsCards() {
         let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
@@ -1577,18 +1914,19 @@
             document.getElementById('avg-time-per-q').textContent = '0s';
             document.getElementById('best-module').textContent = '-';
             document.getElementById('best-module-score').textContent = '0%';
-            document.getElementById('evolution-30d').textContent = '0%';
+            document.getElementById('worst-module').textContent = '-';
+            document.getElementById('worst-module-score').textContent = '0%';
+            
+            // Limpar indicadores de evolução
+            ['1d', '2d', '7d', '30d'].forEach(period => {
+                document.getElementById(`evolution-${period}`).textContent = '0%';
+                document.getElementById(`evolution-${period}-trend`).textContent = 'Nenhum dado disponível';
+            });
+            
             document.getElementById('avg-trend').textContent = 'Nenhum dado disponível';
             document.getElementById('time-trend').textContent = 'Nenhum dado disponível';
-            document.getElementById('evolution-trend').textContent = 'Nenhum dado disponível';
             return;
         }
-
-        // Filtrar últimos 30 dias
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        const recentData = h.filter(x => new Date(x.date) >= thirtyDaysAgo);
-        const olderData = h.filter(x => new Date(x.date) < thirtyDaysAgo);
 
         // Calcular média geral
         const avgOverall = h.length > 0 ? 
@@ -1601,21 +1939,25 @@
         const avgTimePerQuestion = totalQuestions > 0 ? totalTime / totalQuestions : 0;
         document.getElementById('avg-time-per-q').textContent = `${avgTimePerQuestion.toFixed(1)}s`;
 
-        // Encontrar melhor módulo
+        // Encontrar melhor e pior módulo
         const modulePerformance = new Map();
         h.forEach(item => {
             Object.entries(item.modules || {}).forEach(([moduleName, moduleStats]) => {
                 if (!modulePerformance.has(moduleName)) {
-                    modulePerformance.set(moduleName, { correct: 0, total: 0 });
+                    modulePerformance.set(moduleName, { correct: 0, total: 0, attempts: 0 });
                 }
                 const data = modulePerformance.get(moduleName);
                 data.correct += moduleStats.correct;
                 data.total += moduleStats.total;
+                data.attempts += 1;
             });
         });
 
         let bestModule = '-';
         let bestModuleScore = 0;
+        let worstModule = '-';
+        let worstModuleScore = 100;
+        
         modulePerformance.forEach((data, moduleName) => {
             if (data.total > 0) {
                 const score = (data.correct / data.total) * 100;
@@ -1623,34 +1965,53 @@
                     bestModuleScore = score;
                     bestModule = moduleName;
                 }
+                if (score < worstModuleScore && data.attempts >= 2) {
+                    worstModuleScore = score;
+                    worstModule = moduleName;
+                }
             }
         });
 
         document.getElementById('best-module').textContent = bestModule.length > 20 ? 
             bestModule.substring(0, 20) + '...' : bestModule;
         document.getElementById('best-module-score').textContent = `${bestModuleScore.toFixed(1)}%`;
+        
+        document.getElementById('worst-module').textContent = worstModule.length > 20 ? 
+            worstModule.substring(0, 20) + '...' : worstModule;
+        document.getElementById('worst-module-score').textContent = worstModule !== '-' ? `${worstModuleScore.toFixed(1)}%` : 'N/A';
 
-        // Calcular evolução nos últimos 30 dias
-        let evolution30d = 0;
-        if (recentData.length > 0 && olderData.length > 0) {
-            const recentAvg = recentData.reduce((sum, item) => sum + item.percent, 0) / recentData.length;
-            const olderAvg = olderData.reduce((sum, item) => sum + item.percent, 0) / olderData.length;
-            evolution30d = recentAvg - olderAvg;
-        }
+        // Calcular evoluções para diferentes períodos
+        const periods = [1, 2, 7, 30];
+        periods.forEach(days => {
+            const evolutionData = calculateEvolution(h, days);
+            const evolutionElement = document.getElementById(`evolution-${days}d`);
+            const trendElement = document.getElementById(`evolution-${days}d-trend`);
+            
+            if (evolutionElement && trendElement) {
+                evolutionElement.textContent = `${evolutionData.evolution > 0 ? '+' : ''}${evolutionData.evolution.toFixed(1)}%`;
+                
+                // Aplicar classe CSS baseada na evolução
+                if (evolutionData.evolution > 1) {
+                    evolutionElement.classList.remove('text-red-600', 'text-slate-600');
+                    evolutionElement.classList.add('text-green-600');
+                } else if (evolutionData.evolution < -1) {
+                    evolutionElement.classList.remove('text-green-600', 'text-slate-600');
+                    evolutionElement.classList.add('text-red-600');
+                } else {
+                    evolutionElement.classList.remove('text-green-600', 'text-red-600');
+                    evolutionElement.classList.add('text-slate-600');
+                }
+                
+                trendElement.textContent = evolutionData.trend;
+            }
+        });
         
-        document.getElementById('evolution-30d').textContent = `${evolution30d > 0 ? '+' : ''}${evolution30d.toFixed(1)}%`;
-        
-        // Determinar tendências
+        // Determinar tendências gerais
         const avgTrendText = avgOverall >= 70 ? 'Excelente!' : avgOverall >= 50 ? 'Bom, pode melhorar' : 'Precisa melhorar';
         document.getElementById('avg-trend').textContent = avgTrendText;
         
         const timeTrendText = avgTimePerQuestion < 60 ? 'Ótimo ritmo!' : avgTimePerQuestion < 120 ? 'Ritmo adequado' : 'Muito lento';
         document.getElementById('time-trend').textContent = timeTrendText;
-        
-        const evolutionTrendText = evolution30d > 5 ? 'Em forte evolução!' : 
-                                 evolution30d > 0 ? 'Em evolução' : 
-                                 evolution30d < -5 ? 'Regressão preocupante' : 'Estável';
-        document.getElementById('evolution-trend').textContent = evolutionTrendText;
     }
 
     // ============================================
@@ -1683,6 +2044,202 @@
         updateMetricsCards();
     }
 
+    // ============================================
+    // NOVAS FUNÇÕES PARA GRÁFICO DE PIZZA
+    // ============================================
+
+    function renderPieChart(historyData) {
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        
+        if (pieChartInstance) {
+            pieChartInstance.destroy();
+        }
+        
+        if (historyData.length === 0) {
+            pieChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sem dados'],
+                    datasets: [{
+                        data: [1],
+                        backgroundColor: ['#94a3b8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Nenhum dado disponível';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            return;
+        }
+
+        // Coletar dados por módulo
+        const moduleData = new Map();
+        historyData.forEach(item => {
+            Object.entries(item.modules || {}).forEach(([moduleName, moduleStats]) => {
+                if (!moduleData.has(moduleName)) {
+                    moduleData.set(moduleName, { correct: 0, total: 0 });
+                }
+                const data = moduleData.get(moduleName);
+                data.correct += moduleStats.correct;
+                data.total += moduleStats.total;
+            });
+        });
+
+        // Preparar dados para o gráfico de pizza
+        const modules = Array.from(moduleData.keys());
+        const correctAnswers = modules.map(module => moduleData.get(module).correct);
+        const totalAnswers = modules.map(module => moduleData.get(module).total);
+        
+        // Calcular porcentagens CORRETAMENTE - baseado no total de questões respondidas por módulo
+        const percentages = modules.map((module, index) => {
+            const total = totalAnswers[index];
+            return total > 0 ? (correctAnswers[index] / total) * 100 : 0;
+        });
+
+        // Limitar a 10 módulos para o gráfico não ficar muito poluído
+        const maxModules = 10;
+        let displayModules = modules;
+        let displayPercentages = percentages;
+        
+        if (modules.length > maxModules) {
+            // Combinar módulos menores em "Outros"
+            const moduleStats = modules.map((module, index) => ({
+                module,
+                percentage: percentages[index],
+                total: totalAnswers[index]
+            }));
+            
+            moduleStats.sort((a, b) => b.total - a.total);
+            
+            const topModules = moduleStats.slice(0, maxModules - 1);
+            const otherModules = moduleStats.slice(maxModules - 1);
+            
+            const otherPercentage = otherModules.reduce((sum, item) => sum + item.total, 0) > 0 ?
+                (otherModules.reduce((sum, item) => sum + item.correct, 0) / otherModules.reduce((sum, item) => sum + item.total, 0)) * 100 : 0;
+            const otherTotal = otherModules.reduce((sum, item) => sum + item.total, 0);
+            
+            displayModules = [...topModules.map(item => item.module), 'Outros'];
+            displayPercentages = [...topModules.map(item => item.percentage), otherPercentage];
+        }
+
+        // Gerar cores dinamicamente
+        const generateColors = (count) => {
+            const colors = [];
+            const hueStep = 360 / count;
+            for (let i = 0; i < count; i++) {
+                const hue = i * hueStep;
+                colors.push(`hsl(${hue}, 70%, 60%)`);
+            }
+            return colors;
+        };
+
+        pieChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: displayModules,
+                datasets: [{
+                    data: displayPercentages,
+                    backgroundColor: generateColors(displayModules.length),
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const moduleName = label;
+                                const moduleInfo = moduleData.get(moduleName);
+                                
+                                if (moduleName === 'Outros') {
+                                    const otherTotal = moduleData.get('Outros') ? moduleData.get('Outros').total : 
+                                        modules.slice(maxModules - 1).reduce((sum, mod) => sum + moduleData.get(mod).total, 0);
+                                    const otherCorrect = moduleData.get('Outros') ? moduleData.get('Outros').correct :
+                                        modules.slice(maxModules - 1).reduce((sum, mod) => sum + moduleData.get(mod).correct, 0);
+                                    return `${label}: ${value.toFixed(1)}% (${otherCorrect}/${otherTotal})`;
+                                }
+                                
+                                if (moduleInfo) {
+                                    return `${label}: ${value.toFixed(1)}% (${moduleInfo.correct}/${moduleInfo.total})`;
+                                }
+                                return `${label}: ${value.toFixed(1)}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // ============================================
+    // FUNÇÕES MODIFICADAS PARA CORRIGIR FILTRO DE MÓDULOS
+    // ============================================
+
+    // Obtém módulos únicos do histórico (somente módulos com questões respondidas)
+    function getUniqueModulesFromHistory(historyData) {
+        const modules = new Set();
+        historyData.forEach(item => {
+            Object.keys(item.modules || {}).forEach(mod => modules.add(mod));
+        });
+        return Array.from(modules).sort();
+    }
+
+    // Atualiza o select de filtro de módulos com base no histórico
+    function updateModuleFilterSelect(modules, selectId) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        
+        const currentValue = select.value;
+        select.innerHTML = '<option value="all">Todos os módulos</option>';
+        
+        modules.forEach(mod => {
+            const option = document.createElement('option');
+            option.value = mod;
+            option.textContent = mod;
+            select.appendChild(option);
+        });
+        
+        // Restaurar valor selecionado se ainda estiver disponível
+        if (currentValue && modules.includes(currentValue)) {
+            select.value = currentValue;
+        } else {
+            select.value = 'all';
+        }
+    }
+
+    // ============================================
+    // FUNÇÕES EXISTENTES MODIFICADAS
+    // ============================================
+
     async function loadDatabase() {
         try {
             showLoadingState(true);
@@ -1702,9 +2259,13 @@
                 updateDistribution();
                 showLoadingState(false);
                 
-                availableModules = [...new Set(fullDatabase.map(q => q.module))].sort();
-                populateModuleFilter();
-                populate3dModuleFilter();
+                // Verifica se há simulado pausado
+                const paused = localStorage.getItem('alerr_paused_sim');
+                if (paused) {
+                    document.getElementById('paused-alert').classList.remove('hidden');
+                }
+                
+                showScreen('home');
                 return;
             }
             
@@ -1751,8 +2312,14 @@
             renderModules();
             updateDistribution();
             showLoadingState(false);
-            populateModuleFilter();
-            populate3dModuleFilter();
+            
+            // Verifica se há simulado pausado
+            const paused = localStorage.getItem('alerr_paused_sim');
+            if (paused) {
+                document.getElementById('paused-alert').classList.remove('hidden');
+            }
+            
+            showScreen('home');
             
         } catch (error) {
             console.error("Erro ao carregar banco de dados:", error);
@@ -2129,6 +2696,7 @@
         appState.answers = new Array(finalQuestions.length).fill(null).map(() => ({ sel: null, ok: false, isCorrect: false }));
         appState.index = 0;
         appState.startTime = new Date();
+        appState.isPaused = false;
         
         startTimer();
         loadQuestion(0);
@@ -2426,6 +2994,9 @@
             }); 
         }
         
+        // Remove qualquer simulado pausado
+        localStorage.removeItem('alerr_paused_sim');
+        
         showScreen('result');
     }
     
@@ -2443,38 +3014,6 @@
         if (h.length > 100) h.length = 100;
         localStorage.setItem('alerr_hist', JSON.stringify(h)); 
         updateCacheStats();
-    }
-    
-    function populateModuleFilter() {
-        const select = document.getElementById('module-filter');
-        if (!select) return;
-        const currentValue = select.value;
-        select.innerHTML = '<option value="all">Todos os módulos</option>';
-        availableModules.forEach(mod => {
-            const option = document.createElement('option');
-            option.value = mod;
-            option.textContent = mod;
-            select.appendChild(option);
-        });
-        if (currentValue) {
-            select.value = currentValue;
-        }
-    }
-
-    function populate3dModuleFilter() {
-        const select = document.getElementById('3d-module-filter');
-        if (!select) return;
-        const currentValue = select.value;
-        select.innerHTML = '<option value="all">Todos os módulos</option>';
-        availableModules.forEach(mod => {
-            const option = document.createElement('option');
-            option.value = mod;
-            option.textContent = mod;
-            select.appendChild(option);
-        });
-        if (currentValue) {
-            select.value = currentValue;
-        }
     }
     
     function setHistoryFilter(type, value) {
@@ -2495,7 +3034,7 @@
     
     function updateFilterButtons() {
         const days = historyFilters.days;
-        ['all','7','30'].forEach(f => { 
+        ['all','1','2','7','30'].forEach(f => { 
             const btn = document.getElementById(`hist-filter-${f}`);
             if (btn) {
                 if (f == days) {
@@ -2505,15 +3044,11 @@
                 }
             }
         });
-        const moduleFilter = document.getElementById('module-filter');
-        if (moduleFilter) {
-            moduleFilter.value = historyFilters.module;
-        }
     }
 
     function update3dFilterButtons() {
         const days = analytics3dFilters.days;
-        ['all','7','30'].forEach(f => { 
+        ['all','1','7','30'].forEach(f => { 
             const btn = document.getElementById(`3d-filter-${f}`);
             if (btn) {
                 if (f == days) {
@@ -2523,10 +3058,6 @@
                 }
             }
         });
-        const moduleFilter = document.getElementById('3d-module-filter');
-        if (moduleFilter) {
-            moduleFilter.value = analytics3dFilters.module;
-        }
     }
     
     function loadHistory(filters = { days: 'all', module: 'all' }) {
@@ -2539,7 +3070,19 @@
             h = h.filter(x => new Date(x.date) >= limit); 
         }
 
-        // Tabela 1: Histórico Completo (independente do filtro de módulo)
+        // Obter módulos únicos do histórico filtrado
+        const uniqueModules = getUniqueModulesFromHistory(h);
+        
+        // Atualizar o select de filtro de módulos com base no histórico
+        updateModuleFilterSelect(uniqueModules, 'module-filter');
+        updateModuleFilterSelect(uniqueModules, '3d-module-filter');
+
+        // Aplicar filtro de módulo
+        if(filters.module !== 'all') {
+            h = h.filter(item => item.modules && item.modules[filters.module]);
+        }
+
+        // Tabela 1: Histórico Completo
         const tbody = document.getElementById('history-body'); 
         tbody.innerHTML = '';
         
@@ -2636,6 +3179,7 @@
         renderHistoryChart(h);
         renderDistributionChart(h);
         renderTrendChart(h);
+        renderPieChart(h);
         updateMetricsCards();
     }
     
@@ -3156,8 +3700,6 @@
         
         updateFilterButtons();
         update3dFilterButtons();
-        populateModuleFilter();
-        populate3dModuleFilter();
     });
   </script>
 </body>
