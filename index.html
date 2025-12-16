@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador ALE-RR | Regimento Interno 2025</title>
+  <title>Simulador ALE-RR | Regimento Interno 2023</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   
@@ -16,15 +16,15 @@
             brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' }
           },
           fontFamily: { sans: ['Inter', 'sans-serif'] },
-          zIndex: { '60': '60', '70': '70', '80': '80', '100': '100' }
+          zIndex: { '60': '60', '70': '70', '80': '80', '100': '100', '1000': '1000' }
         }
       }
     }
   </script>
 
-  <!-- Chart.js (apenas para gráficos 2D) -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-  <!-- Plotly.js - Biblioteca para gráficos 3D mais estável -->
+  <!-- Plotly.js -->
   <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -64,6 +64,7 @@
         text-orientation: mixed;
         transform: translateY(-50%);
         box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+        z-index: 40;
     }
 
     .locked-checkbox { opacity: 0.5; pointer-events: none; background-color: #e2e8f0; }
@@ -197,6 +198,355 @@
       color: #6b7280;
       border: 1px solid #6b728040;
     }
+
+    /* Estilos para tooltips personalizados */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      position: absolute;
+      z-index: 10;
+      background-color: #1e293b;
+      color: #f8fafc;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      pointer-events: none;
+    }
+    
+    .tooltip .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #1e293b transparent transparent transparent;
+    }
+    
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .dark .tooltip .tooltip-text {
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .dark .tooltip .tooltip-text::after {
+      border-color: #f8fafc transparent transparent transparent;
+    }
+
+    /* Estilos para mostrar nome completo em elementos truncados */
+    .truncate-with-tooltip {
+      position: relative;
+    }
+    
+    .truncate-with-tooltip:hover::after {
+      content: attr(data-fulltext);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      pointer-events: none;
+      margin-bottom: 5px;
+    }
+    
+    .dark .truncate-with-tooltip:hover::after {
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .truncate-with-tooltip:hover::before {
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #1e293b transparent transparent transparent;
+      z-index: 11;
+      margin-bottom: -5px;
+    }
+    
+    .dark .truncate-with-tooltip:hover::before {
+      border-color: #f8fafc transparent transparent transparent;
+    }
+    
+    /* Estilos para os novos elementos de comentários e estatísticas */
+    .comment-section {
+      margin-top: 2rem;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 1.5rem;
+    }
+    
+    .dark .comment-section {
+      border-top-color: #475569;
+    }
+    
+    .comment-item {
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .dark .comment-item {
+      border-bottom-color: #475569;
+    }
+    
+    .comment-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #3b82f6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .comment-date {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    
+    .dark .comment-date {
+      color: #94a3b8;
+    }
+    
+    .emoji-picker {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      z-index: 50;
+      max-width: 200px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.25rem;
+    }
+    
+    .dark .emoji-picker {
+      background: #1f2937;
+      border-color: #374151;
+    }
+    
+    .emoji-option {
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+      text-align: center;
+      font-size: 1.25rem;
+      transition: background-color 0.2s;
+    }
+    
+    .emoji-option:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .dark .emoji-option:hover {
+      background-color: #374151;
+    }
+    
+    .report-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 20;
+    }
+    
+    .question-stats {
+      background-color: #f8fafc;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .dark .question-stats {
+      background-color: #1e293b;
+    }
+    
+    .nav-buttons {
+      position: relative;
+      z-index: 5;
+    }
+    
+    /* Estilos para os informativos modais corrigidos */
+    .modal-informative {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      max-width: 90%;
+      width: 400px;
+      overflow: hidden;
+    }
+    
+    .dark .modal-informative {
+      background: #1f2937;
+    }
+    
+    .modal-informative-content {
+      padding: 1.5rem;
+      position: relative;
+    }
+    
+    /* Ajuste para garantir que os botões não sejam sobrepostos */
+    .btn-container {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    /* Correção para a justificativa não se propagar */
+    #explanation-text {
+      white-space: pre-line;
+    }
+
+    /* Estilo para respostas de comentários */
+    .comment-responses {
+      margin-top: 1rem;
+      margin-left: 2rem;
+      padding-left: 1rem;
+      border-left: 2px solid #e2e8f0;
+    }
+    
+    .dark .comment-responses {
+      border-left-color: #475569;
+    }
+
+    /* Correção para sobreposição de módulo */
+    #q-module-name {
+      max-width: 100%;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    /* Ajuste para botões de like e resposta */
+    .comment-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    
+    .comment-actions button {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 0.875rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      transition: all 0.2s;
+    }
+    
+    .comment-actions button:hover {
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+    
+    .dark .comment-actions button:hover {
+      background-color: #374151;
+      color: #f3f4f6;
+    }
+
+    /* Estilos para editor de comentários */
+    .comment-editor {
+      min-height: 100px;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      outline: none;
+    }
+    
+    .dark .comment-editor {
+      border-color: #475569;
+      background-color: #1e293b;
+      color: #e2e8f0;
+    }
+    
+    .comment-editor:focus {
+      border-color: #3b82f6;
+    }
+    
+    .formatting-toolbar {
+      display: flex;
+      gap: 0.25rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .formatting-toolbar button {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.25rem;
+      background: white;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    
+    .dark .formatting-toolbar button {
+      background: #334155;
+      border-color: #475569;
+      color: #e2e8f0;
+    }
+    
+    .formatting-toolbar button:hover {
+      background: #f3f4f6;
+    }
+    
+    .dark .formatting-toolbar button:hover {
+      background: #475569;
+    }
+    
+    .comment-editor[contenteditable="true"]:empty:before {
+      content: attr(placeholder);
+      color: #9ca3af;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
@@ -266,8 +616,20 @@
             <!-- Configuração do simulador -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="p-6 md:p-10 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
-                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Configurar Simulador</h2>
-                    <p class="text-slate-500 dark:text-slate-400">Selecione os tópicos e a estratégia de distribuição.</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Configurar Simulador</h2>
+                            <p class="text-slate-500 dark:text-slate-400">Selecione os tópicos e a estratégia de distribuição.</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Assembleia Legislativa</label>
+                            <div class="flex items-center gap-2">
+                                <div class="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-bold min-w-[200px] text-center">
+                                    ALE-RR - Roraima
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -421,16 +783,25 @@
                         <div id="progress-bar" class="h-full bg-brand-500 transition-all duration-300" style="width: 0%"></div>
                     </div>
 
-                    <span id="q-module-name" class="inline-block mt-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-4">Módulo</span>
+                    <div class="tooltip">
+                        <span id="q-module-name" class="inline-block mt-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-4 truncate max-w-full">Módulo</span>
+                        <span class="tooltip-text" id="q-module-name-tooltip"></span>
+                    </div>
                     
                     <h3 id="q-text" class="text-xl md:text-2xl text-slate-800 dark:text-slate-100 font-medium leading-relaxed mb-8 mobile-text-sm">...</h3>
 
                     <div id="options-container" class="space-y-3 mb-8"></div>
 
-                    <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700 mobile-stack">
-                        <button onclick="changeQuestion(-1)" id="btn-prev" class="text-slate-500 hover:text-brand-600 font-bold px-4 py-2 rounded transition disabled:opacity-30 mobile-full mb-2">
-                            <i class="fas fa-arrow-left mr-2"></i> Anterior
-                        </button>
+                    <!-- Botões de navegação com reportar problema -->
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700 mobile-stack nav-buttons">
+                        <div class="flex gap-2">
+                            <button onclick="changeQuestion(-1)" id="btn-prev" class="text-slate-500 hover:text-brand-600 font-bold px-4 py-2 rounded transition disabled:opacity-30 mobile-full mb-2">
+                                <i class="fas fa-arrow-left mr-2"></i> Anterior
+                            </button>
+                            <button onclick="showReportModal()" class="text-slate-500 hover:text-red-600 font-bold px-4 py-2 rounded transition mobile-full mb-2">
+                                <i class="fas fa-flag mr-2"></i> Reportar problema
+                            </button>
+                        </div>
                         <div class="flex gap-3 mobile-full">
                             <button id="btn-confirm" onclick="confirmAnswer()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-bold shadow transition disabled:opacity-50 disabled:cursor-not-allowed mobile-full">
                                 Responder
@@ -441,6 +812,7 @@
                         </div>
                     </div>
 
+                    <!-- Explicação da questão -->
                     <div id="explanation-box" class="hidden mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-5 fade-in">
                         <h4 class="text-blue-800 dark:text-blue-300 font-bold text-sm mb-2 flex items-center gap-2">
                             <i class="fas fa-check-circle"></i> Comentário / Justificativa
@@ -449,6 +821,187 @@
                         <div class="mt-3 text-xs text-blue-600 dark:text-blue-400">
                             <i class="fas fa-info-circle mr-1"></i> Consulte o Regimento ao lado para verificar a precisão da explicação.
                         </div>
+                    </div>
+
+                    <!-- Seção de Estatísticas da Questão -->
+                    <div id="question-stats" class="hidden mt-6 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5 fade-in">
+                        <h4 class="text-slate-800 dark:text-white font-bold text-sm mb-4 flex items-center gap-2">
+                            <i class="fas fa-chart-bar"></i> Estatísticas desta Questão
+                        </h4>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div class="p-3 bg-white dark:bg-slate-700 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="stats-correct-rate">85%</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Taxa de Acerto</div>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-700 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="stats-avg-time">25s</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tempo Médio</div>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-700 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="stats-attempts">142</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tentativas</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-slate-500 dark:text-slate-400">
+                            <i class="fas fa-info-circle mr-1"></i> Estatísticas baseadas em respostas anteriores de todos os usuários.
+                        </div>
+                    </div>
+
+                    <!-- Seção de Comentários -->
+                    <div id="comments-section" class="hidden mt-8 border-t border-slate-200 dark:border-slate-700 pt-6">
+                        <h4 class="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center justify-between">
+                            <span>Comentários</span>
+                            <span class="text-sm font-normal text-slate-500" id="comments-count">10 comentários</span>
+                        </h4>
+
+                        <!-- Formulário para novo comentário -->
+                        <div class="mb-6 bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+                            <div class="flex items-start gap-3 mb-4">
+                                <div class="comment-avatar" id="user-avatar">U</div>
+                                <div class="flex-1 relative">
+                                    <div class="comment-editor" id="new-comment-editor" contenteditable="true" placeholder="Escreva seu comentário..."></div>
+                                    <div class="formatting-toolbar">
+                                        <button type="button" onclick="formatText('bold')" title="Negrito"><i class="fas fa-bold"></i></button>
+                                        <button type="button" onclick="formatText('italic')" title="Itálico"><i class="fas fa-italic"></i></button>
+                                        <button type="button" onclick="formatText('underline')" title="Sublinhado"><i class="fas fa-underline"></i></button>
+                                        <button type="button" onclick="formatText('foreColor', '#dc2626')" title="Cor do texto"><i class="fas fa-font" style="color: #dc2626;"></i></button>
+                                        <button type="button" onclick="formatText('justifyLeft')" title="Alinhar à esquerda"><i class="fas fa-align-left"></i></button>
+                                        <button type="button" onclick="formatText('justifyCenter')" title="Centralizar"><i class="fas fa-align-center"></i></button>
+                                        <button type="button" onclick="formatText('justifyRight')" title="Alinhar à direita"><i class="fas fa-align-right"></i></button>
+                                        <button onclick="toggleEmojiPicker()" title="Emojis">
+                                            <i class="far fa-smile"></i>
+                                        </button>
+                                    </div>
+                                    <div id="emoji-picker" class="emoji-picker hidden"></div>
+                                    <div class="mt-2 flex justify-end">
+                                        <button onclick="addComment()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                                            Comentar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">
+                                <i class="fas fa-info-circle mr-1"></i> Os comentários são públicos e visíveis para todos os usuários.
+                            </div>
+                        </div>
+
+                        <!-- Lista de comentários -->
+                        <div id="comments-list" class="space-y-4">
+                            <!-- Comentário exemplo 1 -->
+                            <div class="comment-item" data-comment-id="comment1">
+                                <div class="flex items-start gap-3">
+                                    <div class="comment-avatar bg-purple-500">P</div>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h5 class="font-bold text-slate-800 dark:text-white">Pedro Paulo Vinagre Costa</h5>
+                                                <div class="comment-date">07 de Dezembro de 2025 às 08:29</div>
+                                            </div>
+                                            <button onclick="reportComment(this)" class="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400">
+                                                Reportar abuso
+                                            </button>
+                                        </div>
+                                        <p class="mt-2 text-slate-700 dark:text-slate-300">R: a igualdade ética-racial. Não entendo o porque é essa a resposta.</p>
+                                        <div class="comment-actions">
+                                            <button onclick="likeComment(this)">
+                                                <i class="far fa-thumbs-up"></i>
+                                                <span>Gostei (<span class="like-count">0</span>)</span>
+                                            </button>
+                                            <button onclick="toggleResponses(this)">
+                                                <i class="far fa-comment"></i>
+                                                <span>Respostas (<span class="response-count">0</span>)</span>
+                                            </button>
+                                        </div>
+                                        <div class="comment-responses hidden mt-4">
+                                            <!-- Respostas serão carregadas aqui -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comentário exemplo 2 -->
+                            <div class="comment-item" data-comment-id="comment2">
+                                <div class="flex items-start gap-3">
+                                    <div class="comment-avatar bg-blue-500">N</div>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h5 class="font-bold text-slate-800 dark:text-white">Nicolas Correia</h5>
+                                                <div class="comment-date">07 de Dezembro de 2025 às 02:46</div>
+                                            </div>
+                                            <button onclick="reportComment(this)" class="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400">
+                                                Reportar abuso
+                                            </button>
+                                        </div>
+                                        <p class="mt-2 text-slate-700 dark:text-slate-300">"Se o carro é verde e a tampa da coca é vermelha. Qual a cor do dedo do alien que chegará amanhã?"</p>
+                                        <div class="comment-actions">
+                                            <button onclick="likeComment(this)">
+                                                <i class="far fa-thumbs-up"></i>
+                                                <span>Gostei (<span class="like-count">6</span>)</span>
+                                            </button>
+                                            <button onclick="toggleResponses(this)">
+                                                <i class="far fa-comment"></i>
+                                                <span>Respostas (<span class="response-count">1</span>)</span>
+                                            </button>
+                                        </div>
+                                        <div class="comment-responses hidden mt-4">
+                                            <!-- Respostas serão carregadas aqui -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comentário exemplo 3 -->
+                            <div class="comment-item" data-comment-id="comment3">
+                                <div class="flex items-start gap-3">
+                                    <div class="comment-avatar bg-green-500">J</div>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h5 class="font-bold text-slate-800 dark:text-white">Jose Dirceu</h5>
+                                                <div class="comment-date">06 de Dezembro de 2025 às 11:11</div>
+                                            </div>
+                                            <button onclick="reportComment(this)" class="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400">
+                                                Reportar abuso
+                                            </button>
+                                        </div>
+                                        <p class="mt-2 text-slate-700 dark:text-slate-300">Essas questões devem ser específicas para cargo de comunicador.</p>
+                                        <div class="comment-actions">
+                                            <button onclick="likeComment(this)">
+                                                <i class="far fa-thumbs-up"></i>
+                                                <span>Gostei (<span class="like-count">0</span>)</span>
+                                            </button>
+                                            <button onclick="toggleResponses(this)">
+                                                <i class="far fa-comment"></i>
+                                                <span>Respostas (<span class="response-count">0</span>)</span>
+                                            </button>
+                                        </div>
+                                        <div class="comment-responses hidden mt-4">
+                                            <!-- Respostas serão carregadas aqui -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <button onclick="loadMoreComments()" class="text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300 font-medium">
+                                <i class="fas fa-arrow-down mr-2"></i> Carregar mais comentários
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Botões para alternar entre visualizações -->
+                    <div class="mt-6 flex gap-3 border-t border-slate-200 dark:border-slate-700 pt-6">
+                        <button onclick="toggleSection('explanation')" class="flex-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 py-2 rounded-lg font-medium transition">
+                            <i class="fas fa-check-circle mr-2"></i> Explicação
+                        </button>
+                        <button onclick="toggleSection('stats')" class="flex-1 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-300 py-2 rounded-lg font-medium transition">
+                            <i class="fas fa-chart-bar mr-2"></i> Estatísticas
+                        </button>
+                        <button onclick="toggleSection('comments')" class="flex-1 bg-green-50 hover:bg-green-100 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 py-2 rounded-lg font-medium transition">
+                            <i class="fas fa-comments mr-2"></i> Comentários
+                        </button>
                     </div>
                 </div>
 
@@ -580,30 +1133,36 @@
                     <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="time-trend">Carregando...</div>
                 </div>
                 
-                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="text-xs font-bold text-slate-500 uppercase">Melhor Módulo</div>
-                            <div class="text-xl font-bold text-slate-800 dark:text-white truncate" id="best-module">-</div>
+                <div class="tooltip">
+                    <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-xs font-bold text-slate-500 uppercase">Melhor Módulo</div>
+                                <div class="text-xl font-bold text-slate-800 dark:text-white truncate" id="best-module" title="">-</div>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                                <i class="fas fa-trophy text-yellow-600 dark:text-yellow-400"></i>
+                            </div>
                         </div>
-                        <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
-                            <i class="fas fa-trophy text-yellow-600 dark:text-yellow-400"></i>
-                        </div>
+                        <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="best-module-score">0%</div>
                     </div>
-                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="best-module-score">0%</div>
+                    <span class="tooltip-text" id="best-module-tooltip"></span>
                 </div>
                 
-                <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="text-xs font-bold text-slate-500 uppercase">Pior Módulo</div>
-                            <div class="text-xl font-bold text-slate-800 dark:text-white truncate" id="worst-module">-</div>
+                <div class="tooltip">
+                    <div class="metric-card bg-white dark:bg-slate-800 rounded-xl shadow border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-xs font-bold text-slate-500 uppercase">Pior Módulo</div>
+                                <div class="text-xl font-bold text-slate-800 dark:text-white truncate" id="worst-module" title="">-</div>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+                            </div>
                         </div>
-                        <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                            <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
-                        </div>
+                        <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="worst-module-score">0%</div>
                     </div>
-                    <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="worst-module-score">0%</div>
+                    <span class="tooltip-text" id="worst-module-tooltip"></span>
                 </div>
             </div>
 
@@ -671,7 +1230,7 @@
                     <button onclick="setHistoryFilter('days', 30)" class="px-3 py-1 text-xs font-bold rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" id="hist-filter-30">30 Dias</button>
                 </div>
                 
-                <!-- Corrigido: O filtro agora só mostra módulos que realmente têm questões respondidas -->
+                <!-- Filtro para módulos -->
                 <select id="module-filter" onchange="setHistoryFilter('module', this.value)" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm min-w-[200px]">
                     <option value="all">Todos os módulos</option>
                 </select>
@@ -897,6 +1456,8 @@
                                     <th class="px-6 py-4">Acertos</th>
                                     <th class="px-6 py-4">Erros</th>
                                     <th class="px-6 py-4">Branco</th>
+                                    <th class="px-6 py-4">Total</th>
+                                    <th class="px-6 py-4">Tempo Total</th>
                                     <th class="px-6 py-4">Tempo/Q</th>
                                     <th class="px-6 py-4 text-right">Nota</th>
                                 </tr>
@@ -931,6 +1492,7 @@
                                 <th class="px-6 py-4">Erros</th>
                                 <th class="px-6 py-4">Branco</th>
                                 <th class="px-6 py-4">Total</th>
+                                <th class="px-6 py-4">Tempo Total</th>
                                 <th class="px-6 py-4">Tempo/Q</th>
                                 <th class="px-6 py-4 text-right">Nota</th>
                             </tr>
@@ -949,7 +1511,7 @@
 
     <div id="pdf-drawer" class="fixed top-16 right-0 w-[90%] md:w-[600px] h-[calc(100vh-4rem)] bg-white dark:bg-slate-800 shadow-2xl border-l border-slate-200 dark:border-slate-700 z-50 transform translate-x-full flex flex-col transition-transform duration-300">
         <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-            <span class="font-bold text-sm text-slate-700 dark:text-slate-200"><i class="fas fa-book mr-2"></i> Regimento Interno</span>
+            <span class="font-bold text-sm text-slate-700 dark:text-slate-200"><i class="fas fa-book mr-2"></i> Regimento Interno ALE-RR 2023</span>
             <div class="flex gap-2">
                 <a href="src/regimento-interno-2023-ale-rr-ok.pdf" target="_blank" class="text-xs text-brand-600 hover:underline flex items-center"><i class="fas fa-external-link-alt mr-1"></i> Abrir Janela</a>
                 <button onclick="togglePdfDrawer()" class="w-6 h-6 rounded hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fas fa-times"></i></button>
@@ -1021,31 +1583,100 @@
         </div>
     </div>
 
-    <div id="warning-modal" class="fixed inset-0 z-[90] bg-black/60 hidden flex items-center justify-center backdrop-blur-sm fade-in">
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-sm text-center border border-slate-200 dark:border-slate-600 transform scale-100 transition-transform">
-            <div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fas fa-exclamation-triangle"></i>
+    <!-- Modal de Reportar Problema -->
+    <div id="report-modal" class="fixed inset-0 z-[1000] bg-black/50 hidden flex items-center justify-center backdrop-blur-sm fade-in">
+        <div class="modal-informative">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-flag text-red-500"></i> Reportar Problema</h3>
+                <button onclick="closeReportModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fas fa-times"></i></button>
             </div>
-            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Quantidade Indisponível</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-300 mb-6">Você solicitou mais questões do que as selecionadas atualmente. Ajuste o filtro ou diminua a quantidade.</p>
-            <button onclick="document.getElementById('warning-modal').classList.add('hidden')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-lg w-full transition">
-                Entendi
-            </button>
+            <div class="modal-informative-content">
+                <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                    Descreva o problema encontrado nesta questão. Sua contribuição ajuda a melhorar o sistema.
+                </p>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tipo de problema</label>
+                    <select id="report-type" class="w-full p-2 border border-slate-300 rounded dark:bg-slate-700 dark:border-slate-600">
+                        <option value="erro">Erro na questão</option>
+                        <option value="alternativa">Alternativa incorreta</option>
+                        <option value="explicacao">Explicação confusa</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Descrição</label>
+                    <textarea id="report-description" rows="4" class="w-full p-2 border border-slate-300 rounded dark:bg-slate-700 dark:border-slate-600" placeholder="Descreva o problema..."></textarea>
+                </div>
+                <div class="btn-container">
+                    <button onclick="closeReportModal()" class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg flex-1">Cancelar</button>
+                    <button onclick="submitReport()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold flex-1">Enviar Reporte</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="csv-import-modal" class="fixed inset-0 z-[100] bg-black/50 hidden flex items-center justify-center backdrop-blur-sm fade-in">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-700">
+    <!-- Modal de Reportar Comentário -->
+    <div id="report-comment-modal" class="fixed inset-0 z-[1000] bg-black/50 hidden flex items-center justify-center backdrop-blur-sm fade-in">
+        <div class="modal-informative">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-flag text-red-500"></i> Reportar Comentário</h3>
+                <button onclick="closeReportCommentModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-informative-content">
+                <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                    Descreva o motivo do reporte deste comentário. Um moderador irá analisar.
+                </p>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Motivo</label>
+                    <select id="report-comment-type" class="w-full p-2 border border-slate-300 rounded dark:bg-slate-700 dark:border-slate-600">
+                        <option value="spam">Spam</option>
+                        <option value="abuso">Abuso ou discurso de ódio</option>
+                        <option value="conteudo">Conteúdo inapropriado</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Descrição</label>
+                    <textarea id="report-comment-description" rows="4" class="w-full p-2 border border-slate-300 rounded dark:bg-slate-700 dark:border-slate-600" placeholder="Descreva o motivo do reporte..."></textarea>
+                </div>
+                <div class="btn-container">
+                    <button onclick="closeReportCommentModal()" class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg flex-1">Cancelar</button>
+                    <button onclick="submitCommentReport()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold flex-1">Enviar Reporte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Informativo Corrigido -->
+    <div id="warning-modal" class="fixed inset-0 z-[1000] bg-black/60 hidden flex items-center justify-center backdrop-blur-sm fade-in">
+        <div class="modal-informative">
+            <div class="modal-informative-content">
+                <div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2 text-center">Quantidade Indisponível</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-300 mb-6 text-center">Você solicitou mais questões do que as selecionadas atualmente. Ajuste o filtro ou diminua a quantidade.</p>
+                <div class="btn-container">
+                    <button onclick="document.getElementById('warning-modal').classList.add('hidden')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-lg w-full transition">
+                        Entendi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="csv-import-modal" class="fixed inset-0 z-[1000] bg-black/50 hidden flex items-center justify-center backdrop-blur-sm fade-in">
+        <div class="modal-informative">
             <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-file-import text-green-500"></i> Importar Histórico CSV</h3>
                 <button onclick="closeCSVImportModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fas fa-times"></i></button>
             </div>
-            <div class="p-6">
+            <div class="modal-informative-content">
                 <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
                     Selecione um arquivo CSV no formato exportado por este sistema.
                 </p>
                 <input type="file" id="csv-file-input" accept=".csv" class="w-full p-2 border border-slate-300 rounded dark:bg-slate-700 dark:border-slate-600 mb-4">
-                <div class="flex justify-end gap-3">
+                <div class="btn-container">
                     <button onclick="closeCSVImportModal()" class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancelar</button>
                     <button onclick="processCSVImport()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold">Importar</button>
                 </div>
@@ -1056,19 +1687,27 @@
   </div>
 
   <script>
-    const DB_FILES = [
-      'src/da-interpretacao-e-observancia-do-regimento-titulo-VI.json',
-      'src/da-ordem-interna-da-assembleia-titulo-IX.json',
-      'src/da-participacao-da-sociedade-civil.titulo-IV.json',
-      'src/da-representacao-parlamentar-titulo-III.json',
-      'src/das-disposicoes-finais-titulo-XI.json',
-      'src/disposicoes-preliminares-titulo-I.json',
-      'src/do-processo-por-crime-de-responsabilidade-da-convocacao-de-secretarios-e-do-credenciamento-de-imprensa-titulo-X.json',
-      'src/dos-debates-e-das-deliberacoes-titulo-VIII.json',
-      'src/orgaos-da-assembleia-titulo-II.json',
-      'src/questoes-concurso-2018.json',
-      'src/sessoes-da-assembleia-titulo-V.json'
-    ];
+    // ============================================
+    // CONFIGURAÇÃO ESPECÍFICA PARA ALE-RR
+    // ============================================
+    const assembleiaAtual = 'ALRR';
+    
+    // Banco de dados de questões da ALE-RR
+    const assembleiasDB = {
+      'ALRR': [
+        'src/da-interpretacao-e-observancia-do-regimento-titulo-VI.json',
+        'src/da-ordem-interna-da-assembleia-titulo-IX.json',
+        'src/da-participacao-da-sociedade-civil.titulo-IV.json',
+        'src/da-representacao-parlamentar-titulo-III.json',
+        'src/das-disposicoes-finais-titulo-XI.json',
+        'src/disposicoes-preliminares-titulo-I.json',
+        'src/do-processo-por-crime-de-responsabilidade-da-convocacao-de-secretarios-e-do-credenciamento-de-imprensa-titulo-X.json',
+        'src/dos-debates-e-das-deliberacoes-titulo-VIII.json',
+        'src/orgaos-da-assembleia-titulo-II.json',
+        'src/questoes-concurso-2018.json',
+        'src/sessoes-da-assembleia-titulo-V.json'
+      ]
+    };
 
     // Variáveis Globais de Chart.js (2D)
     let historyChartInstance = null;
@@ -1083,6 +1722,8 @@
     
     let fullDatabase = [];
     let availableModules = [];
+    
+    // Filtros
     let historyFilters = {
         days: 'all',
         module: 'all'
@@ -1104,206 +1745,119 @@
         distribution: {},
         savingEnabled: true,
         startTime: null,
-        isPaused: false
+        isPaused: false,
+        currentSection: 'explanation',
+        currentQuestionStartTime: null,
+        questionStartTimes: []
     };
 
-    // Funções auxiliares
-    function showScreen(id) { 
-        ['home','quiz','result','analytics','error','pause'].forEach(s => {
-            const screen = document.getElementById('screen-'+s);
-            if (screen) screen.classList.add('hidden');
-        }); 
-        
-        const targetScreen = document.getElementById('screen-'+id);
-        if (targetScreen) {
-            targetScreen.classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-        
-        if(id === 'home') {
-            updateDistribution();
-            // Verifica se há simulado pausado
-            const paused = localStorage.getItem('alerr_paused_sim');
-            if (paused) {
-                document.getElementById('paused-alert').classList.remove('hidden');
-            }
-        } else if (id === 'analytics') {
-            setTimeout(() => {
-                applyHistoryFilters();
-                update3dCharts();
-                updateMetricsCards();
-            }, 100);
-        }
-    }
-    
-    function togglePdfDrawer() { 
-        const d = document.getElementById('pdf-drawer'); 
-        d.classList.toggle('translate-x-full'); 
-        d.classList.toggle('drawer-open'); 
-    }
-    
-    function initTheme() { 
-        if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-        updateThemeIcon();
-    }
-    
-    function toggleDarkMode() { 
-        document.documentElement.classList.toggle('dark'); 
-        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); 
-        updateThemeIcon();
-        
-        update3dCharts();
-    }
-
-    function updateThemeIcon() {
-        const themeIcon = document.getElementById('theme-icon');
-        if (document.documentElement.classList.contains('dark')) {
-            themeIcon.className = 'fas fa-sun';
-        } else {
-            themeIcon.className = 'fas fa-moon';
-        }
+    // Variáveis para gerenciar likes dos comentários
+    let userId = localStorage.getItem('alerr_userId');
+    if (!userId) {
+        userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('alerr_userId', userId);
     }
 
     // ============================================
-    // FUNÇÕES DE PAUSA, RETOMADA E ABANDONO
+    // SISTEMA DE ESTATÍSTICAS REAIS
     // ============================================
 
-    function pauseSimulation() {
-        // Calcula o tempo decorrido
-        const now = new Date();
-        const elapsed = Math.floor((now - appState.startTime) / 1000);
-
-        // Salva o estado do simulado
-        const pausedState = {
-            questions: appState.questions,
-            answers: appState.answers,
-            index: appState.index,
-            config: appState.config,
-            elapsedTime: elapsed,
-            datePaused: new Date().toISOString()
-        };
-
-        // Salva no localStorage
-        localStorage.setItem('alerr_paused_sim', JSON.stringify(pausedState));
-
-        // Para o timer
-        if (appState.timer) {
-            clearInterval(appState.timer);
-            appState.timer = null;
-        }
-
-        // Atualiza a tela de pausa com os dados atuais
-        updatePauseScreen(pausedState);
-
-        // Marca como pausado
-        appState.isPaused = true;
-
-        // Mostra a tela de pausa
-        showScreen('pause');
+    // Gerar chave única para estatísticas da questão
+    function getQuestionStatsKey(question) {
+      // Normalizar o nome do módulo para usar como parte da chave
+      const moduloNormalizado = question.module
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]/g, '_')
+        .toLowerCase();
+      
+      // Usar o ID da questão ou criar um hash do texto se não tiver ID
+      const questionId = question.id !== undefined ? question.id : 
+        (question.text ? hashString(question.text) : '0');
+      
+      return `alerr_stats_${moduloNormalizado}_${questionId}`;
     }
 
-    function updatePauseScreen(pausedState) {
-        const total = pausedState.questions.length;
-        const current = pausedState.index + 1;
-        document.getElementById('paused-progress').textContent = `${current}/${total}`;
-
-        // Calcula acertos até agora
-        let correct = 0;
-        for (let i = 0; i < pausedState.answers.length; i++) {
-            if (pausedState.answers[i].ok && pausedState.answers[i].isCorrect) {
-                correct++;
-            }
-        }
-        document.getElementById('paused-correct').textContent = correct;
-
-        // Formata o tempo decorrido
-        const minutes = Math.floor(pausedState.elapsedTime / 60).toString().padStart(2, '0');
-        const seconds = (pausedState.elapsedTime % 60).toString().padStart(2, '0');
-        document.getElementById('paused-time').textContent = `${minutes}:${seconds}`;
+    // Função para criar hash simples de uma string
+    function hashString(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return Math.abs(hash);
     }
 
-    function resumeSimulation() {
-        // Carrega o estado pausado
-        const pausedState = localStorage.getItem('alerr_paused_sim');
-        
-        if (!pausedState) {
-            alert('Não há simulado pausado.');
-            return;
-        }
-
-        const state = JSON.parse(pausedState);
-
-        // Restaura o estado
-        appState.questions = state.questions;
-        appState.answers = state.answers;
-        appState.index = state.index;
-        appState.config = state.config;
-
-        // Ajusta o startTime para considerar o tempo já decorrido
-        const now = new Date();
-        const adjustedStartTime = new Date(now.getTime() - (state.elapsedTime * 1000));
-        appState.startTime = adjustedStartTime;
-
-        // Remove o estado pausado do localStorage
-        localStorage.removeItem('alerr_paused_sim');
-
-        // Esconde o alerta de pausado na tela inicial
-        document.getElementById('paused-alert').classList.add('hidden');
-
-        // Reinicia o timer
-        startTimer();
-
-        // Carrega a questão atual
-        loadQuestion(appState.index);
-        renderNav();
-
-        // Mostra a tela do quiz
-        showScreen('quiz');
+    // Atualizar estatísticas da questão quando respondida
+    function updateQuestionStatistics(question, isCorrect, timeSpent) {
+      const key = getQuestionStatsKey(question);
+      
+      // Carregar estatísticas existentes ou criar novas
+      let stats = JSON.parse(localStorage.getItem(key) || '{"tentativas":0,"acertos":0,"tempoTotal":0}');
+      
+      // Atualizar estatísticas
+      stats.tentativas += 1;
+      if (isCorrect) {
+        stats.acertos += 1;
+      }
+      stats.tempoTotal += timeSpent;
+      
+      // Salvar de volta no localStorage
+      localStorage.setItem(key, JSON.stringify(stats));
+      
+      // Atualizar contador de cache
+      updateCacheStats();
+      
+      console.log(`Estatísticas atualizadas para questão ${question.id}:`, stats);
     }
 
-    function discardPaused() {
-        if (confirm('Tem certeza que deseja descartar o simulado pausado? Esta ação não pode ser desfeita.')) {
-            localStorage.removeItem('alerr_paused_sim');
-            document.getElementById('paused-alert').classList.add('hidden');
-        }
+    // Buscar estatísticas da questão
+    function getQuestionStats(question) {
+      const key = getQuestionStatsKey(question);
+      const stats = JSON.parse(localStorage.getItem(key) || '{"tentativas":0,"acertos":0,"tempoTotal":0}');
+      
+      // Calcular métricas
+      let correctRate = 0;
+      let avgTime = 0;
+      
+      if (stats.tentativas > 0) {
+        correctRate = (stats.acertos / stats.tentativas) * 100;
+        avgTime = stats.tempoTotal / stats.tentativas;
+      }
+      
+      return {
+        tentativas: stats.tentativas,
+        acertos: stats.acertos,
+        tempoTotal: stats.tempoTotal,
+        taxaAcerto: correctRate,
+        tempoMedio: avgTime
+      };
     }
 
-    function abandonSimulation() {
-        if (!confirm('Tem certeza que deseja abandonar o simulado? Todo o progresso será perdido e não será salvo no histórico.')) {
-            return;
-        }
-
-        // Para o timer
-        if (appState.timer) {
-            clearInterval(appState.timer);
-            appState.timer = null;
-        }
-
-        // Remove o estado pausado se existir
-        localStorage.removeItem('alerr_paused_sim');
-
-        // Reseta o estado
-        appState.questions = [];
-        appState.answers = [];
-        appState.index = 0;
-        appState.isPaused = false;
-
-        // Mostra a tela inicial
-        showScreen('home');
+    // Atualizar exibição das estatísticas da questão
+    function updateQuestionStats() {
+      const question = appState.questions[appState.index];
+      if (!question) return;
+      
+      const stats = getQuestionStats(question);
+      
+      // Atualizar a interface com estatísticas reais
+      document.getElementById('stats-correct-rate').textContent = `${Math.round(stats.taxaAcerto)}%`;
+      document.getElementById('stats-avg-time').textContent = `${Math.round(stats.tempoMedio)}s`;
+      document.getElementById('stats-attempts').textContent = stats.tentativas;
+      
+      console.log(`Estatísticas da questão ${question.id}:`, stats);
     }
 
     // ============================================
     // FUNÇÕES PLOTLY.JS (3D) COM TABELAS
     // ============================================
 
-    // Inicializa os gráficos 3D com Plotly.js
     function init3dCharts() {
         console.log("Plotly.js carregado e pronto para gráficos 3D");
     }
 
-    // Atualiza gráfico 3D Geral com dados do histórico
     function renderOverall3dChart(historyData) {
         const container = document.getElementById('overall3dChart');
         if (!container || historyData.length === 0) {
@@ -1312,10 +1866,8 @@
             return;
         }
 
-        // Ordenar por data para linha evolutiva
         const sortedData = [...historyData].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        // Preparar dados para o gráfico 3D
         const xData = [];
         const yData = [];
         const zData = [];
@@ -1324,7 +1876,6 @@
         const hoverTexts = [];
         const dates = [];
 
-        // Encontrar valores máximos para normalização
         let maxQuestions = 1;
         let maxModules = 1;
         let maxTime = 1;
@@ -1338,7 +1889,6 @@
             maxTime = Math.max(maxTime, avgTime || 1);
         });
 
-        // Preparar dados
         sortedData.forEach((item, index) => {
             const moduleCount = Object.keys(item.modules || {}).length;
             const avgTime = item.total > 0 ? (item.duration || 0) / item.total : 0;
@@ -1348,22 +1898,19 @@
             zData.push(avgTime);
             dates.push(new Date(item.date));
             
-            // Tamanho baseado no número de questões
             const size = 8 + (item.total / maxQuestions) * 12;
             sizes.push(size);
             
-            // Cor baseada no desempenho
             let color;
             if (item.percent >= 70) {
-                color = '#22c55e'; // Verde
+                color = '#22c55e';
             } else if (item.percent >= 50) {
-                color = '#eab308'; // Amarelo
+                color = '#eab308';
             } else {
-                color = '#ef4444'; // Vermelho
+                color = '#ef4444';
             }
             colors.push(color);
             
-            // Texto de hover
             const date = new Date(item.date).toLocaleDateString('pt-BR');
             hoverTexts.push(
                 `Data: ${date}<br>` +
@@ -1374,13 +1921,11 @@
             );
         });
 
-        // Configurar layout do tema
         const isDark = document.documentElement.classList.contains('dark');
         const bgColor = isDark ? '#1e293b' : '#f8fafc';
         const textColor = isDark ? '#e2e8f0' : '#334155';
         const gridColor = isDark ? '#475569' : '#cbd5e1';
 
-        // Criar trace de marcadores
         const markerTrace = {
             x: xData,
             y: yData,
@@ -1401,7 +1946,6 @@
             name: 'Simulados'
         };
 
-        // Criar trace de linha evolutiva
         const lineTrace = {
             x: xData,
             y: yData,
@@ -1475,7 +2019,6 @@
             modeBarButtonsToRemove: ['select2d', 'lasso2d']
         };
 
-        // Renderizar ou atualizar gráfico
         Plotly.newPlot(container, [markerTrace, lineTrace], layout, config)
             .then(() => {
                 document.getElementById('overall3dError').classList.add('hidden');
@@ -1488,7 +2031,6 @@
             });
     }
 
-    // Preencher tabela de métricas para gráfico geral
     function fillOverall3dTable(data) {
         const tableBody = document.getElementById('overall3dTable');
         if (!tableBody || data.length === 0) {
@@ -1496,7 +2038,6 @@
             return;
         }
 
-        // Ordenar por data (mais recente primeiro)
         const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
         
         let tableHTML = '';
@@ -1509,7 +2050,6 @@
             const formattedDate = date.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'});
             const formattedTime = avgTime.toFixed(1);
 
-            // Calcular variação em relação ao anterior
             let variation = '';
             let variationClass = '';
             if (previousPercent !== null && index > 0) {
@@ -1531,7 +2071,6 @@
             
             previousPercent = item.percent;
 
-            // Determinar ícone de tendência
             let trendIcon = '';
             if (variation !== '-' && variation !== '0.0') {
                 if (variation.startsWith('+')) {
@@ -1556,7 +2095,6 @@
         tableBody.innerHTML = tableHTML;
     }
 
-    // Atualiza gráfico 3D por Módulo
     function renderModule3dChart(historyData) {
         const container = document.getElementById('module3dChart');
         if (!container) {
@@ -1565,9 +2103,8 @@
             return;
         }
 
-        // Coletar dados agregados por módulo
         const moduleDataMap = new Map();
-        const moduleEvolutionMap = new Map(); // Para evolução por módulo
+        const moduleEvolutionMap = new Map();
         
         historyData.forEach(item => {
             Object.entries(item.modules || {}).forEach(([moduleName, moduleStats]) => {
@@ -1581,7 +2118,7 @@
                         totalTime: 0,
                         totalCorrect: 0,
                         totalSimulations: 0,
-                        performances: [], // Para calcular evolução
+                        performances: [],
                         dates: []
                     });
                 }
@@ -1597,7 +2134,6 @@
                 moduleData.performances.push(performance);
                 moduleData.dates.push(new Date(item.date));
                 
-                // Armazenar para evolução
                 if (!moduleEvolutionMap.has(moduleName)) {
                     moduleEvolutionMap.set(moduleName, []);
                 }
@@ -1616,7 +2152,6 @@
             return;
         }
 
-        // Preparar dados para o gráfico
         const graphData = [];
         moduleDataMap.forEach((data, moduleName) => {
             const avgQuestions = data.totalQuestions / data.totalSimulations;
@@ -1625,7 +2160,6 @@
             const avgTime = data.totalQuestions > 0 ? 
                 data.totalTime / data.totalQuestions : 0;
             
-            // Calcular evolução (diferença entre primeira e última performance)
             let evolution = 0;
             if (data.performances.length >= 2) {
                 const first = data.performances[0];
@@ -1645,10 +2179,8 @@
             });
         });
 
-        // Ordenar por desempenho para linha evolutiva
         const sortedGraphData = [...graphData].sort((a, b) => a.avgPerformance - b.avgPerformance);
 
-        // Preparar arrays para o gráfico
         const xData = sortedGraphData.map(d => d.avgQuestions);
         const yData = sortedGraphData.map(d => d.avgPerformance);
         const zData = sortedGraphData.map(d => d.avgTime);
@@ -1657,29 +2189,25 @@
         const hoverTexts = [];
         const labels = [];
 
-        // Encontrar valores máximos para normalização
         const maxQuestions = Math.max(...xData, 1);
         const maxPerformance = Math.max(...yData, 1);
 
         sortedGraphData.forEach(item => {
             labels.push(item.moduleName);
             
-            // Tamanho baseado no número de simulações
             const size = 8 + (item.totalSimulations * 1.5);
             sizes.push(size);
             
-            // Cor baseada no desempenho
             let color;
             if (item.avgPerformance >= 70) {
-                color = '#22c55e'; // Verde
+                color = '#22c55e';
             } else if (item.avgPerformance >= 50) {
-                color = '#eab308'; // Amarelo
+                color = '#eab308';
             } else {
-                color = '#ef4444'; // Vermelho
+                color = '#ef4444';
             }
             colors.push(color);
             
-            // Texto de hover
             hoverTexts.push(
                 `Módulo: ${item.moduleName}<br>` +
                 `Questões/média: ${item.avgQuestions.toFixed(1)}<br>` +
@@ -1690,13 +2218,11 @@
             );
         });
 
-        // Configurar layout do tema
         const isDark = document.documentElement.classList.contains('dark');
         const bgColor = isDark ? '#1e293b' : '#f8fafc';
         const textColor = isDark ? '#e2e8f0' : '#334155';
         const gridColor = isDark ? '#475569' : '#cbd5e1';
 
-        // Criar trace de marcadores
         const markerTrace = {
             x: xData,
             y: yData,
@@ -1717,7 +2243,6 @@
             name: 'Módulos'
         };
 
-        // Criar trace de linha (conectando por ordem de desempenho)
         const lineTrace = {
             x: xData,
             y: yData,
@@ -1791,7 +2316,6 @@
             modeBarButtonsToRemove: ['select2d', 'lasso2d']
         };
 
-        // Renderizar ou atualizar gráfico
         Plotly.newPlot(container, [markerTrace, lineTrace], layout, config)
             .then(() => {
                 document.getElementById('module3dError').classList.add('hidden');
@@ -1804,7 +2328,6 @@
             });
     }
 
-    // Preencher tabela de métricas para gráfico por módulo
     function fillModule3dTable(data) {
         const tableBody = document.getElementById('module3dTable');
         if (!tableBody || data.length === 0) {
@@ -1812,7 +2335,6 @@
             return;
         }
 
-        // Ordenar por desempenho (do maior para o menor)
         const sortedData = [...data].sort((a, b) => b.avgPerformance - a.avgPerformance);
         
         let tableHTML = '';
@@ -1820,7 +2342,6 @@
         sortedData.forEach(item => {
             const moduleName = item.moduleName.length > 15 ? item.moduleName.substring(0, 15) + '...' : item.moduleName;
             
-            // Determinar ícone de evolução
             let evolutionIcon = '';
             let evolutionClass = '';
             if (item.evolution > 1) {
@@ -1836,7 +2357,7 @@
 
             tableHTML += `
                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                    <td class="px-3 py-2" title="${item.moduleName}">${moduleName}</td>
+                    <td class="px-3 py-2 truncate-with-tooltip" data-fulltext="${item.moduleName}" title="${item.moduleName}">${moduleName}</td>
                     <td class="px-3 py-2 font-bold">${item.avgQuestions.toFixed(1)}</td>
                     <td class="px-3 py-2 font-bold ${item.avgPerformance >= 70 ? 'text-green-600' : item.avgPerformance >= 50 ? 'text-yellow-600' : 'text-red-600'}">${item.avgPerformance.toFixed(1)}%</td>
                     <td class="px-3 py-2">${item.avgTime.toFixed(1)}s</td>
@@ -1849,11 +2370,6 @@
         tableBody.innerHTML = tableHTML;
     }
 
-    // ============================================
-    // NOVAS FUNÇÕES PARA INDICADORES DE EVOLUÇÃO
-    // ============================================
-
-    // Calcula a evolução do desempenho para diferentes períodos
     function calculateEvolution(historyData, days) {
         if (historyData.length === 0) return { evolution: 0, trend: 'Nenhum dado disponível' };
         
@@ -1862,7 +2378,6 @@
         const previousStart = new Date(now.getTime() - (days * 2 * 24 * 60 * 60 * 1000));
         const previousEnd = recentStart;
         
-        // Filtrar dados para os períodos
         const recentData = historyData.filter(item => new Date(item.date) >= recentStart);
         const previousData = historyData.filter(item => 
             new Date(item.date) >= previousStart && new Date(item.date) < previousEnd
@@ -1870,7 +2385,6 @@
         
         if (recentData.length === 0) return { evolution: 0, trend: 'Sem dados recentes' };
         
-        // Calcular médias
         const recentAvg = recentData.reduce((sum, item) => sum + item.percent, 0) / recentData.length;
         
         let previousAvg = 0;
@@ -1905,11 +2419,22 @@
         };
     }
 
-    // Atualiza métricas dos cards superiores
     function updateMetricsCards() {
-        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        const key = `alerr_hist_ALRR`;
+        let allHistory = JSON.parse(localStorage.getItem(key) || '[]');
         
-        if (h.length === 0) {
+        // Aplicar filtros atuais (dias e módulo) se houver
+        if (historyFilters.days !== 'all') { 
+            const limit = new Date(); 
+            limit.setDate(limit.getDate() - historyFilters.days); 
+            allHistory = allHistory.filter(x => new Date(x.date) >= limit); 
+        }
+
+        if (historyFilters.module !== 'all') {
+            allHistory = allHistory.filter(item => item.modules && item.modules[historyFilters.module]);
+        }
+        
+        if (allHistory.length === 0) {
             document.getElementById('avg-overall').textContent = '0%';
             document.getElementById('avg-time-per-q').textContent = '0s';
             document.getElementById('best-module').textContent = '-';
@@ -1917,7 +2442,6 @@
             document.getElementById('worst-module').textContent = '-';
             document.getElementById('worst-module-score').textContent = '0%';
             
-            // Limpar indicadores de evolução
             ['1d', '2d', '7d', '30d'].forEach(period => {
                 document.getElementById(`evolution-${period}`).textContent = '0%';
                 document.getElementById(`evolution-${period}-trend`).textContent = 'Nenhum dado disponível';
@@ -1928,20 +2452,17 @@
             return;
         }
 
-        // Calcular média geral
-        const avgOverall = h.length > 0 ? 
-            h.reduce((sum, item) => sum + item.percent, 0) / h.length : 0;
+        const avgOverall = allHistory.length > 0 ? 
+            allHistory.reduce((sum, item) => sum + item.percent, 0) / allHistory.length : 0;
         document.getElementById('avg-overall').textContent = `${avgOverall.toFixed(1)}%`;
 
-        // Calcular tempo médio por questão
-        const totalQuestions = h.reduce((sum, item) => sum + item.total, 0);
-        const totalTime = h.reduce((sum, item) => sum + (item.duration || 0), 0);
+        const totalQuestions = allHistory.reduce((sum, item) => sum + item.total, 0);
+        const totalTime = allHistory.reduce((sum, item) => sum + (item.duration || 0), 0);
         const avgTimePerQuestion = totalQuestions > 0 ? totalTime / totalQuestions : 0;
         document.getElementById('avg-time-per-q').textContent = `${avgTimePerQuestion.toFixed(1)}s`;
 
-        // Encontrar melhor e pior módulo
         const modulePerformance = new Map();
-        h.forEach(item => {
+        allHistory.forEach(item => {
             Object.entries(item.modules || {}).forEach(([moduleName, moduleStats]) => {
                 if (!modulePerformance.has(moduleName)) {
                     modulePerformance.set(moduleName, { correct: 0, total: 0, attempts: 0 });
@@ -1972,25 +2493,37 @@
             }
         });
 
-        document.getElementById('best-module').textContent = bestModule.length > 20 ? 
+        const bestModuleEl = document.getElementById('best-module');
+        const bestModuleTooltip = document.getElementById('best-module-tooltip');
+        const bestModuleDisplay = bestModule.length > 20 ? 
             bestModule.substring(0, 20) + '...' : bestModule;
+        
+        bestModuleEl.textContent = bestModuleDisplay;
+        bestModuleEl.setAttribute('title', bestModule);
+        bestModuleTooltip.textContent = bestModule;
+        
         document.getElementById('best-module-score').textContent = `${bestModuleScore.toFixed(1)}%`;
         
-        document.getElementById('worst-module').textContent = worstModule.length > 20 ? 
+        const worstModuleEl = document.getElementById('worst-module');
+        const worstModuleTooltip = document.getElementById('worst-module-tooltip');
+        const worstModuleDisplay = worstModule.length > 20 ? 
             worstModule.substring(0, 20) + '...' : worstModule;
+        
+        worstModuleEl.textContent = worstModuleDisplay;
+        worstModuleEl.setAttribute('title', worstModule);
+        worstModuleTooltip.textContent = worstModule;
+        
         document.getElementById('worst-module-score').textContent = worstModule !== '-' ? `${worstModuleScore.toFixed(1)}%` : 'N/A';
 
-        // Calcular evoluções para diferentes períodos
         const periods = [1, 2, 7, 30];
         periods.forEach(days => {
-            const evolutionData = calculateEvolution(h, days);
+            const evolutionData = calculateEvolution(allHistory, days);
             const evolutionElement = document.getElementById(`evolution-${days}d`);
             const trendElement = document.getElementById(`evolution-${days}d-trend`);
             
             if (evolutionElement && trendElement) {
                 evolutionElement.textContent = `${evolutionData.evolution > 0 ? '+' : ''}${evolutionData.evolution.toFixed(1)}%`;
                 
-                // Aplicar classe CSS baseada na evolução
                 if (evolutionData.evolution > 1) {
                     evolutionElement.classList.remove('text-red-600', 'text-slate-600');
                     evolutionElement.classList.add('text-green-600');
@@ -2006,7 +2539,6 @@
             }
         });
         
-        // Determinar tendências gerais
         const avgTrendText = avgOverall >= 70 ? 'Excelente!' : avgOverall >= 50 ? 'Bom, pode melhorar' : 'Precisa melhorar';
         document.getElementById('avg-trend').textContent = avgTrendText;
         
@@ -2014,39 +2546,27 @@
         document.getElementById('time-trend').textContent = timeTrendText;
     }
 
-    // ============================================
-    // FUNÇÕES MODIFICADAS PARA USAR PLOTLY.JS
-    // ============================================
-
-    // Atualiza ambos os gráficos 3D
     function update3dCharts() {
-        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
-        
-        // Aplicar filtros
+        const key = `alerr_hist_ALRR`;
+        let allHistory = JSON.parse(localStorage.getItem(key) || '[]');
+
         if(analytics3dFilters.days !== 'all') { 
             const limit = new Date(); 
             limit.setDate(limit.getDate() - analytics3dFilters.days); 
-            h = h.filter(x => new Date(x.date) >= limit); 
+            allHistory = allHistory.filter(x => new Date(x.date) >= limit); 
         }
 
         if(analytics3dFilters.module !== 'all') {
-            h = h.filter(item => item.modules && item.modules[analytics3dFilters.module]);
+            allHistory = allHistory.filter(item => item.modules && item.modules[analytics3dFilters.module]);
         }
 
-        // Atualizar contador de histórico
-        document.getElementById('history-count').textContent = `${h.length} ${h.length === 1 ? 'registro' : 'registros'}`;
+        document.getElementById('history-count').textContent = `${allHistory.length} ${allHistory.length === 1 ? 'registro' : 'registros'}`;
 
-        // Renderizar gráficos 3D com Plotly.js
-        renderOverall3dChart(h);
-        renderModule3dChart(h);
+        renderOverall3dChart(allHistory);
+        renderModule3dChart(allHistory);
         
-        // Atualizar métricas dos cards
         updateMetricsCards();
     }
-
-    // ============================================
-    // NOVAS FUNÇÕES PARA GRÁFICO DE PIZZA
-    // ============================================
 
     function renderPieChart(historyData) {
         const ctx = document.getElementById('pieChart').getContext('2d');
@@ -2084,7 +2604,6 @@
             return;
         }
 
-        // Coletar dados por módulo
         const moduleData = new Map();
         historyData.forEach(item => {
             Object.entries(item.modules || {}).forEach(([moduleName, moduleStats]) => {
@@ -2097,24 +2616,20 @@
             });
         });
 
-        // Preparar dados para o gráfico de pizza
         const modules = Array.from(moduleData.keys());
         const correctAnswers = modules.map(module => moduleData.get(module).correct);
         const totalAnswers = modules.map(module => moduleData.get(module).total);
         
-        // Calcular porcentagens CORRETAMENTE - baseado no total de questões respondidas por módulo
         const percentages = modules.map((module, index) => {
             const total = totalAnswers[index];
             return total > 0 ? (correctAnswers[index] / total) * 100 : 0;
         });
 
-        // Limitar a 10 módulos para o gráfico não ficar muito poluído
         const maxModules = 10;
         let displayModules = modules;
         let displayPercentages = percentages;
         
         if (modules.length > maxModules) {
-            // Combinar módulos menores em "Outros"
             const moduleStats = modules.map((module, index) => ({
                 module,
                 percentage: percentages[index],
@@ -2134,7 +2649,6 @@
             displayPercentages = [...topModules.map(item => item.percentage), otherPercentage];
         }
 
-        // Gerar cores dinamicamente
         const generateColors = (count) => {
             const colors = [];
             const hueStep = 360 / count;
@@ -2200,11 +2714,6 @@
         });
     }
 
-    // ============================================
-    // FUNÇÕES MODIFICADAS PARA CORRIGIR FILTRO DE MÓDULOS
-    // ============================================
-
-    // Obtém módulos únicos do histórico (somente módulos com questões respondidas)
     function getUniqueModulesFromHistory(historyData) {
         const modules = new Set();
         historyData.forEach(item => {
@@ -2213,7 +2722,6 @@
         return Array.from(modules).sort();
     }
 
-    // Atualiza o select de filtro de módulos com base no histórico
     function updateModuleFilterSelect(modules, selectId) {
         const select = document.getElementById(selectId);
         if (!select) return;
@@ -2228,7 +2736,6 @@
             select.appendChild(option);
         });
         
-        // Restaurar valor selecionado se ainda estiver disponível
         if (currentValue && modules.includes(currentValue)) {
             select.value = currentValue;
         } else {
@@ -2236,16 +2743,13 @@
         }
     }
 
-    // ============================================
-    // FUNÇÕES EXISTENTES MODIFICADAS
-    // ============================================
-
     async function loadDatabase() {
         try {
             showLoadingState(true);
             
-            const cachedData = localStorage.getItem('alerr_fullDatabase');
-            const cacheTimestamp = localStorage.getItem('alerr_cacheTimestamp');
+            const cacheKey = `alerr_fullDatabase_ALRR`;
+            const cachedData = localStorage.getItem(cacheKey);
+            const cacheTimestamp = localStorage.getItem(`alerr_cacheTimestamp_ALRR`);
             const oneDay = 24 * 60 * 60 * 1000;
             
             if (cachedData && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp)) < oneDay) {
@@ -2254,13 +2758,12 @@
                 appState.moduleCounts = parsedData.moduleCounts;
                 appState.moduleCounts2018 = parsedData.moduleCounts2018;
                 
-                console.log("Dados carregados do cache");
+                console.log("Dados carregados do cache para ALE-RR");
                 renderModules();
                 updateDistribution();
                 showLoadingState(false);
                 
-                // Verifica se há simulado pausado
-                const paused = localStorage.getItem('alerr_paused_sim');
+                const paused = localStorage.getItem(`alerr_paused_sim_ALRR`);
                 if (paused) {
                     document.getElementById('paused-alert').classList.remove('hidden');
                 }
@@ -2269,7 +2772,10 @@
                 return;
             }
             
-            const promises = DB_FILES.map(file => 
+            // Carregar arquivos da ALE-RR
+            const dbFiles = assembleiasDB['ALRR'];
+            
+            const promises = dbFiles.map(file => 
                 fetch(file)
                     .then(res => {
                         if (!res.ok) throw new Error(`Erro ao carregar ${file}: ${res.status}`);
@@ -2306,15 +2812,14 @@
                 moduleCounts: appState.moduleCounts,
                 moduleCounts2018: appState.moduleCounts2018
             };
-            localStorage.setItem('alerr_fullDatabase', JSON.stringify(cacheData));
-            localStorage.setItem('alerr_cacheTimestamp', Date.now().toString());
+            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+            localStorage.setItem(`alerr_cacheTimestamp_ALRR`, Date.now().toString());
             
             renderModules();
             updateDistribution();
             showLoadingState(false);
             
-            // Verifica se há simulado pausado
-            const paused = localStorage.getItem('alerr_paused_sim');
+            const paused = localStorage.getItem(`alerr_paused_sim_ALRR`);
             if (paused) {
                 document.getElementById('paused-alert').classList.remove('hidden');
             }
@@ -2362,8 +2867,11 @@
             options = ["Alternativa não disponível"];
         }
         
+        // Garantir que cada questão tenha um ID único
+        const questionId = q.id !== undefined ? q.id : id;
+        
         return {
-            id: id,
+            id: questionId,
             module: mod,
             text: q.enunciado || q.question || "Questão sem enunciado",
             options: options,
@@ -2387,7 +2895,10 @@
             label.innerHTML = `
                 <div class="flex items-center gap-3 overflow-hidden flex-grow">
                     <input type="checkbox" value="${mod}" class="mod-chk w-4 h-4 text-brand-600 rounded focus:ring-brand-500 cursor-pointer transition" onchange="updateDistribution()" ${is2018Module ? 'data-2018="true"' : ''}>
-                    <span class="text-xs md:text-sm truncate select-none dark:text-slate-300 font-medium" title="${mod}">${mod}</span>
+                    <span class="tooltip">
+                        <span class="text-xs md:text-sm truncate select-none dark:text-slate-300 font-medium truncate-with-tooltip" data-fulltext="${mod}" title="${mod}">${mod}</span>
+                        <span class="tooltip-text">${mod}</span>
+                    </span>
                 </div>
                 <div class="flex items-center gap-3">
                     <input type="number" min="0" max="${count}" class="manual-input hidden w-14 h-7 text-xs border border-slate-300 rounded px-1 text-center focus:border-brand-500 outline-none dark:bg-slate-800 dark:border-slate-600 dark:text-white" placeholder="0" oninput="updateDistribution()">
@@ -2405,7 +2916,6 @@
         document.getElementById('badge-modules').innerText = checkedModules.length;
         document.getElementById('badge-total').innerText = fullDatabase.length;
         
-        // Atualizar questões disponíveis
         const is2018 = document.getElementById('filter-2018').checked;
         let availableCount = 0;
         
@@ -2610,7 +3120,10 @@
                 let displayTotal = 0;
                 for (const [mod, qtd] of Object.entries(appState.distribution)) {
                     displayTotal += qtd;
-                    previewList.innerHTML += `<div class="flex justify-between border-b border-slate-100 dark:border-slate-600 pb-1"><span class="truncate pr-2">${mod}</span><span class="font-bold text-brand-600">${qtd}</span></div>`;
+                    previewList.innerHTML += `<div class="flex justify-between border-b border-slate-100 dark:border-slate-600 pb-1">
+                        <span class="truncate pr-2 truncate-with-tooltip" data-fulltext="${mod}" title="${mod}">${mod}</span>
+                        <span class="font-bold text-brand-600">${qtd}</span>
+                    </div>`;
                 }
                 document.getElementById('preview-total').innerText = `${displayTotal} questões`;
              } else {
@@ -2620,7 +3133,10 @@
                  } else {
                      let previewHTML = `<p class="text-brand-600 font-bold">Distribuição planejada (${totalPlan} questões):</p>`;
                      for (const [mod, qtd] of Object.entries(appState.distribution)) {
-                         previewHTML += `<div class="flex justify-between border-b border-slate-100 dark:border-slate-600 pb-1 mt-1"><span class="truncate pr-2">${mod}</span><span class="font-bold text-brand-600">${qtd}</span></div>`;
+                         previewHTML += `<div class="flex justify-between border-b border-slate-100 dark:border-slate-600 pb-1 mt-1">
+                             <span class="truncate pr-2 truncate-with-tooltip" data-fulltext="${mod}" title="${mod}">${mod}</span>
+                             <span class="font-bold text-brand-600">${qtd}</span>
+                         </div>`;
                      }
                      previewList.innerHTML = previewHTML;
                  }
@@ -2697,6 +3213,7 @@
         appState.index = 0;
         appState.startTime = new Date();
         appState.isPaused = false;
+        appState.questionStartTimes = new Array(finalQuestions.length).fill(null);
         
         startTimer();
         loadQuestion(0);
@@ -2736,20 +3253,30 @@
     function clearHistory(scope) {
         if(!confirm("Tem certeza que deseja limpar o histórico?")) return;
         
-        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
-        const now = new Date().getTime();
-        let cutoff = 0;
-
         if(scope === 'all') { 
-            localStorage.removeItem('alerr_hist'); 
-            localStorage.removeItem('alerr_fullDatabase');
-            localStorage.removeItem('alerr_cacheTimestamp');
+            localStorage.removeItem('alerr_hist_ALRR');
+            localStorage.removeItem('alerr_fullDatabase_ALRR');
+            localStorage.removeItem('alerr_cacheTimestamp_ALRR');
+            localStorage.removeItem('alerr_paused_sim_ALRR');
+            
+            // Limpar todas as estatísticas de questões
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('alerr_stats_')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
             loadHistory(); 
             updateCacheStats(); 
             toggleCacheModal();
             return; 
         }
         
+        const key = `alerr_hist_ALRR`;
+        let h = JSON.parse(localStorage.getItem(key) || '[]');
+        const now = new Date().getTime();
+        let cutoff = 0;
+
         if(scope === '1h') cutoff = now - (1 * 60 * 60 * 1000);
         else if(scope === '2h') cutoff = now - (2 * 60 * 60 * 1000);
         else if(scope === '4h') cutoff = now - (4 * 60 * 60 * 1000);
@@ -2763,7 +3290,7 @@
         }
 
         h = h.filter(x => new Date(x.date).getTime() >= cutoff);
-        localStorage.setItem('alerr_hist', JSON.stringify(h));
+        localStorage.setItem(key, JSON.stringify(h));
         loadHistory(); 
         updateCacheStats();
         toggleCacheModal();
@@ -2778,7 +3305,15 @@
         
         document.getElementById('q-current-index').innerText = idx + 1;
         document.getElementById('q-total-count').innerText = appState.questions.length;
-        document.getElementById('q-module-name').innerText = q.module;
+        
+        const moduleNameEl = document.getElementById('q-module-name');
+        const moduleNameTooltipEl = document.getElementById('q-module-name-tooltip');
+        const moduleName = q.module;
+        const truncatedModuleName = moduleName.length > 30 ? moduleName.substring(0, 30) + '...' : moduleName;
+        
+        moduleNameEl.textContent = truncatedModuleName;
+        moduleNameTooltipEl.textContent = moduleName;
+        
         document.getElementById('q-text').innerText = q.text;
         document.getElementById('progress-bar').style.width = `${((idx+1)/appState.questions.length)*100}%`;
         
@@ -2849,6 +3384,12 @@
             d.classList.toggle('ring-2', i === idx);
             d.classList.toggle('ring-brand-500', i === idx);
         });
+        
+        toggleSection('explanation');
+        
+        // Iniciar o cronômetro para medir tempo nesta questão
+        appState.currentQuestionStartTime = new Date();
+        appState.questionStartTimes[idx] = appState.currentQuestionStartTime;
     }
     
     function selectOpt(i) { 
@@ -2863,6 +3404,16 @@
         const isCorrect = (appState.answers[idx].sel === appState.questions[idx].correct);
         appState.answers[idx].ok = true; 
         appState.answers[idx].isCorrect = isCorrect;
+        
+        // Calcular tempo gasto na questão
+        let timeSpent = 0;
+        if (appState.currentQuestionStartTime) {
+            const now = new Date();
+            timeSpent = Math.floor((now - appState.currentQuestionStartTime) / 1000); // Tempo em segundos
+        }
+        
+        // Atualizar estatísticas da questão
+        updateQuestionStatistics(appState.questions[idx], isCorrect, timeSpent);
         
         loadQuestion(idx); 
         renderNav();
@@ -2931,6 +3482,12 @@
         return moduleStats;
     }
     
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+    
     function finishSimulation() {
         if (appState.timer) {
             clearInterval(appState.timer);
@@ -2994,14 +3551,14 @@
             }); 
         }
         
-        // Remove qualquer simulado pausado
-        localStorage.removeItem('alerr_paused_sim');
+        localStorage.removeItem(`alerr_paused_sim_ALRR`);
         
         showScreen('result');
     }
     
     function saveHistory(data) { 
-        const h = JSON.parse(localStorage.getItem('alerr_hist') || '[]'); 
+        const key = `alerr_hist_ALRR`;
+        const h = JSON.parse(localStorage.getItem(key) || '[]'); 
         data.correct = Number(data.correct) || 0;
         data.wrong = Number(data.wrong) || 0;
         data.unanswered = Number(data.unanswered) || 0;
@@ -3012,7 +3569,7 @@
         
         h.unshift(data); 
         if (h.length > 100) h.length = 100;
-        localStorage.setItem('alerr_hist', JSON.stringify(h)); 
+        localStorage.setItem(key, JSON.stringify(h)); 
         updateCacheStats();
     }
     
@@ -3061,64 +3618,90 @@
     }
     
     function loadHistory(filters = { days: 'all', module: 'all' }) {
-        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        const key = `alerr_hist_ALRR`;
+        let allHistory = JSON.parse(localStorage.getItem(key) || '[]');
         
-        // Aplicar filtro de dias
         if(filters.days !== 'all') { 
             const limit = new Date(); 
             limit.setDate(limit.getDate() - filters.days); 
-            h = h.filter(x => new Date(x.date) >= limit); 
+            allHistory = allHistory.filter(x => new Date(x.date) >= limit); 
         }
 
-        // Obter módulos únicos do histórico filtrado
-        const uniqueModules = getUniqueModulesFromHistory(h);
+        const uniqueModules = getUniqueModulesFromHistory(allHistory);
         
-        // Atualizar o select de filtro de módulos com base no histórico
         updateModuleFilterSelect(uniqueModules, 'module-filter');
         updateModuleFilterSelect(uniqueModules, '3d-module-filter');
 
-        // Aplicar filtro de módulo
         if(filters.module !== 'all') {
-            h = h.filter(item => item.modules && item.modules[filters.module]);
+            allHistory = allHistory.filter(item => item.modules && item.modules[filters.module]);
         }
 
-        // Tabela 1: Histórico Completo
         const tbody = document.getElementById('history-body'); 
         tbody.innerHTML = '';
         
-        if(h.length === 0) {
+        if(allHistory.length === 0) {
             document.getElementById('no-history').classList.remove('hidden');
         } else {
             document.getElementById('no-history').classList.add('hidden');
-            h.forEach(x => {
+            
+            // Calcular totais gerais
+            let totalCorrect = 0, totalWrong = 0, totalUnanswered = 0, totalQuestions = 0, totalDuration = 0;
+            
+            allHistory.forEach(x => {
                 const moduleNames = Object.keys(x.modules || {});
                 const moduleDisplay = moduleNames.length === 0 ? 'Sem módulo' : 
                                     moduleNames.length === 1 ? moduleNames[0] : 
                                     'Vários módulos';
                 
                 const avgTime = x.total > 0 ? (x.duration || 0) / x.total : 0;
+                const totalTime = formatTime(x.duration || 0);
+                
+                // Acumular totais
+                totalCorrect += x.correct;
+                totalWrong += x.wrong;
+                totalUnanswered += x.unanswered;
+                totalQuestions += x.total;
+                totalDuration += x.duration || 0;
                 
                 tbody.innerHTML += `
                     <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
                         <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
-                        <td class="px-6 py-4 text-xs text-slate-500" title="${moduleNames.join(', ')}">
+                        <td class="px-6 py-4 text-xs text-slate-500 truncate-with-tooltip" data-fulltext="${moduleNames.join(', ')}" title="${moduleNames.join(', ')}">
                             ${moduleDisplay.length > 30 ? moduleDisplay.substring(0, 30) + '...' : moduleDisplay}
                         </td>
                         <td class="px-6 py-4 text-green-600 font-bold">${x.correct}</td>
                         <td class="px-6 py-4 text-red-600 font-bold">${x.wrong}</td>
                         <td class="px-6 py-4 text-slate-500 font-bold">${x.unanswered}</td>
+                        <td class="px-6 py-4 text-slate-700 dark:text-slate-300 font-bold">${x.total}</td>
+                        <td class="px-6 py-4 text-slate-600 font-mono">${totalTime}</td>
                         <td class="px-6 py-4 text-slate-600 font-mono">${avgTime.toFixed(1)}s</td>
                         <td class="px-6 py-4 text-right font-bold ${x.percent >= 70 ? 'text-green-600' : x.percent >= 50 ? 'text-yellow-600' : 'text-red-600'}">${x.percent}%</td>
                     </tr>
                 `;
             });
+
+            // Adicionar linha de totais
+            const avgTotalTime = totalQuestions > 0 ? totalDuration / totalQuestions : 0;
+            const totalPercent = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+            const formattedTotalDuration = formatTime(totalDuration);
+            
+            tbody.innerHTML += `
+                <tr class="bg-slate-50 dark:bg-slate-700/50 font-bold">
+                    <td class="px-6 py-4" colspan="2">TOTAL (${allHistory.length} simulados)</td>
+                    <td class="px-6 py-4 text-green-600">${totalCorrect}</td>
+                    <td class="px-6 py-4 text-red-600">${totalWrong}</td>
+                    <td class="px-6 py-4 text-slate-500">${totalUnanswered}</td>
+                    <td class="px-6 py-4 text-slate-700 dark:text-slate-300">${totalQuestions}</td>
+                    <td class="px-6 py-4 text-slate-600 font-mono">${formattedTotalDuration}</td>
+                    <td class="px-6 py-4 text-slate-600 font-mono">${avgTotalTime.toFixed(1)}s</td>
+                    <td class="px-6 py-4 text-right ${totalPercent >= 70 ? 'text-green-600' : totalPercent >= 50 ? 'text-yellow-600' : 'text-red-600'}">${totalPercent}%</td>
+                </tr>
+            `;
         }
 
-        // Tabela 2: Detalhada por Módulo
         const moduleDetailBody = document.getElementById('module-detail-body');
         moduleDetailBody.innerHTML = '';
         
-        // Atualizar descrição
         const description = document.getElementById('module-detail-description');
         if (filters.module === 'all') {
             description.textContent = 'Mostrando todos os módulos (selecione um módulo específico para detalhes)';
@@ -3127,14 +3710,14 @@
             description.textContent = `Mostrando apenas o módulo: ${filters.module}`;
             document.getElementById('no-module-detail').classList.add('hidden');
             
-            // Coletar todos os dados do módulo selecionado
             let moduleDetails = [];
             
-            h.forEach(item => {
+            allHistory.forEach(item => {
                 if (item.modules && item.modules[filters.module]) {
                     const modData = item.modules[filters.module];
                     const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
                     const avgTime = modData.total > 0 ? (item.duration || 0) / modData.total : 0;
+                    const totalTime = formatTime(item.duration || 0);
                     
                     moduleDetails.push({
                         date: item.date,
@@ -3143,6 +3726,7 @@
                         wrong: modData.wrong,
                         unanswered: modData.unanswered,
                         total: modData.total,
+                        totalTime: totalTime,
                         avgTime: avgTime,
                         percent: percent
                     });
@@ -3160,13 +3744,14 @@
                     moduleDetailBody.innerHTML += `
                         <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
                             <td class="px-6 py-4">${new Date(x.date).toLocaleDateString()}</td>
-                            <td class="px-6 py-4 text-xs text-slate-500" title="${x.module}">
+                            <td class="px-6 py-4 text-xs text-slate-500 truncate-with-tooltip" data-fulltext="${x.module}" title="${x.module}">
                                 ${x.module.length > 30 ? x.module.substring(0, 30) + '...' : x.module}
                             </td>
                             <td class="px-6 py-4 text-green-600 font-bold">${x.correct}</td>
                             <td class="px-6 py-4 text-red-600 font-bold">${x.wrong}</td>
                             <td class="px-6 py-4 text-slate-500 font-bold">${x.unanswered}</td>
                             <td class="px-6 py-4 text-slate-700 dark:text-slate-300 font-bold">${x.total}</td>
+                            <td class="px-6 py-4 text-slate-600 font-mono">${x.totalTime}</td>
                             <td class="px-6 py-4 text-slate-600 font-mono">${x.avgTime.toFixed(1)}s</td>
                             <td class="px-6 py-4 text-right font-bold ${x.percent >= 70 ? 'text-green-600' : x.percent >= 50 ? 'text-yellow-600' : 'text-red-600'}">${x.percent}%</td>
                         </tr>
@@ -3175,11 +3760,10 @@
             }
         }
 
-        // Atualizar gráficos 2D
-        renderHistoryChart(h);
-        renderDistributionChart(h);
-        renderTrendChart(h);
-        renderPieChart(h);
+        renderHistoryChart(allHistory);
+        renderDistributionChart(allHistory);
+        renderTrendChart(allHistory);
+        renderPieChart(allHistory);
         updateMetricsCards();
     }
     
@@ -3529,36 +4113,37 @@
     }
     
     function exportHistoryCSV() {
-        let h = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+        const key = `alerr_hist_ALRR`;
+        let allHistory = JSON.parse(localStorage.getItem(key) || '[]');
         
-        if (h.length === 0) {
+        if (allHistory.length === 0) {
             alert("Nenhum histórico para exportar.");
             return;
         }
         
         let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Data,Módulo,Acertos,Erros,Branco,Nota(%),Duração(s),Detalhes\n";
+        csvContent += "Data,Módulo,Acertos,Erros,Branco,Total,Nota(%),Duração(s),Tempo Total,Detalhes\n";
         
-        h.forEach(item => {
+        allHistory.forEach(item => {
             const date = new Date(item.date).toLocaleString();
             const modules = Object.keys(item.modules || {});
             
             if (modules.length === 0) {
-                csvContent += `"${date}","Sem módulo",${item.correct},${item.wrong},${item.unanswered},${item.percent},${item.duration || 0},""\n`;
+                csvContent += `"${date}","Sem módulo",${item.correct},${item.wrong},${item.unanswered},${item.total},${item.percent},${item.duration || 0},"${formatTime(item.duration || 0)}",""\n`;
             } else if (modules.length === 1) {
                 const mod = modules[0];
                 const modData = item.modules[mod];
                 const percent = modData.total > 0 ? Math.round((modData.correct / modData.total) * 100) : 0;
-                csvContent += `"${date}","${mod}",${modData.correct},${modData.wrong},${modData.unanswered},${percent},${item.duration || 0},""\n`;
+                csvContent += `"${date}","${mod}",${modData.correct},${modData.wrong},${modData.unanswered},${modData.total},${percent},${item.duration || 0},"${formatTime(item.duration || 0)}",""\n`;
             } else {
-                csvContent += `"${date}","Vários módulos",${item.correct},${item.wrong},${item.unanswered},${item.percent},${item.duration || 0},"${modules.join('; ')}"\n`;
+                csvContent += `"${date}","Vários módulos",${item.correct},${item.wrong},${item.unanswered},${item.total},${item.percent},${item.duration || 0},"${formatTime(item.duration || 0)}","${modules.join('; ')}"\n`;
             }
         });
         
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `historico_simulados_${new Date().toISOString().slice(0,10)}.csv`);
+        link.setAttribute("download", `historico_simulados_ale_rr_${new Date().toISOString().slice(0,10)}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -3595,8 +4180,8 @@
                 
                 const headers = lines[0].split(',').map(h => h.trim());
                 
-                const expectedHeaders = ['Data', 'Módulo', 'Acertos', 'Erros', 'Branco', 'Nota(%)', 'Duração(s)', 'Detalhes'];
-                const hasRequiredHeaders = expectedHeaders.every(h => headers.includes(h));
+                const expectedHeaders = ['Data', 'Módulo', 'Acertos', 'Erros', 'Branco', 'Total', 'Nota(%)', 'Duração(s)', 'Tempo Total', 'Detalhes'];
+                const hasRequiredHeaders = expectedHeaders.slice(0, 7).every(h => headers.includes(h));
                 
                 if (!hasRequiredHeaders) {
                     alert("Formato de CSV inválido. Verifique os cabeçalhos.");
@@ -3622,8 +4207,9 @@
                     const correct = parseInt(values[2]) || 0;
                     const wrong = parseInt(values[3]) || 0;
                     const unanswered = parseInt(values[4]) || 0;
-                    const percent = parseInt(values[5]) || 0;
-                    const duration = parseInt(values[6]) || 0;
+                    const total = parseInt(values[5]) || (correct + wrong + unanswered);
+                    const percent = parseInt(values[6]) || 0;
+                    const duration = parseInt(values[7]) || 0;
                     
                     let modules = {};
                     
@@ -3634,7 +4220,7 @@
                             correct: correct,
                             wrong: wrong,
                             unanswered: unanswered,
-                            total: correct + wrong + unanswered
+                            total: total
                         };
                     }
                     
@@ -3643,7 +4229,7 @@
                         correct: correct,
                         wrong: wrong,
                         unanswered: unanswered,
-                        total: correct + wrong + unanswered,
+                        total: total,
                         percent: percent,
                         duration: duration,
                         modules: modules
@@ -3655,14 +4241,15 @@
                     return;
                 }
                 
-                let existingHistory = JSON.parse(localStorage.getItem('alerr_hist') || '[]');
+                const key = `alerr_hist_ALRR`;
+                let existingHistory = JSON.parse(localStorage.getItem(key) || '[]');
                 existingHistory = [...newHistory, ...existingHistory];
                 
                 if (existingHistory.length > 100) {
                     existingHistory = existingHistory.slice(0, 100);
                 }
                 
-                localStorage.setItem('alerr_hist', JSON.stringify(existingHistory));
+                localStorage.setItem(key, JSON.stringify(existingHistory));
                 
                 closeCSVImportModal();
                 loadHistory(historyFilters);
@@ -3679,12 +4266,467 @@
         reader.readAsText(file);
     }
 
+    // ============================================
+    // NOVAS FUNÇÕES PARA COMENTÁRIOS E REPORTAR
+    // ============================================
+
+    function showReportModal() {
+        document.getElementById('report-modal').classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+        document.getElementById('report-modal').classList.add('hidden');
+        document.getElementById('report-type').value = 'erro';
+        document.getElementById('report-description').value = '';
+    }
+
+    function submitReport() {
+        const type = document.getElementById('report-type').value;
+        const description = document.getElementById('report-description').value;
+        
+        if (!description.trim()) {
+            alert('Por favor, descreva o problema encontrado.');
+            return;
+        }
+        
+        console.log('Reporte enviado:', { type, description, questionId: appState.index });
+        
+        alert('Obrigado por reportar o problema! Nossa equipe irá analisá-lo.');
+        closeReportModal();
+    }
+
+    let emojiPickerOpen = false;
+
+    function toggleEmojiPicker() {
+        const picker = document.getElementById('emoji-picker');
+        picker.classList.toggle('hidden');
+        emojiPickerOpen = !picker.classList.contains('hidden');
+        
+        if (emojiPickerOpen) {
+            const emojis = ['😀', '😂', '🥰', '😎', '🤔', '👏', '🙌', '🔥', '💯', '👍', '👎', '❤️', '🎉', '🤝', '💪', '✨', '🌟', '💡', '📚', '🎯'];
+            
+            picker.innerHTML = '';
+            emojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.className = 'emoji-option';
+                span.textContent = emoji;
+                span.onclick = () => {
+                    const editor = document.getElementById('new-comment-editor');
+                    insertTextAtCursor(editor, emoji);
+                    editor.focus();
+                };
+                picker.appendChild(span);
+            });
+        }
+    }
+
+    function insertTextAtCursor(element, text) {
+        const range = document.getSelection().getRangeAt(0);
+        range.deleteContents();
+        const textNode = document.createTextNode(text);
+        range.insertNode(textNode);
+        range.setStartAfter(textNode);
+        range.setEndAfter(textNode);
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(range);
+    }
+
+    function formatText(command, value = null) {
+        document.execCommand(command, false, value);
+        document.getElementById('new-comment-editor').focus();
+    }
+
+    // Fechar emoji picker ao clicar fora
+    document.addEventListener('click', function(event) {
+        const picker = document.getElementById('emoji-picker');
+        const emojiButton = document.querySelector('button[onclick="toggleEmojiPicker()"]');
+        
+        if (picker && !picker.contains(event.target) && event.target !== emojiButton && !emojiButton.contains(event.target)) {
+            picker.classList.add('hidden');
+            emojiPickerOpen = false;
+        }
+    });
+
+    function addComment() {
+        const editor = document.getElementById('new-comment-editor');
+        const commentText = editor.innerHTML.trim();
+        
+        if (!commentText || commentText === '<br>') {
+            alert('Por favor, escreva um comentário antes de enviar.');
+            return;
+        }
+        
+        const commentsList = document.getElementById('comments-list');
+        const newComment = document.createElement('div');
+        newComment.className = 'comment-item';
+        const commentId = 'comment_' + Date.now() + Math.random().toString(36).substr(2, 9);
+        newComment.dataset.commentId = commentId;
+        
+        const avatars = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-yellow-500'];
+        const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
+        
+        newComment.innerHTML = `
+            <div class="flex items-start gap-3">
+                <div class="comment-avatar ${randomAvatar}">U</div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h5 class="font-bold text-slate-800 dark:text-white">Você</h5>
+                            <div class="comment-date">Agora</div>
+                        </div>
+                        <button onclick="reportComment(this)" class="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400">
+                            Reportar abuso
+                        </button>
+                    </div>
+                    <div class="mt-2 text-slate-700 dark:text-slate-300 comment-content">${commentText}</div>
+                    <div class="comment-actions">
+                        <button onclick="likeComment(this)">
+                            <i class="far fa-thumbs-up"></i>
+                            <span>Gostei (<span class="like-count">0</span>)</span>
+                        </button>
+                        <button onclick="toggleResponses(this)">
+                            <i class="far fa-comment"></i>
+                            <span>Respostas (<span class="response-count">0</span>)</span>
+                        </button>
+                    </div>
+                    <div class="comment-responses hidden mt-4">
+                        <!-- Respostas serão carregadas aqui -->
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        commentsList.insertBefore(newComment, commentsList.firstChild);
+        
+        const commentCount = parseInt(document.getElementById('comments-count').textContent) || 0;
+        document.getElementById('comments-count').textContent = `${commentCount + 1} comentários`;
+        
+        editor.innerHTML = '';
+        document.getElementById('emoji-picker').classList.add('hidden');
+        emojiPickerOpen = false;
+        
+        console.log('Comentário adicionado:', commentText);
+    }
+
+    function loadMoreComments() {
+        alert('Funcionalidade de carregar mais comentários será implementada com o back-end.');
+    }
+
+    function reportComment(button) {
+        const commentDiv = button.closest('.comment-item');
+        const commentAuthor = commentDiv.querySelector('h5').textContent;
+        const commentId = commentDiv.dataset.commentId;
+        
+        // Armazenar o comentário atual para reporte
+        window.currentReportedComment = commentId;
+        
+        // Mostrar modal de reporte de comentário
+        document.getElementById('report-comment-modal').classList.remove('hidden');
+    }
+
+    function closeReportCommentModal() {
+        document.getElementById('report-comment-modal').classList.add('hidden');
+        document.getElementById('report-comment-type').value = 'spam';
+        document.getElementById('report-comment-description').value = '';
+        window.currentReportedComment = null;
+    }
+
+    function submitCommentReport() {
+        const type = document.getElementById('report-comment-type').value;
+        const description = document.getElementById('report-comment-description').value;
+        const commentId = window.currentReportedComment;
+        
+        if (!description.trim()) {
+            alert('Por favor, descreva o motivo do reporte.');
+            return;
+        }
+        
+        console.log('Reporte de comentário enviado:', { type, description, commentId });
+        
+        // Marcar o comentário como reportado visualmente
+        if (commentId) {
+            const commentDiv = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (commentDiv) {
+                commentDiv.style.opacity = '0.7';
+                commentDiv.style.backgroundColor = '#fef2f2';
+                if (document.documentElement.classList.contains('dark')) {
+                    commentDiv.style.backgroundColor = '#450a0a';
+                }
+            }
+        }
+        
+        alert('Obrigado por reportar o comentário! Nossa equipe irá analisá-lo.');
+        closeReportCommentModal();
+    }
+
+    function likeComment(button) {
+        const commentItem = button.closest('.comment-item');
+        const commentId = commentItem.dataset.commentId;
+        if (!commentId) return;
+
+        // Recupera os likes do localStorage
+        let likedComments = JSON.parse(localStorage.getItem('alerr_likedComments') || '{}');
+        if (!likedComments[commentId]) {
+            likedComments[commentId] = [];
+        }
+
+        const index = likedComments[commentId].indexOf(userId);
+        if (index === -1) {
+            // Adiciona like
+            likedComments[commentId].push(userId);
+            button.style.color = '#16a34a';
+            button.querySelector('i').className = 'fas fa-thumbs-up';
+        } else {
+            // Remove like
+            likedComments[commentId].splice(index, 1);
+            button.style.color = '';
+            button.querySelector('i').className = 'far fa-thumbs-up';
+        }
+
+        // Atualiza o contador
+        const countSpan = button.querySelector('.like-count');
+        countSpan.textContent = likedComments[commentId].length;
+
+        // Salva no localStorage
+        localStorage.setItem('alerr_likedComments', JSON.stringify(likedComments));
+    }
+
+    function toggleResponses(button) {
+        const commentItem = button.closest('.comment-item');
+        const responsesDiv = commentItem.querySelector('.comment-responses');
+        const isHidden = responsesDiv.classList.contains('hidden');
+        const responseCountSpan = commentItem.querySelector('.response-count');
+        
+        if (isHidden) {
+            loadResponses(responsesDiv, responseCountSpan);
+            responsesDiv.classList.remove('hidden');
+        } else {
+            responsesDiv.classList.add('hidden');
+        }
+    }
+
+    function loadResponses(container, countSpan) {
+        const responses = [
+            { author: "Ana Silva", text: "Concordo com você!", date: "08 de Dezembro de 2025 às 10:00" },
+            { author: "João Souza", text: "A resposta correta é a C.", date: "08 de Dezembro de 2025 às 11:30" }
+        ];
+        
+        container.innerHTML = '';
+        responses.forEach(resp => {
+            const responseEl = document.createElement('div');
+            responseEl.className = 'mb-3';
+            responseEl.innerHTML = `
+                <div class="flex items-start gap-2">
+                    <div class="comment-avatar bg-blue-500" style="width:30px; height:30px; font-size:12px">${resp.author.charAt(0)}</div>
+                    <div class="flex-1">
+                        <h6 class="font-bold text-slate-700 dark:text-slate-300 text-sm">${resp.author}</h6>
+                        <div class="text-xs text-slate-500">${resp.date}</div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">${resp.text}</p>
+                    </div>
+                </div>
+            `;
+            container.appendChild(responseEl);
+        });
+        
+        if (countSpan) {
+            countSpan.textContent = responses.length;
+        }
+    }
+
+    function toggleSection(section) {
+        document.getElementById('explanation-box').classList.add('hidden');
+        document.getElementById('question-stats').classList.add('hidden');
+        document.getElementById('comments-section').classList.add('hidden');
+        
+        if (section === 'explanation') {
+            const q = appState.questions[appState.index];
+            const ans = appState.answers[appState.index];
+            const boxExp = document.getElementById('explanation-box');
+            boxExp.classList.remove('hidden');
+            if (ans.ok) {
+                document.getElementById('explanation-text').innerText = q.explanation;
+            } else {
+                document.getElementById('explanation-text').innerText = 'Responda a questão para ver a explicação.';
+            }
+        } else if (section === 'stats') {
+            document.getElementById('question-stats').classList.remove('hidden');
+            // Atualizar estatísticas reais
+            updateQuestionStats();
+        } else if (section === 'comments') {
+            document.getElementById('comments-section').classList.remove('hidden');
+        }
+        
+        appState.currentSection = section;
+    }
+
+    // Funções auxiliares
+    function showScreen(id) { 
+        ['home','quiz','result','analytics','error','pause'].forEach(s => {
+            const screen = document.getElementById('screen-'+s);
+            if (screen) screen.classList.add('hidden');
+        }); 
+        
+        const targetScreen = document.getElementById('screen-'+id);
+        if (targetScreen) {
+            targetScreen.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+        
+        if(id === 'home') {
+            updateDistribution();
+            const paused = localStorage.getItem(`alerr_paused_sim_ALRR`);
+            if (paused) {
+                document.getElementById('paused-alert').classList.remove('hidden');
+            }
+        } else if (id === 'analytics') {
+            setTimeout(() => {
+                applyHistoryFilters();
+                update3dCharts();
+                updateMetricsCards();
+            }, 100);
+        } else if (id === 'quiz') {
+            toggleSection('explanation');
+        }
+    }
+    
+    function togglePdfDrawer() { 
+        const d = document.getElementById('pdf-drawer'); 
+        d.classList.toggle('translate-x-full'); 
+        d.classList.toggle('drawer-open'); 
+    }
+    
+    function initTheme() { 
+        if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcon();
+    }
+    
+    function toggleDarkMode() { 
+        document.documentElement.classList.toggle('dark'); 
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); 
+        updateThemeIcon();
+        
+        update3dCharts();
+    }
+
+    function updateThemeIcon() {
+        const themeIcon = document.getElementById('theme-icon');
+        if (document.documentElement.classList.contains('dark')) {
+            themeIcon.className = 'fas fa-sun';
+        } else {
+            themeIcon.className = 'fas fa-moon';
+        }
+    }
+
+    function pauseSimulation() {
+        const now = new Date();
+        const elapsed = Math.floor((now - appState.startTime) / 1000);
+
+        const pausedState = {
+            questions: appState.questions,
+            answers: appState.answers,
+            index: appState.index,
+            config: appState.config,
+            elapsedTime: elapsed,
+            datePaused: new Date().toISOString()
+        };
+
+        localStorage.setItem(`alerr_paused_sim_ALRR`, JSON.stringify(pausedState));
+
+        if (appState.timer) {
+            clearInterval(appState.timer);
+            appState.timer = null;
+        }
+
+        updatePauseScreen(pausedState);
+
+        appState.isPaused = true;
+
+        showScreen('pause');
+    }
+
+    function updatePauseScreen(pausedState) {
+        const total = pausedState.questions.length;
+        const current = pausedState.index + 1;
+        document.getElementById('paused-progress').textContent = `${current}/${total}`;
+
+        let correct = 0;
+        for (let i = 0; i < pausedState.answers.length; i++) {
+            if (pausedState.answers[i].ok && pausedState.answers[i].isCorrect) {
+                correct++;
+            }
+        }
+        document.getElementById('paused-correct').textContent = correct;
+
+        const minutes = Math.floor(pausedState.elapsedTime / 60).toString().padStart(2, '0');
+        const seconds = (pausedState.elapsedTime % 60).toString().padStart(2, '0');
+        document.getElementById('paused-time').textContent = `${minutes}:${seconds}`;
+    }
+
+    function resumeSimulation() {
+        const paused = localStorage.getItem(`alerr_paused_sim_ALRR`);
+        
+        if (!paused) {
+            alert('Não há simulado pausado.');
+            return;
+        }
+
+        const state = JSON.parse(paused);
+
+        appState.questions = state.questions;
+        appState.answers = state.answers;
+        appState.index = state.index;
+        appState.config = state.config;
+
+        const now = new Date();
+        const adjustedStartTime = new Date(now.getTime() - (state.elapsedTime * 1000));
+        appState.startTime = adjustedStartTime;
+
+        localStorage.removeItem(`alerr_paused_sim_ALRR`);
+
+        document.getElementById('paused-alert').classList.add('hidden');
+
+        startTimer();
+
+        loadQuestion(appState.index);
+        renderNav();
+
+        showScreen('quiz');
+    }
+
+    function discardPaused() {
+        if (confirm('Tem certeza que deseja descartar o simulado pausado? Esta ação não pode ser desfeita.')) {
+            localStorage.removeItem(`alerr_paused_sim_ALRR`);
+            document.getElementById('paused-alert').classList.add('hidden');
+        }
+    }
+
+    function abandonSimulation() {
+        if (!confirm('Tem certeza que deseja abandonar o simulado? Todo o progresso será perdido e não será salvo no histórico.')) {
+            return;
+        }
+
+        if (appState.timer) {
+            clearInterval(appState.timer);
+            appState.timer = null;
+        }
+
+        localStorage.removeItem(`alerr_paused_sim_ALRR`);
+
+        appState.questions = [];
+        appState.answers = [];
+        appState.index = 0;
+        appState.isPaused = false;
+
+        showScreen('home');
+    }
+
     // Inicialização
     document.addEventListener('DOMContentLoaded', () => {
         initTheme();
         loadDatabase();
         
-        // Inicializa gráficos 3D com Plotly.js
         init3dCharts();
         
         setTimeout(() => {
@@ -3700,6 +4742,39 @@
         
         updateFilterButtons();
         update3dFilterButtons();
+
+        // Carregar likes dos comentários existentes
+        setTimeout(() => {
+            const likedComments = JSON.parse(localStorage.getItem('alerr_likedComments') || '{}');
+            
+            // Para comentários existentes
+            document.querySelectorAll('.comment-item').forEach(item => {
+                const commentId = item.dataset.commentId;
+                if (commentId && likedComments[commentId]) {
+                    const likeCount = likedComments[commentId].length;
+                    const likeButton = item.querySelector('.like-count');
+                    if (likeButton) {
+                        likeButton.textContent = likeCount;
+                    }
+                    
+                    // Verificar se o usuário atual já curtiu
+                    if (likedComments[commentId].includes(userId)) {
+                        const likeBtn = item.querySelector('.comment-actions button');
+                        if (likeBtn) {
+                            likeBtn.style.color = '#16a34a';
+                            likeBtn.querySelector('i').className = 'fas fa-thumbs-up';
+                        }
+                    }
+                }
+                
+                // Inicializar contadores de respostas
+                const responseCount = Math.floor(Math.random() * 3);
+                const responseCountSpan = item.querySelector('.response-count');
+                if (responseCountSpan) {
+                    responseCountSpan.textContent = responseCount;
+                }
+            });
+        }, 100);
     });
   </script>
 </body>
