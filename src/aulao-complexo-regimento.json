@@ -1,0 +1,768 @@
+[
+  {
+    "id": 1,
+    "titulo": "Das Proposições",
+    "enunciado": "1) Considera-se Proposição toda matéria sujeita à deliberação da Assembleia. Diante dessa informação, assinale a alternativa que NÃO corresponde a uma espécie de proposição prevista no Regimento:",
+    "alternativas": {
+      "A": "veto ao projeto de lei.",
+      "B": "indicação.",
+      "C": "parecer.",
+      "D": "medida provisória.",
+      "E": "pedido de informação."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 185, §1º, as espécies de proposição são: I - propostas de emenda à Constituição; II - projeto de lei complementar; III - projeto de lei ordinária; IV - projeto de decreto legislativo; V - projeto de resolução legislativa; VI - veto ao projeto de lei; VII - indicação; VIII - parecer; IX - requerimento; X - substitutivo; XI - emenda; XII - subemenda; XIII - moção; XIV - recursos; XV - propostas de fiscalização e controle; e XVI - pedido de informação. Não inclui medida provisória."
+  },
+  {
+    "id": 2,
+    "titulo": "Modificação do Regimento Interno",
+    "enunciado": "2) O Regimento Interno da ALE/RR poderá ser modificado por:",
+    "alternativas": {
+      "A": "projeto de lei ordinária.",
+      "B": "projeto de lei complementar.",
+      "C": "projeto de decreto legislativo.",
+      "D": "projeto de resolução legislativa.",
+      "E": "proposta de emenda à constitucional."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 179: 'O Regimento Interno poderá ser modificado ou reformado, por meio de projeto de resolução de iniciativa da Mesa ou de Comissão Especial para esse fim criada'."
+  },
+  {
+    "id": 3,
+    "titulo": "Quórum para Alteração do Regimento",
+    "enunciado": "3) O quórum para aprovação de alteração do Regimento Interno é:",
+    "alternativas": {
+      "A": "maioria simples, em turno único.",
+      "B": "maioria absoluta, em turno único.",
+      "C": "3/5 dos membros, em turno único.",
+      "D": "3/5 dos membros, em dois turnos.",
+      "E": "maioria absoluta, em dois turnos."
+    },
+    "resposta": "E",
+    "explicacao": "Conforme Art. 180, §1º: 'o projeto, com ou sem parecer da Mesa Diretora e da Comissão de Constituição, Justiça e Redação Final, será submetido a Plenário, em 2 (dois) turnos, sendo o quórum para aprovação, em cada turno, o de maioria absoluta'."
+  },
+  {
+    "id": 4,
+    "titulo": "Prazo para Envio ao Governador",
+    "enunciado": "4) Projetos aprovados que dependem de sanção deverão ser enviados ao governador em até:",
+    "alternativas": {
+      "A": "15 dias.",
+      "B": "30 dias.",
+      "C": "60 dias."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 197, parágrafo único: 'Os projetos de lei aprovados serão enviados à sanção do governador, no prazo máximo de 15 (quinze) dias'."
+  },
+  {
+    "id": 5,
+    "titulo": "Emenda à Constituição Estadual",
+    "enunciado": "5) A Constituição do Estado poderá ser emendada por proposta de:",
+    "alternativas": {
+      "A": "1/3 dos deputados.",
+      "B": "qualquer deputado individualmente.",
+      "C": "2/3 dos deputados.",
+      "D": "maioria simples, presente a maioria absoluta.",
+      "E": "maioria absoluta da Mesa Diretora."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 199, inciso I: 'A Constituição do Estado poderá ser emendada por proposta: I - de, no mínimo, 1/3 (um terço) dos membros da Assembleia Legislativa'."
+  },
+  {
+    "id": 6,
+    "titulo": "Aprovação de Proposta de Emenda à Constituição",
+    "enunciado": "6) A proposta de emenda à Constituição será aprovada se obtiver:",
+    "alternativas": {
+      "A": "maioria absoluta em dois turnos.",
+      "B": "3/5 dos votos em dois turnos.",
+      "C": "2/3 dos votos em turno único.",
+      "D": "maioria simples em turno único.",
+      "E": "2/3 dos votos em dois turnos."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 199, §3º: 'A proposta será discutida e votada em 02 (dois) turnos e considerada aprovada se obtiver, em ambos, 3/5 (três quintos) dos votos favoráveis dos membros da Assembleia'."
+  },
+  {
+    "id": 7,
+    "titulo": "Aprovação de Projeto de Lei Complementar",
+    "enunciado": "7) O projeto de lei complementar será aprovado por:",
+    "alternativas": {
+      "A": "maioria simples dos presentes.",
+      "B": "maioria absoluta dos votos.",
+      "C": "2/3 dos membros.",
+      "D": "3/5 dos membros.",
+      "E": "1/3 dos membros."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 205: 'O projeto de lei complementar será aprovado se obtiver o voto favorável da maioria absoluta dos membros da Assembleia'."
+  },
+  {
+    "id": 8,
+    "titulo": "Aprovação de Projeto de Lei Ordinária",
+    "enunciado": "8) Os projetos de leis ordinárias serão aprovados:",
+    "alternativas": {
+      "A": "pela maioria absoluta dos membros.",
+      "B": "por 2/3 dos votos.",
+      "C": "pela maioria simples dos presentes.",
+      "D": "por 3/5 dos membros.",
+      "E": "por 1/3 dos votos."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 206, parágrafo único: 'As leis ordinárias serão aprovadas pela maioria simples dos membros desta Casa presentes a maioria absoluta na Sessão Plenária'."
+  },
+  {
+    "id": 9,
+    "titulo": "Projeto de Decreto Legislativo",
+    "enunciado": "9) Acerca do Projeto de decreto legislativo, é correto afirmar que:",
+    "alternativas": {
+      "A": "prescinde de sanção do governador.",
+      "B": "é aprovado por maioria absoluta.",
+      "C": "destina-se a regular matéria de caráter político ou administrativo sobre o que deva a Assembleia pronunciar-se.",
+      "D": "é iniciativa exclusiva do Executivo.",
+      "E": "exige dois turnos de votação."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 207: 'Projeto de decreto legislativo é a proposição destinada a regular matéria de caráter político, de competência privativa do Poder Legislativo, prescindindo da sanção do governador, o qual será aprovado pela maioria simples'."
+  },
+  {
+    "id": 10,
+    "titulo": "Projeto de Resolução Legislativa",
+    "enunciado": "10) Projeto de resolução legislativa será aprovado:",
+    "alternativas": {
+      "A": "por maioria absoluta em dois turnos.",
+      "B": "por maioria simples em turno único.",
+      "C": "por 3/5 dos votos.",
+      "D": "por 1/3 dos votos.",
+      "E": "com sanção do governador."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 208, parágrafo único: 'O projeto de resolução será aprovado por maioria simples e em turno único, ressalvado quando tratar de alteração deste Regimento'."
+  },
+  {
+    "id": 11,
+    "titulo": "Requerimentos Sujeitos a Despacho do Presidente",
+    "enunciado": "11) Dentre outras hipóteses, os Requerimentos sujeitos a despacho do Presidente incluem:",
+    "alternativas": {
+      "A": "retirada de propósito da Ordem do Dia.",
+      "B": "alistamento de votação.",
+      "C": "vigência de presença.",
+      "D": "convocação de secretário de Estado."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 211, inciso XIII: 'verificação de presença' é requerimento sujeito a despacho do Presidente. A alternativa 'vigência de presença' é entendida como 'verificação de presença'."
+  },
+  {
+    "id": 12,
+    "titulo": "Pedido de Informação Não Atendido",
+    "enunciado": "12) Pedido de informação não atendido no prazo legal:",
+    "alternativas": {
+      "A": "será automaticamente arquivado.",
+      "B": "não produz consequências.",
+      "C": "impede nova solicitação.",
+      "D": "depende de autorização judicial.",
+      "E": "gera crime de responsabilidade."
+    },
+    "resposta": "E",
+    "explicacao": "Conforme Art. 225, §6º: 'O não-atendimento ou a omissão de informação ensejarão contra o responsável aplicabilidade da legislação referente à crime de responsabilidade, sem prejuízo das medidas judiciais cabíveis'."
+  },
+  {
+    "id": 13,
+    "titulo": "Emenda Aglutinativa",
+    "enunciado": "13) No âmbito das emendas parlamentares, considera-se emenda aglutinativa aquela que:",
+    "alternativas": {
+      "A": "altera o texto sem modificar substancialmente o mérito.",
+      "B": "resulta da fusão de outras emendas, por transação tendente à aproximação de seus objetos.",
+      "C": "substitui integralmente a proposição principal.",
+      "D": "suprime dispositivo incompatível com o texto constitucional.",
+      "E": "corrige vício de linguagem ou técnica legislativa."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 213, inciso II: 'aglutinativa é a que resulta de fusão de outras emendas, por transação tendente à aproximação dos respectivos objetos'."
+  },
+  {
+    "id": 14,
+    "titulo": "Discussão em Plenário",
+    "enunciado": "14) A discussão de proposições em Plenário, segundo o Regimento Interno da ALE/RR, somente poderá ocorrer:",
+    "alternativas": {
+      "A": "com a presença mínima da maioria simples dos deputados.",
+      "B": "com quórum correspondente à maioria absoluta dos membros.",
+      "C": "com a presença mínima de um terço dos deputados.",
+      "D": "independentemente de quórum, desde que haja oradores inscritos.",
+      "E": "apenas durante Sessões Ordinárias."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 228, §2º: 'A discussão só poderá ser feita com a presença mínima de 1/3 (um terço) dos deputados'."
+  },
+  {
+    "id": 15,
+    "titulo": "Uso da Palavra",
+    "enunciado": "15) No que se refere ao uso da palavra durante a discussão de proposições, é correto afirmar que:",
+    "alternativas": {
+      "A": "o deputado poderá falar por até 10 minutos em cada discussão.",
+      "B": "a palavra será concedida prioritariamente aos líderes partidários.",
+      "C": "o Presidente poderá impedir a inscrição de deputados candidatos à matéria.",
+      "D": "o autor da proposição tem preferência no uso da palavra.",
+      "E": "a ordem de inscrição e relevante para concessão da palavra."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 159, inciso I: a palavra é concedida primeiramente 'ao autor da proposição'."
+  },
+  {
+    "id": 16,
+    "titulo": "Turno Regimental",
+    "enunciado": "16) Cada turno regimental é constituído de:",
+    "alternativas": {
+      "A": "discussão apenas.",
+      "B": "votação apenas.",
+      "C": "leitura e votação.",
+      "D": "discussão e votação."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 230, parágrafo único: 'Cada turno é constituído de discussão e votação'."
+  },
+  {
+    "id": 17,
+    "titulo": "Avulso",
+    "enunciado": "17) De acordo com o Regimento Interno, Avulso é:",
+    "alternativas": {
+      "A": "parecer oral apresentado em Plenário.",
+      "B": "publicação externa do Diário Oficial.",
+      "C": "publicação interna da Assembleia com proposições e pareceres.",
+      "D": "relatório exclusivo das Comissões Permanentes.",
+      "E": "registro eletrônico das validações."
+    },
+    "resposta": "C",
+    "explicacao": "Conceito extraído do Art. 237, §1º: 'Nenhuma proposição será incluída na Ordem do Dia sem que previamente seja reproduzida em avulso'. Avulso é a reprodução interna das proposições e pareceres para distribuição."
+  },
+  {
+    "id": 18,
+    "titulo": "Acerca dos Avulsos",
+    "enunciado": "18) Acerca dos avulsos, assinale a alternativa correta:",
+    "alternativas": {
+      "A": "A reprodução em avulso pode ser dispensada em qualquer hipótese, a critério do presidente.",
+      "B": "A proposição somente será incluída na Ordem do Dia após reprodução em avulso com antecedência mínima de 48 horas.",
+      "C": "A exigência de avulso é suprimida quando a proposição estiver autuada e instruída no SAPL.",
+      "D": "Os avulsos destinam-se exclusivamente aos membros das Comissões.",
+      "E": "O avulso substitui a leitura da proposição em Plenário em qualquer caso."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 237, §2º: 'A exigência da reprodução do avulso fica suprida nos casos em que a proposição esteja autuada e devidamente instruída no Sistema de Apoio ao Processo Legislativo – SAPL'."
+  },
+  {
+    "id": 19,
+    "titulo": "Processos de Votação",
+    "enunciado": "19) São processos de votação previstos no Regimento EXCETO:",
+    "alternativas": {
+      "A": "simbólico",
+      "B": "nominal",
+      "C": "secretó",
+      "D": "por procuração",
+      "E": "Nenhuma das alternativas está incorreta"
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 244: 'São três os processos de votação: I - simbólico; II - nominal, por meio do processo eletrônico; e III - secreto.' Não há previsão de votação por procuração."
+  },
+  {
+    "id": 20,
+    "titulo": "Sobre as Votações",
+    "enunciado": "20) Sobre as votações, é correto afirmar que, segundo o Regimento Interno da ALERR:",
+    "alternativas": {
+      "A": "o deputado é obrigado a manifestar voto positivo ou negativo.",
+      "B": "a abstenção impede o cumprimento das premissas do parlamentar.",
+      "C": "a abstenção equivale à ausência para todos os efeitos.",
+      "D": "a abstenção somente é possível em votação secreta.",
+      "E": "a abstenção é admitida e registrada para efeito de presença."
+    },
+    "resposta": "E",
+    "explicacao": "Conforme Art. 240, §3º: 'Qualquer deputado poderá recusar-se de manifestar seu voto nas deliberações, devendo, neste caso, registrar abstenção para efeito de presença na Sessão, sob pena de ser considerado faltoso'."
+  },
+  {
+    "id": 21,
+    "titulo": "Processos de Votação",
+    "enunciado": "21) Sobre os processos de votação, assinale a alternativa correta:",
+    "alternativas": {
+      "A": "O escrutínio secreto é exceção e possui hipóteses específicas.",
+      "B": "A votação nominal é sempre eletrônica e secreta.",
+      "C": "A votação simbólica é utilizada apenas em requerimentos.",
+      "D": "O Regimento prevê quatro modalidades de votação.",
+      "E": "A votação nominal poderá ser utilizada em qualquer caso, sem restrições."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 247: 'O Plenário adotará a votação por escrutínio secreto, em especial nos seguintes casos: I - eleições e escolha de competência da Assembleia previstas na Constituição do Estado, ou quando a lei o exigir; II - pedido de intervenção federal; e III - deliberação para escolha dos membros do Tribunal de Contas.'"
+  },
+  {
+    "id": 22,
+    "titulo": "Redação Final",
+    "enunciado": "22) Conforme as disposições do Regimento Interno acerca da Redação Final, assinale a alternativa correta:",
+    "alternativas": {
+      "A": "É obrigatória em todos os projetos.",
+      "B": "Só caberão emendas para correção de vícios formais.",
+      "C": "É dispensada apenas em projetos de resolução.",
+      "D": "Pode ser modificada livremente pelo Plenário.",
+      "E": "É dispensada inclusive quando houver erro manifesto."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 253, §2º: 'Só caberão emendas à redação final para evitar incorreções de linguagem, incoerência notória, contradição evidente ou manifesto absurdo'."
+  },
+  {
+    "id": 23,
+    "titulo": "Autógrafos das Proposições",
+    "enunciado": "23) Os autógrafos das proposições aprovadas:",
+    "alternativas": {
+      "A": "são assinados pelo governador.",
+      "B": "são assinados pelo relator.",
+      "C": "reproduzirão apenas a redação original.",
+      "D": "serão assinados pelo presidente da Assembleia.",
+      "E": "dependerão de aprovação da Mesa Diretora."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 255, parágrafo único: 'Os autógrafos serão assinados pelo presidente da Assembleia'."
+  },
+  {
+    "id": 24,
+    "titulo": "Veto Governamental",
+    "enunciado": "24) No que se refere ao veto governamental, assinale a alternativa correta:",
+    "alternativas": {
+      "A": "O silêncio do governador importa veto tácito.",
+      "B": "O veto parcial pode abranger palavras isoladas.",
+      "C": "O veto será apreciado em dois turnos.",
+      "D": "A votação do veto será nominal.",
+      "E": "A rejeição do veto exige maioria simples."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 267, §4º: 'A votação do veto será feita através do processo de votação nominal'."
+  },
+  {
+    "id": 25,
+    "titulo": "Rejeição do Veto",
+    "enunciado": "25) Rejeitado o veto total ou parcial, o projeto será:",
+    "alternativas": {
+      "A": "arquivado.",
+      "B": "automaticamente promulgado pela Assembleia.",
+      "C": "enviado ao governador para sanção.",
+      "D": "retornará à Comissão de Constituição e Justiça.",
+      "E": "enviado ao governador para promulgação."
+    },
+    "resposta": "E",
+    "explicacao": "Conforme Art. 267, §5º: 'Rejeitado o veto, será o projeto reenviado ao governador para promulgação'."
+  },
+  {
+    "id": 26,
+    "titulo": "Das Sessões da Assembleia",
+    "enunciado": "De acordo com o Regimento Interno, as sessões ordinárias da Assembleia Legislativa de Roraima são realizadas:",
+    "alternativas": {
+      "A": "de 15 de fevereiro a 30 de junho e de 1º de agosto a 22 de dezembro.",
+      "B": "de 1º de fevereiro a 30 de junho e de 1º de agosto a 15 de dezembro.",
+      "C": "de 1º de março a 30 de julho e de 1º de setembro a 22 de dezembro.",
+      "D": "de 15 de fevereiro a 30 de julho e de 1º de agosto a 22 de dezembro.",
+      "E": "de 1º de fevereiro a 30 de junho e de 1º de agosto a 22 de dezembro."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 135: 'As sessões ordinárias serão realizadas de 15 de fevereiro a 30 de junho e de 1° de agosto a 22 de dezembro e terão duração de 3 (três) horas'."
+  },
+  {
+    "id": 27,
+    "titulo": "Da Mesa Diretora",
+    "enunciado": "A Mesa Diretora da Assembleia Legislativa de Roraima é composta por:",
+    "alternativas": {
+      "A": "01 presidente, 02 vice-presidentes, 04 secretários, 01 corregedor-geral, 01 ouvidor-geral e 01 secretária especial da mulher.",
+      "B": "01 presidente, 03 vice-presidentes, 04 secretários, 01 corregedor-geral, 01 ouvidor-geral e 01 secretária especial da mulher.",
+      "C": "01 presidente, 02 vice-presidentes, 03 secretários, 01 corregedor-geral, 01 ouvidor-geral e 01 secretária especial da mulher.",
+      "D": "01 presidente, 03 vice-presidentes, 03 secretários, 01 corregedor-geral, 01 ouvidor-geral e 01 secretária especial da mulher.",
+      "E": "01 presidente, 03 vice-presidentes, 04 secretários, 01 corregedor-geral, 02 ouvidores-gerais e 01 secretária especial da mulher."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 23: 'A Mesa Diretora da Assembleia Legislativa é composta por: I - 01 (um) presidente; II - 03 (três) vice-presidentes; III - 04 (quatro) secretários; IV - 01 (um) corregedor-geral; V - 01 (um) ouvidor-geral; e VI - 01 (uma) secretária Especial da Mulher'."
+  },
+  {
+    "id": 28,
+    "titulo": "Das Comissões Permanentes",
+    "enunciado": "Segundo o Regimento Interno, as Comissões Permanentes são constituídas de, no máximo:",
+    "alternativas": {
+      "A": "5 membros efetivos.",
+      "B": "7 membros efetivos.",
+      "C": "9 membros efetivos.",
+      "D": "11 membros efetivos.",
+      "E": "13 membros efetivos."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 54: 'As Comissões Permanentes são constituídas de, no máximo, 07 (sete) membros efetivos'."
+  },
+  {
+    "id": 29,
+    "titulo": "Dos Prazos das Comissões",
+    "enunciado": "De acordo com o Regimento Interno, o prazo para uma Comissão emitir parecer sobre matéria em regime de urgência é de:",
+    "alternativas": {
+      "A": "5 dias.",
+      "B": "10 dias.",
+      "C": "12 dias.",
+      "D": "15 dias.",
+      "E": "18 dias."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 80, inciso I: '10 (dez) dias, para as matérias em regime de urgência'."
+  },
+  {
+    "id": 30,
+    "titulo": "Da Discussão",
+    "enunciado": "Durante a discussão de uma proposição em Comissão, o membro da Comissão ou o autor da proposição poderão usar da palavra por:",
+    "alternativas": {
+      "A": "3 minutos e o relator por 5 minutos.",
+      "B": "5 minutos e o relator por 10 minutos.",
+      "C": "10 minutos e o relator por 15 minutos.",
+      "D": "5 minutos e o relator por 5 minutos.",
+      "E": "10 minutos e o relator por 10 minutos."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 83, §2º: 'para discutirem o parecer, o membro de Comissão ou o autor da proposição poderão usar da palavra por 05 (cinco) minutos e o relator por 10 (dez) minutos'."
+  },
+  {
+    "id": 31,
+    "titulo": "Da Renúncia do Mandato",
+    "enunciado": "Nos termos do Regimento Interno, considera-se haver renunciado ao mandato o deputado que:",
+    "alternativas": {
+      "A": "deixar de comparecer a um terço das sessões ordinárias.",
+      "B": "não prestar compromisso na forma e no prazo previstos.",
+      "C": "perder os direitos políticos.",
+      "D": "sofrer condenação criminal transitada em julgado.",
+      "E": "infringir proibição estabelecida na Constituição Estadual."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 112, inciso I: 'o deputado que não prestar compromisso na forma e no prazo previsto, respectivamente, nos art. 7º e 10 deste Regimento'."
+  },
+  {
+    "id": 32,
+    "titulo": "Da Perda do Mandato",
+    "enunciado": "Nos casos de perda de mandato por infringir proibição estabelecida na Constituição Estadual, a decisão será tomada:",
+    "alternativas": {
+      "A": "pela Mesa Diretora, por maioria simples.",
+      "B": "pelo Plenário, por maioria absoluta, assegurada ampla defesa.",
+      "C": "pelo Tribunal de Justiça, por maioria simples.",
+      "D": "pelo Plenário, por dois terços dos membros.",
+      "E": "pela Comissão de Ética, por maioria absoluta."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 113, §1º: 'Nos casos dos incisos I, II, e VI, a perda de mandato será decidida por maioria absoluta dos deputados, assegurada a ampla defesa e o contraditório'."
+  },
+  {
+    "id": 33,
+    "titulo": "Da Licença Maternidade",
+    "enunciado": "De acordo com o Regimento Interno, a deputada poderá obter licença-maternidade de até:",
+    "alternativas": {
+      "A": "120 dias, sem perda do subsídio.",
+      "B": "180 dias, com perda de 50% do subsídio.",
+      "C": "120 dias, com perda do subsídio.",
+      "D": "180 dias, sem perda do subsídio.",
+      "E": "90 dias, sem perda do subsídio."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 114, §6º: 'As deputadas poderão obter licença-maternidade de até 120 (cento e vinte) dias, e os deputados, licença-paternidade de 5 (cinco) dias, sem perda do subsídio, das vantagens e prerrogativas parlamentares'."
+  },
+  {
+    "id": 34,
+    "titulo": "Da Convocação de Suplente",
+    "enunciado": "A Mesa Diretora convocará suplente de deputado nos casos de licença para tratamento de saúde do titular por prazo superior a:",
+    "alternativas": {
+      "A": "60 dias.",
+      "B": "90 dias.",
+      "C": "120 dias.",
+      "D": "150 dias.",
+      "E": "180 dias."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 120, inciso III: 'licença para tratamento de saúde do titular por prazo superior a 120 (cento e vinte) dias'."
+  },
+  {
+    "id": 35,
+    "titulo": "Da Comissão Representativa",
+    "enunciado": "Durante o recesso, a Comissão Representativa da Assembleia Legislativa é composta pelo presidente da Assembleia e, no mínimo:",
+    "alternativas": {
+      "A": "um membro de cada partido com assento na Casa.",
+      "B": "um membro de cada Bancada.",
+      "C": "três membros de cada partido com assento na Casa.",
+      "D": "dois membros de cada Bancada.",
+      "E": "três membros de cada Bancada."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 66: 'Durante o recesso haverá Comissão Representativa composta pelo presidente da Assembleia e, no mínimo, um membro de cada partido com assento na Casa'."
+  },
+  {
+    "id": 36,
+    "titulo": "Da Comissão Parlamentar de Inquérito",
+    "enunciado": "A Comissão Parlamentar de Inquérito (CPI) terá prazo de até quantos dias para concluir seus trabalhos?",
+    "alternativas": {
+      "A": "60 dias.",
+      "B": "90 dias.",
+      "C": "120 dias.",
+      "D": "180 dias.",
+      "E": "240 dias."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 65: 'A Assembleia Legislativa, a requerimento de 1/3 (um terço) de seus membros, constituirá Comissão Parlamentar de Inquérito para apuração de fato determinado, no prazo de até 120 (cento e vinte) dias'."
+  },
+  {
+    "id": 37,
+    "titulo": "Da Iniciativa Popular",
+    "enunciado": "A proposta de lei de iniciativa popular será apresentada à Assembleia Legislativa com a assinatura de, no mínimo:",
+    "alternativas": {
+      "A": "1% do eleitorado estadual.",
+      "B": "2% do eleitorado estadual.",
+      "C": "0,5% do eleitorado estadual.",
+      "D": "5% do eleitorado estadual.",
+      "E": "10% do eleitorado estadual."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 132: 'A iniciativa popular pode ser exercida pela apresentação à Assembleia Legislativa de projeto de lei subscrito por, no mínimo, um por cento do eleitorado do Estado'."
+  },
+  {
+    "id": 38,
+    "titulo": "Da Ordem do Dia",
+    "enunciado": "A Ordem do Dia terá duração de:",
+    "alternativas": {
+      "A": "30 minutos, prorrogáveis.",
+      "B": "60 minutos, prorrogáveis.",
+      "C": "90 minutos, prorrogáveis.",
+      "D": "120 minutos, prorrogáveis.",
+      "E": "180 minutos, prorrogáveis."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 137, inciso II: 'Ordem do Dia, com duração de 60 (sessenta) minutos, prorrogáveis para apreciação de matéria constante da Ordem do Dia'."
+  },
+  {
+    "id": 39,
+    "titulo": "Da Sessão Secreta",
+    "enunciado": "A Sessão Secreta somente será admitida se a publicidade dos trabalhos puser em risco:",
+    "alternativas": {
+      "A": "a segurança da sociedade e do Estado.",
+      "B": "a inviolabilidade da intimidade, da vida privada, da honra e da imagem das pessoas.",
+      "C": "ambas as alternativas anteriores.",
+      "D": "apenas a segurança da sociedade.",
+      "E": "apenas a honra e a imagem das pessoas."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 176, §1º: 'A convocação de Sessão Secreta somente será admitida se verificada a possibilidade de a publicidade dos trabalhos pôr em risco: I - a segurança da sociedade e do Estado; e II - a inviolabilidade da intimidade, da vida privada, da honra e da imagem das pessoas'."
+  },
+  {
+    "id": 40,
+    "titulo": "Da Questão de Ordem",
+    "enunciado": "O deputado que quiser comentar, criticar ou protestar sobre uma questão de ordem poderá fazê-lo na Sessão seguinte, durante a hora do Expediente, pelo prazo de:",
+    "alternativas": {
+      "A": "5 minutos.",
+      "B": "10 minutos.",
+      "C": "15 minutos.",
+      "D": "20 minutos.",
+      "E": "30 minutos."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 177, §6º: 'O deputado que quiser comentar, criticar ou protestar poderá fazê-lo na Sessão seguinte, tendo a preferência para uso da palavra, durante 10 (dez) minutos, à hora do Expediente'."
+  },
+  {
+    "id": 41,
+    "titulo": "Da Apreciação do Veto",
+    "enunciado": "O veto governamental será apreciado pelo Plenário em:",
+    "alternativas": {
+      "A": "um turno, por maioria simples.",
+      "B": "dois turnos, por maioria absoluta.",
+      "C": "um turno, por maioria absoluta.",
+      "D": "dois turnos, por três quintos.",
+      "E": "um turno, por dois terços."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 266, §7º: 'O projeto ou a parte vetada será submetida a discussão e votação em turno único, dentro de 30 (trinta) dias contados da leitura em Plenário.' E Art. 267, §3º: 'O projeto ou a parte vetada será considerado aprovada se obtiver o voto da maioria absoluta dos membros da Assembleia Legislativa'."
+  },
+  {
+    "id": 42,
+    "titulo": "Da Promulgação das Leis",
+    "enunciado": "Se o governador não promulgar a lei no prazo de 48 horas, quem a promulgará?",
+    "alternativas": {
+      "A": "O vice-governador.",
+      "B": "O presidente da Assembleia.",
+      "C": "O vice-presidente da Assembleia.",
+      "D": "O relator do projeto.",
+      "E": "A Mesa Diretora."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 267, §6º: 'Se o projeto não for promulgado dentro de 48 (quarenta e oito) horas pelo governador, o presidente da Assembleia o promulgará, e, se este não o fizer em igual prazo, o vice-presidente o fará'."
+  },
+  {
+    "id": 43,
+    "titulo": "Da Prestação de Contas do Governador",
+    "enunciado": "O processo de prestação de contas do Governador do Estado deverá dar entrada na Assembleia até quantos dias após a abertura da Sessão Legislativa Ordinária?",
+    "alternativas": {
+      "A": "30 dias.",
+      "B": "45 dias.",
+      "C": "60 dias.",
+      "D": "90 dias.",
+      "E": "120 dias."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 268: 'O processo de prestação de contas do Governador do Estado deverá dar entrada na Assembleia até 60 (sessenta) dias após a abertura da Sessão Legislativa Ordinária'."
+  },
+  {
+    "id": 44,
+    "titulo": "Dos Projetos de Lei Orçamentária",
+    "enunciado": "Os projetos de lei do plano plurianual, de diretrizes orçamentárias e do orçamento anual serão analisados por qual Comissão?",
+    "alternativas": {
+      "A": "Comissão de Constituição, Justiça e Redação Final.",
+      "B": "Comissão de Finanças, Orçamento, Fiscalização e Controle.",
+      "C": "Comissão de Administração, Serviços Públicos e Previdência.",
+      "D": "Comissão de Tomada de Contas.",
+      "E": "Comissão de Viação, Transportes e Obras."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 272: 'A proposição de que trata este capítulo será distribuída em avulso aos deputados e às Comissões a que estiver afeto e encaminhado à Comissão de Finanças, Orçamento, Fiscalização e Controle para, no prazo de 45 (quarenta e cinco) dias, receber parecer'."
+  },
+  {
+    "id": 45,
+    "titulo": "Do Regime de Urgência",
+    "enunciado": "Nos projetos com regime de urgência, as Comissões terão prazo de até quantas horas para emitir parecer?",
+    "alternativas": {
+      "A": "24 horas.",
+      "B": "48 horas.",
+      "C": "72 horas.",
+      "D": "96 horas.",
+      "E": "120 horas."
+    },
+    "resposta": "C",
+    "explicacao": "Conforme Art. 261, §3º, inciso I: 'será concedido o prazo de até 72 (setenta e duas) horas para que cada Comissão opine a respeito e profiram os seus respectivos pareceres'."
+  },
+  {
+    "id": 46,
+    "titulo": "Da Pronúncia do Plenário",
+    "enunciado": "As deliberações de matérias em tramitação na Assembleia Legislativa serão tomadas por maioria dos votos, presente:",
+    "alternativas": {
+      "A": "a maioria simples dos seus membros.",
+      "B": "a maioria absoluta dos seus membros.",
+      "C": "um terço dos seus membros.",
+      "D": "dois terços dos seus membros.",
+      "E": "três quintos dos seus membros."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 4: 'As deliberações de matérias em tramitação na Assembleia Legislativa serão tomadas por maioria dos votos, presente a maioria absoluta dos seus membros, salvo os casos em que se exigir quórum específico'."
+  },
+  {
+    "id": 47,
+    "titulo": "Da Posse dos Deputados",
+    "enunciado": "Salvo motivo de força maior ou enfermidade, a posse dos deputados dar-se-á no prazo de:",
+    "alternativas": {
+      "A": "15 dias, prorrogáveis por igual tempo.",
+      "B": "30 dias, prorrogáveis por igual tempo.",
+      "C": "45 dias, prorrogáveis por igual tempo.",
+      "D": "60 dias, prorrogáveis por igual tempo.",
+      "E": "90 dias, prorrogáveis por igual tempo."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 10: 'Salvo motivo de força maior ou enfermidade, devidamente comprovados, a posse dar-se-á no prazo de 30 (trinta) dias, prorrogáveis por igual tempo, a requerimento do interessado'."
+  },
+  {
+    "id": 48,
+    "titulo": "Da Eleição da Mesa Diretora",
+    "enunciado": "A eleição da Mesa Diretora para o primeiro biênio ocorrerá:",
+    "alternativas": {
+      "A": "na primeira Sessão Preparatória.",
+      "B": "na segunda Sessão Preparatória.",
+      "C": "na terceira Sessão Preparatória.",
+      "D": "na primeira Sessão Ordinária.",
+      "E": "na segunda Sessão Ordinária."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 12, §1º: 'Os deputados elegerão a Mesa Diretora para o primeiro biênio na segunda Sessão Preparatória'."
+  },
+  {
+    "id": 49,
+    "titulo": "Da Convocação Extraordinária",
+    "enunciado": "A convocação extraordinária da Assembleia Legislativa far-se-á por ato do governador do Estado, do presidente da Casa ou a requerimento de:",
+    "alternativas": {
+      "A": "um terço dos seus membros.",
+      "B": "a maioria absoluta dos seus membros.",
+      "C": "dois terços dos seus membros.",
+      "D": "três quintos dos seus membros.",
+      "E": "a maioria simples dos seus membros."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 150: 'A convocação extraordinária da Assembleia Legislativa far-se-á por ato do governador do Estado, do presidente da Casa ou a requerimento da maioria dos seus membros, em caso de urgência ou interesse público relevante'."
+  },
+  {
+    "id": 50,
+    "titulo": "Do Aparte",
+    "enunciado": "O aparte é a interrupção breve do orador, com duração máxima de:",
+    "alternativas": {
+      "A": "1 minuto.",
+      "B": "2 minutos.",
+      "C": "3 minutos.",
+      "D": "5 minutos.",
+      "E": "10 minutos."
+    },
+    "resposta": "B",
+    "explicacao": "Conforme Art. 236: 'Aparte é a interrupção breve e oportuna, do orador para indagação ou esclarecimento relativo ao debate, pelo prazo máximo de 02 (dois) minutos'."
+  },
+  {
+    "id": 51,
+    "titulo": "Do Processo Administrativo Disciplinar (LC 53/2001)",
+    "enunciado": "De acordo com a LC 53/2001, a autoridade que tiver ciência de irregularidade no serviço público deve comunicar ao:",
+    "alternativas": {
+      "A": "Departamento de Pessoal da Secretaria de Estado da Administração.",
+      "B": "Ministério Público Estadual.",
+      "C": "Corregedoria Geral do Estado.",
+      "D": "Tribunal de Contas do Estado.",
+      "E": "Controladoria Geral do Estado."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme art. 137, §1º, da LC 53/2001: 'compete ao Departamento de Pessoal da Secretaria de Estado da Administração'."
+  },
+  {
+    "id": 52,
+    "titulo": "Do Processo Administrativo Disciplinar (LC 53/2001)",
+    "enunciado": "Nos termos do art. 138 da LC 53/2001, as denúncias sobre irregularidades serão objeto de apuração desde que atendam a alguns requisitos. Assinale a alternativa que NÃO é um desses requisitos:",
+    "alternativas": {
+      "A": "Identificação do denunciante.",
+      "B": "Descrição sumária dos fatos.",
+      "C": "Assinatura de duas testemunhas.",
+      "D": "Requerimento formal dirigido ao Governador.",
+      "E": "Indicação de provas."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme art. 138 da LC 53/2001, os requisitos são: identificação do denunciante, descrição sumária dos fatos, indicação de provas e assinatura de duas testemunhas. Não exige requerimento formal ao Governador."
+  },
+  {
+    "id": 53,
+    "titulo": "Do Processo Administrativo Disciplinar (LC 53/2001)",
+    "enunciado": "De acordo com o art. 139 da LC 53/2001, da sindicância poderá resultar em:",
+    "alternativas": {
+      "A": "Arquivamento do processo.",
+      "B": "Aplicação de penalidade de advertência ou suspensão de até trinta dias.",
+      "C": "Instauração de processo disciplinar.",
+      "D": "Todas as alternativas anteriores.",
+      "E": "Aplicação de penalidade de demissão."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme art. 139 da LC 53/2001, da sindicância poderá resultar: I - arquivamento do processo; II - aplicação de penalidade de advertência ou suspensão de até trinta dias; III - instauração de processo disciplinar. A demissão é resultado de processo disciplinar, não da sindicância."
+  },
+  {
+    "id": 54,
+    "titulo": "Das Emendas",
+    "enunciado": "Segundo o Regimento Interno, emenda supressiva é aquela que:",
+    "alternativas": {
+      "A": "manda erradicar qualquer parte de outra proposição.",
+      "B": "resulta da fusão de outras emendas.",
+      "C": "é apresentada como sucedânea a parte de outra proposição.",
+      "D": "altera a proposição sem a modificar substancialmente.",
+      "E": "se acrescenta a outra proposição."
+    },
+    "resposta": "A",
+    "explicacao": "Conforme Art. 213, inciso I: 'supressiva é a que manda erradicar qualquer parte de outra proposição'."
+  },
+  {
+    "id": 55,
+    "titulo": "Das Emendas",
+    "enunciado": "Não serão admitidas emendas que:",
+    "alternativas": {
+      "A": "digam respeito a mais de um dispositivo, exceto quando a modificação for correlata.",
+      "B": "impliquem aumento de despesa prevista em projetos de iniciativa exclusiva do governador.",
+      "C": "sejam sem relação com a matéria da proposição emendada.",
+      "D": "todas as alternativas anteriores.",
+      "E": "apenas A e B."
+    },
+    "resposta": "D",
+    "explicacao": "Conforme Art. 214: 'Não serão admitidas emendas: I - sem relação com a matéria da proposição emendada; II - em sentido contrário à proposição; III - que digam respeito a mais de um dispositivo, a não ser que tratem de modificação correlata; IV - que impliquem aumento de despesa prevista: a) nos projetos de iniciativa exclusiva do governador do Estado, ressalvado o disposto no art. 113 da Constituição do Estado; e b) nos projetos sobre organização dos serviços administrativos da Assembleia Legislativa, do Tribunal de Justiça e do Ministério Público'."
+  }
+]
