@@ -2285,7 +2285,7 @@
                 console.log(`Carregado ${item.file}: ${item.data.length} questões`);
                 
                 const is2018File = item.file.includes('2018');
-                const qs = item.data.map((q, i) => normalizeQuestion(q, i, is2018File));
+                const qs = item.data.map((q, i) => normalizeQuestion(q, i, is2018File, item.file));
                 allQs = allQs.concat(qs);
             });
             
@@ -2335,16 +2335,22 @@
         }
     }
 
-    function normalizeQuestion(q, id, from2018File) {
+    function normalizeQuestion(q, id, from2018File, fileName) {
         let mod = q.titulo || "Geral";
-        const match = mod.match(/Título\s+([IVXLCDM]+)/i);
-        if(match) {
-            const rest = mod.split('-').pop().trim();
-            mod = `Título ${match[1].toUpperCase()} - ${rest}`;
+        
+        // Tratamento especial para o arquivo aulao-complexo-regimento.json
+        if (fileName && fileName.includes('aulao-complexo-regimento.json')) {
+            mod = "Aulão Complexo de Regimento";
         } else {
-             mod = mod.replace('Regimento Interno 2023 - ', '').trim();
+            const match = mod.match(/Título\s+([IVXLCDM]+)/i);
+            if(match) {
+                const rest = mod.split('-').pop().trim();
+                mod = `Título ${match[1].toUpperCase()} - ${rest}`;
+            } else {
+                 mod = mod.replace('Regimento Interno 2023 - ', '').trim();
+            }
+            if(from2018File) mod = "Questões de Concursos Anteriores (2018)";
         }
-        if(from2018File) mod = "Questões de Concursos Anteriores (2018)";
         
         let correctIdx = 0;
         if(q.resposta) {
